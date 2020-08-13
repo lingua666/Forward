@@ -1,0 +1,14 @@
+LIBRARY  dllNetFrame_RawServer
+
+EXPORTS
+
+MRaw_S_Init					@1
+MRaw_S_Listen				@2
+MRaw_S_Close				@3
+MRaw_S_Free					@4
+MRaw_S_DisConnectClient		@5
+MRaw_S_SetClientDisConnect	@6
+MRaw_S_SetClientRecData		@7
+MRaw_S_SentData				@8
+SetDebugModule				@9	
+GetModuleInfo				@10

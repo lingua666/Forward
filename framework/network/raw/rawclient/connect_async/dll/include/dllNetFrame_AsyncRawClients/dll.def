@@ -1,0 +1,14 @@
+LIBRARY  dllNetFrame_AsyncRawClients
+
+EXPORTS
+
+MRaw_C_Init				@1
+MRaw_C_Free				@2
+MRaw_C_SetConnect		@3
+MRaw_C_Connect			@4
+MRaw_C_Close			@5
+MRaw_C_SetClose			@6
+MRaw_C_SetRecData		@7
+MRaw_C_SentData			@8
+SetDebugModule			@9
+GetModuleInfo			@10

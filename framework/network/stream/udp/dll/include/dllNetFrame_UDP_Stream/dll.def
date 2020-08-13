@@ -1,0 +1,9 @@
+LIBRARY  dllNetFrame_UDP_Stream
+
+EXPORTS
+
+MEmergency_Telephone_Init		@1
+MEmergency_Telephone_Free		@2
+MEmergency_Telephone_Call		@3
+MEmergency_Telephone_Hangup		@4
+

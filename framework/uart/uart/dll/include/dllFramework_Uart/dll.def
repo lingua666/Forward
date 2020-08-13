@@ -1,0 +1,14 @@
+LIBRARY  dllFramework_Uart
+
+EXPORTS
+
+MUart_Init				@1
+MUart_Free				@2
+MUart_Set				@3
+MUart_Open				@4
+MUart_Close				@5
+MUart_SentData			@6
+GetModuleInfo			@7
+SetDebugModule			@8
+MUart_String2Double		@9
+MUart_Double2String		@10

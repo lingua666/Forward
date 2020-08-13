@@ -1,0 +1,23 @@
+LIBRARY  dllNetFrame_AsyncStreamClients
+
+EXPORTS
+
+MStream_C_Init				@1
+MStream_C_Free				@2
+MStream_C_SetConnect			@3
+MStream_C_Connect			@4
+MStream_C_Close				@5
+MStream_C_SetClose			@6
+MStream_C_SetRecData			@7
+MStream_C_SentData			@8
+SetDebugModule				@9
+GetModuleInfo				@10
+
+MStream_C_V20_Init			@11
+MStream_C_V20_Free			@12
+MStream_C_V20_SetConnect		@13
+MStream_C_V20_Connect			@14
+MStream_C_V20_Close			@15
+MStream_C_V20_SetClose			@16
+MStream_C_V20_SetRecData		@17
+MStream_C_V20_SentData			@18

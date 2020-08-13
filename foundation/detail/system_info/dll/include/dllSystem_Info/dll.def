@@ -1,0 +1,6 @@
+LIBRARY  dllSystem_Info
+
+EXPORTS
+
+GetCpuInfo		@1
+MGetDiskInfo	@2

@@ -1,0 +1,24 @@
+LIBRARY  dllNetFrame_AsyncCmdClients
+
+EXPORTS
+
+MCmd_C_Init				@1
+MCmd_C_Free				@2
+MCmd_C_SetConnect			@3
+MCmd_C_Connect				@4
+MCmd_C_Close				@5
+MCmd_C_SetClose				@6
+MCmd_C_SetRecData			@7
+MCmd_C_SentData				@8
+SetDebugModule				@9
+GetModuleInfo				@10
+
+MCmd_C_V20_Init				@11
+MCmd_C_V20_Free				@12
+MCmd_C_V20_SetConnect			@13
+MCmd_C_V20_Connect			@14
+MCmd_C_V20_Close			@15
+MCmd_C_V20_SetClose			@16
+MCmd_C_V20_SetRecData			@17
+MCmd_C_V20_SentData			@18
+MCmd_C_V20_Error			@19

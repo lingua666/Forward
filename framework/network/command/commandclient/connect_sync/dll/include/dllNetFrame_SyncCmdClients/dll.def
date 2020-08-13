@@ -1,0 +1,12 @@
+LIBRARY  dllNetFrame_SyncCmdClients
+
+EXPORTS
+
+MCmd_SynC_Init				@1
+MCmd_SynC_Free				@2
+MCmd_SynC_Connect			@3
+MCmd_SynC_Close				@4
+MCmd_SynC_SetClose			@5
+MCmd_SynC_SetRecData			@6
+MCmd_SynC_SentData			@7
+GetModuleInfo				@8

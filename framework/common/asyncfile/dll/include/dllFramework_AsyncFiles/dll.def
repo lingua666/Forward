@@ -1,0 +1,7 @@
+LIBRARY  dllFrameWork_AsyncFile
+
+EXPORTS
+
+
+SetDebugModule				@9
+GetModuleInfo				@10

@@ -1,0 +1,4 @@
+LIBRARY  dllSmart_ptr
+
+EXPORTS
+

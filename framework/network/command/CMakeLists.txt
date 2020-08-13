@@ -1,0 +1,3 @@
+add_subdirectory(commandserver)
+add_subdirectory(commandserver_v10)
+add_subdirectory(commandclient)

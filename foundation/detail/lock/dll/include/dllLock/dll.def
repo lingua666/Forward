@@ -1,0 +1,8 @@
+LIBRARY  dllLock
+
+EXPORTS
+
+MLock_Alloc		@1
+MLock_Free		@2
+MLock_Lock		@3
+MLock_UnLock	@4

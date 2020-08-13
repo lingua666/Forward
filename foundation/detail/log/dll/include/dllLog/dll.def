@@ -1,0 +1,19 @@
+LIBRARY  dllLog
+
+EXPORTS
+
+MLog_AllocObj			@1
+MLog_FreeObj			@2
+MLog_GetModuleLogPath		@3
+MLog_Alloc			@4
+MLog_Free			@5
+MLog_Open			@6
+MLog_SetLevel			@7
+MLog_Close			@8
+MLog_Info			@9
+MLog_Warning			@10
+MLog_Debug			@11
+MLog_Error			@12
+MLog_FATAL			@13	
+MLog_AllocObjWithPath		@14
+

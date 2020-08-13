@@ -1,0 +1,13 @@
+LIBRARY  dllThread
+
+EXPORTS
+
+GetMemory		@1
+ParseMemory		@2
+
+MCSHARP_Test_1		@3
+MCSHARP_Test_2		@4
+MCSHARP_Test_3		@5
+MCSHARP_Test_4		@6
+MCSHARP_Test_5		@7
+MCSHARP_Test_6		@8

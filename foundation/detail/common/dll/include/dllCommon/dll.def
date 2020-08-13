@@ -1,0 +1,6 @@
+LIBRARY  dllCommon
+
+EXPORTS
+
+DllCommonInit	@1
+

@@ -1,0 +1,23 @@
+LIBRARY  dllNetFrame_CmdServer_V10
+
+EXPORTS
+
+MCmd_SV10_Listen				@1
+MCmd_SV10_Close					@2
+MCmd_SV10_Free					@3
+MCmd_SV10_DisConnectClient		@4
+MCmd_SV10_SetClientDisConnect	@5
+MCmd_SV10_SetClientRecData		@6
+MCmd_SV10_SentData				@7
+MCmd_SV10_Init					@8
+SetDebugModule					@9	
+GetModuleInfo					@10
+
+MCmd_S_V20_Init					@11
+MCmd_S_V20_Listen				@12
+MCmd_S_V20_Close				@13
+MCmd_S_V20_Free					@14
+MCmd_S_V20_DisConnectClient		@15
+MCmd_S_V20_SetClientDisConnect	@16
+MCmd_S_V20_SetClientRecData		@17
+MCmd_S_V20_SentData				@18

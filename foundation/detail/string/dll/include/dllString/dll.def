@@ -1,0 +1,6 @@
+LIBRARY  dllString
+
+EXPORTS
+
+MIOTPen_Proto_Test_SetParse	@1
+MIOTPen_Proto_Test_Parse	@2

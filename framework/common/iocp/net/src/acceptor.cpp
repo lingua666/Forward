@@ -117,7 +117,7 @@ namespace _iocp_net_{
 		void acceptor::accept_handle( const fn_accept_handle& f, tagIOData_INFO* pIOData )
 		{
 			//test
-			printf("acceptor::accept_handle()\r\n");
+			//printf("acceptor::accept_handle()\r\n");
 			//test
 
 			tagOverlapped* pOver = (tagOverlapped*)pIOData->_pOverlapped;

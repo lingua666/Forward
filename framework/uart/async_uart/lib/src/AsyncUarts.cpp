@@ -5,6 +5,11 @@ namespace	_async_{
 
 	namespace	_uarts_{
 
+		AsyncUarts* GetAsyncUartsInstance(void)
+		{
+			return Singleton<AsyncUarts>::instance();
+		}
+
 		void AsyncUarts::WorkThread( void* pParamter )
 		{
 			AsyncUarts* pUart = reinterpret_cast<AsyncUarts*>(pParamter);

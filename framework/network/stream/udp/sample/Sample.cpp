@@ -80,7 +80,7 @@ void ClientTest( void )
 
 	_string_type s = _file_::RWIni::GetCurrentPath();
 	s.append("\\Config\\Stream_Config.ini");
-	const int iPort = 10000;//_file_::RWIni::ReadInt("SERVER","Port",s.c_str());
+	const int iPort = 11000;//_file_::RWIni::ReadInt("SERVER","Port",s.c_str());
 
 	int iThreadNum = get_processor_number();
 	App.Init(/*__max(iThreadNum / 2, 2), __max(iThreadNum / 2, 2)*/);

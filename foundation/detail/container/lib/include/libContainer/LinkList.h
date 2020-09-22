@@ -151,9 +151,28 @@ namespace	_container_{
 
 		}
 
+		LinkList(const LinkList& t1)
+			: _Impl(sizeof(value_type))
+		{
+			for (LinkList::iterator iter = t1.begin(); iter != t1.end(); iter ++)
+			{
+				push_back(*iter);
+			}
+		}
+
 		~LinkList( void )
 		{
 			clear();
+		}
+
+		LinkList& operator=(const LinkList& t1) 
+		{
+			for (LinkList::iterator iter = t1.begin(); iter != t1.end(); iter++)
+			{
+				push_back(*iter);
+			}
+
+			return *this;
 		}
 
 		void push_back( const_reference Value )

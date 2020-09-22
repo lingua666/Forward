@@ -159,7 +159,9 @@ typedef NETHANDLE	_HASH;
 	protected:
 		static void	Send( const CmdSession_sptr& Session_ptr )
 		{
-			Timestamp_type::UtcTimeVal UtcTime = Timestamp_type().utcTime();
+			//Timestamp_type::UtcTimeVal UtcTime = Timestamp_type().utcTime();
+			UInt32 UtcTime = Timestamp_type().unixTime();
+
 			//ÐÄÌø°ü
 			_session_hdr Hdr;
 			Hdr._uPriority = 0;

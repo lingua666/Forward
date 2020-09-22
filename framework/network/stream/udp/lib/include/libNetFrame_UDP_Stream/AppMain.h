@@ -63,6 +63,9 @@ namespace	_server_{
 			Int32	Send( NETHANDLE Node, sockaddr_in* pDest,
 				const char* c_pData, UInt16 u16Size );
 
+			Int32	Send(NETHANDLE Node, const char* c_szDstIP, UInt16 uDstPort,
+				const char* c_pData, UInt16 u16Size);
+
 			void	Stop( void );
 			int		Close( NETHANDLE Node );
 

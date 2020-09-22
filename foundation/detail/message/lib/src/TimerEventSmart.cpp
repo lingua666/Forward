@@ -1,6 +1,11 @@
 
 #include <libMessage/TimerEventSmart.h>
 
+TimerEventSmart* GetTimerEventSmartInstance(void)
+{
+	return Singleton<TimerEventSmart>::instance();
+}
+
 TimerEventSmart::TimerEventSmart( void )
 {
 

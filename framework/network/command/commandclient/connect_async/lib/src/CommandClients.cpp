@@ -283,8 +283,6 @@ gt_error:
 								ptr->_Data + sizeof(_session_hdr),
 								ptr->_uPayload - sizeof(_session_hdr));
 
-							LOG_Print_Info(NetFrame_AsyncCmdClients, "RecvData(%d):%s", ptr->_uPayload - sizeof(_session_hdr), ptr->_Data + sizeof(_session_hdr) )
-
 							ptr.reset();
 
 							//更新心跳

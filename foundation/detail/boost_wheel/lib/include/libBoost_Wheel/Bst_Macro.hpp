@@ -144,25 +144,25 @@ template<int x> struct static_assert_test{};
 
 
 #define INSERT_MULTI_INDEX_FUNCTION_DECL(tp, tp_name, dst, ...)\
-	int MultiIndex_Insert( const dst& Val )\
+	int MultiIndex_Insert(reference_type<dst>::type Val)\
 	{\
 		std::pair< NAMESPACE_MEMBER_MACRO(tp, iterator),bool> Ret = tp_name.insert(Val);\
 		return Ret.second ? 1 : -1;\
 	}
 
 #define FIND_MULTI_INDEX_ELEMENT(function, tp_name, dst, cla, ret, memb)\
-	dst MultiIndex_FindFrom_##memb(ret Val)\
+	dst MultiIndex_FindFrom_##memb(reference_type<ret>::type Val)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		ITERATOR_MULTI_INDEX(memb) iter = indexOf.find( Val );\
 		if( iter == indexOf.end() )\
 		{\
-			return boost_wheel::ret_init<dst>::init();\
+			return ret_init<dst>::init();\
 		}\
 		BOOST_WHEEL_TYPEOF(*iter) ptr = *iter;\
 		return ptr;\
 	}\
-	UInt64 MultiIndex_FindsFrom_##memb(ret Val, const function& func)\
+	UInt64 MultiIndex_FindsFrom_##memb(reference_type<ret>::type Val, const function& func)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		UInt64 uCount = indexOf.count(Val);\
@@ -188,8 +188,26 @@ template<int x> struct static_assert_test{};
 #define FIND_MULTI_INDEX_FUNCTION_DECL(function, tp_name, dst, ...)\
 	MACRO_PP_SEQ_FOR_EACH_I(FIND_MULTI_INDEX_MEMBER_GET_FIELD,  MULTI_INDEX_MACRO(function, tp_name, dst), MACRO_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
+#define REPLACE_MULTI_INDEX_ELEMENT(tp_name, dst, cla, ret, memb)\
+	bool MultiIndex_Replace_##memb(reference_type<ret>::type Key, reference_type<dst>::type Val)\
+	{\
+		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
+		ITERATOR_MULTI_INDEX(memb) iter = indexOf.find( Key );\
+		if(iter != indexOf.end())\
+		{\
+			return indexOf.replace(iter, Val);\
+		}\
+		return false;\
+	}
+
+#define REPLACE_MULTI_INDEX_MEMBER_GET_FIELD(r, data, i, field)\
+	MULTI_INDEX_RAW(MACRO_PP_CAT(REPLACE_, MULTI_INDEX_ELEMENT( MULTI_INDEX_RAW(MACRO_PP_CAT(PARAMETER_,data)), MULTI_INDEX_RAW(MACRO_PP_CAT(PARAMETER_MULTI_, field)) ) ))
+
+#define REPLACE_MULTI_INDEX_FUNCTION_DECL(tp_name, dst, ...)\
+	MACRO_PP_SEQ_FOR_EACH_I(REPLACE_MULTI_INDEX_MEMBER_GET_FIELD,  MULTI_INDEX_MACRO(tp_name, dst), MACRO_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+
 #define REMOVE_MULTI_INDEX_ELEMENT(tp_name, dst, cla, ret, memb)\
-	dst MultiIndex_RemoveFrom_##memb(ret Val)\
+	dst MultiIndex_RemoveFrom_##memb(reference_type<ret>::type Val)\
 	{\
 		dst t;\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
@@ -210,7 +228,7 @@ template<int x> struct static_assert_test{};
 
 
 #define COUNT_MULTI_INDEX_ELEMENT(tp_name, dst, cla, ret, memb)\
-	UInt64 MultiIndex_Count_##memb(ret Val)\
+	UInt64 MultiIndex_Count_##memb(reference_type<ret>::type Val)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		return indexOf.count(Val);\
@@ -240,15 +258,16 @@ template<int x> struct static_assert_test{};
 	tp tp_name;\
 	FIELD_TYPEDEF_MULTI_INDEX_DECL(tp, __VA_ARGS__)\
 	INSERT_MULTI_INDEX_FUNCTION_DECL(tp, tp_name, dst, __VA_ARGS__)\
+	REPLACE_MULTI_INDEX_FUNCTION_DECL(tp_name, dst, __VA_ARGS__)\
 	REMOVE_MULTI_INDEX_FUNCTION_DECL(tp_name, dst, __VA_ARGS__)\
 	COUNT_MULTI_INDEX_FUNCTION_DECL(tp_name, dst, __VA_ARGS__)\
 	typedef function20_handle<bool (UInt64, UInt64, dst)>	HFNFind;\
 	FIND_MULTI_INDEX_FUNCTION_DECL(HFNFind,tp_name, dst, __VA_ARGS__)\
 	CLEAR_MULTI_INDEX_ELEMENT(tp_name)\
-	SIZE_MULTI_INDEX_ELEMENT(tp_name, _MultiIndexLock)
+	SIZE_MULTI_INDEX_ELEMENT(tp_name)
 
 #define INSERT_LOCK_MULTI_INDEX_FUNCTION_DECL(tp, tp_name, lock, dst, ...)\
-	int MultiIndex_Insert( const dst& Val )\
+	int MultiIndex_Insert(reference_type<dst>::type Val)\
 	{\
 		lock.Lock();\
 		std::pair< NAMESPACE_MEMBER_MACRO(tp, iterator),bool> Ret = tp_name.insert(Val);\
@@ -258,7 +277,7 @@ template<int x> struct static_assert_test{};
 
 
 #define FIND_LOCK_MULTI_INDEX_ELEMENT(function, tp_name, lock, dst, cla, ret, memb)\
-	dst MultiIndex_FindFrom_##memb(ret Val)\
+	dst MultiIndex_FindFrom_##memb(reference_type<ret>::type Val)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		lock.Lock();\
@@ -266,13 +285,13 @@ template<int x> struct static_assert_test{};
 		if( iter == indexOf.end() )\
 		{\
 			lock.UnLock();\
-			return boost_wheel::ret_init<dst>::init();\
+			return ret_init<dst>::init();\
 		}\
 		BOOST_WHEEL_TYPEOF(*iter) ptr = *iter;\
 		lock.UnLock();\
 		return ptr;\
 	}\
-	UInt64 MultiIndex_FindsFrom_##memb(ret Val, const function& func)\
+	UInt64 MultiIndex_FindsFrom_##memb(reference_type<ret>::type Val, const function& func)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		lock.Lock();\
@@ -300,8 +319,29 @@ template<int x> struct static_assert_test{};
 #define FIND_LOCK_MULTI_INDEX_FUNCTION_DECL(function, tp_name, lock, dst, ...)\
 	MACRO_PP_SEQ_FOR_EACH_I(FIND_LOCK_MULTI_INDEX_MEMBER_GET_FIELD,  MULTI_INDEX_MACRO(function, tp_name, lock, dst), MACRO_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
+#define REPLACE_LOCK_MULTI_INDEX_ELEMENT(tp_name, lock, dst, cla, ret, memb)\
+	bool MultiIndex_Replace_##memb(reference_type<ret>::type Key, reference_type<dst>::type Val )\
+	{\
+		bool isRet = false;\
+		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
+		lock.Lock();\
+		ITERATOR_MULTI_INDEX(memb) iter = indexOf.find( Key );\
+		if(iter != indexOf.end())\
+		{\
+			isRet = indexOf.replace(iter, Val);\
+		}\
+		lock.UnLock(); \
+		return isRet;\
+	}
+
+#define REPLACE_LOCK_MULTI_INDEX_MEMBER_GET_FIELD(r, data, i, field)\
+	MULTI_INDEX_RAW(MACRO_PP_CAT(REPLACE_LOCK_, MULTI_INDEX_ELEMENT( MULTI_INDEX_RAW(MACRO_PP_CAT(PARAMETER_,data)), MULTI_INDEX_RAW(MACRO_PP_CAT(PARAMETER_MULTI_, field)) ) ))
+
+#define REPLACE_LOCK_MULTI_INDEX_FUNCTION_DECL(tp_name, lock, dst, ...)\
+	MACRO_PP_SEQ_FOR_EACH_I(REPLACE_LOCK_MULTI_INDEX_MEMBER_GET_FIELD,  MULTI_INDEX_MACRO(tp_name, lock, dst), MACRO_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+
 #define REMOVE_LOCK_MULTI_INDEX_ELEMENT(tp_name, lock, dst, cla, ret, memb)\
-	dst MultiIndex_RemoveFrom_##memb(ret Val)\
+	dst MultiIndex_RemoveFrom_##memb(reference_type<ret>::type Val)\
 	{\
 		dst t;\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
@@ -309,8 +349,8 @@ template<int x> struct static_assert_test{};
 		ITERATOR_MULTI_INDEX(memb) iter = indexOf.find( Val );\
 		if(iter != indexOf.end())\
 		{\
-			indexOf.erase(Val); \
 			t = *iter;\
+			indexOf.erase(Val); \
 		}\
 		lock.UnLock(); \
 		return t;\
@@ -323,7 +363,7 @@ template<int x> struct static_assert_test{};
 	MACRO_PP_SEQ_FOR_EACH_I(REMOVE_LOCK_MULTI_INDEX_MEMBER_GET_FIELD,  MULTI_INDEX_MACRO(tp_name, lock, dst), MACRO_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 #define COUNT_LOCK_MULTI_INDEX_ELEMENT(tp_name, lock, dst, cla, ret, memb)\
-	UInt64 MultiIndex_Count_##memb(ret Val)\
+	UInt64 MultiIndex_Count_##memb(reference_type<ret>::type Val)\
 	{\
 		TYPE_MULTI_INDEX(memb) & indexOf = tp_name.get< TAG_MULTI_INDEX(memb) >();\
 		lock.Lock();\
@@ -356,6 +396,7 @@ template<int x> struct static_assert_test{};
 	CLock	_MultiIndexLock;\
 	FIELD_TYPEDEF_MULTI_INDEX_DECL(tp, __VA_ARGS__)\
 	INSERT_LOCK_MULTI_INDEX_FUNCTION_DECL(tp, tp_name, _MultiIndexLock, dst, __VA_ARGS__)\
+	REPLACE_LOCK_MULTI_INDEX_FUNCTION_DECL(tp_name, _MultiIndexLock, dst, __VA_ARGS__)\
 	REMOVE_LOCK_MULTI_INDEX_FUNCTION_DECL(tp_name, _MultiIndexLock, dst, __VA_ARGS__)\
 	COUNT_LOCK_MULTI_INDEX_FUNCTION_DECL(tp_name, _MultiIndexLock, dst, __VA_ARGS__)\
 	typedef function20_handle<bool (UInt64, UInt64, dst)>	HFNFind;\
@@ -370,6 +411,8 @@ template<int x> struct static_assert_test{};
 #define MULTI_INDEX_FIND_FUNCTION(memb, val)				MultiIndex_FindFrom_##memb(val)
 
 #define MULTI_INDEX_FINDS_FUNCTION(memb, val, function)		MultiIndex_FindsFrom_##memb(val, function)
+
+#define MULTI_INDEX_REPLACE_FUNCTION(memb, key, val)		MultiIndex_Replace_##memb(key, val)
 
 #define MULTI_INDEX_REMOVE_FUNCTION(memb, val)				MultiIndex_RemoveFrom_##memb(val)
 
@@ -387,6 +430,8 @@ template<int x> struct static_assert_test{};
 
 #define CLASS_MULTI_INDEX_FINDS_FUNCTION(obj, memb, val, function)		obj.MultiIndex_FindsFrom_##memb(val, function)
 
+#define CLASS_MULTI_INDEX_REPLACE_FUNCTION(obj, memb, key, val)			obj.MultiIndex_Replace_##memb(key, val)
+
 #define CLASS_MULTI_INDEX_REMOVE_FUNCTION(obj, memb, val)				obj.MultiIndex_RemoveFrom_##memb(val)
 
 #define CLASS_MULTI_INDEX_COUNT_FUNCTION(obj, memb, val)				obj.MultiIndex_Count_##memb(val)
@@ -403,6 +448,8 @@ template<int x> struct static_assert_test{};
 #define PTR_MULTI_INDEX_FIND_FUNCTION(ptr, memb, val)					ptr->MultiIndex_FindFrom_##memb(val)
 
 #define PTR_MULTI_INDEX_FINDS_FUNCTION(ptr, memb, val, function)		ptr->MultiIndex_FindsFrom_##memb(val, function)
+
+#define PTR_MULTI_INDEX_REPLACE_FUNCTION(ptr, memb, key, val)			ptr->MultiIndex_Replace_##memb(key, val)
 
 #define PTR_MULTI_INDEX_REMOVE_FUNCTION(ptr, memb, val)					ptr->MultiIndex_RemoveFrom_##memb(val)
 

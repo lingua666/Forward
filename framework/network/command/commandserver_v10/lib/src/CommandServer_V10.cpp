@@ -156,11 +156,6 @@ namespace	_server_{
 
 	void	CommandServer_V10::HandleAccept( const _SOCKET_::HSOCKET& Socket )
 	{
-		//test
-		printf("CommandServer_V10::HandleAccept() _Count:%d\r\n", _Count);
-		//test
-
-
 		if( _Count < SOCKET_STREAM_COUNT )
 		{
 			CmdSession* Session = _Pool.AllocObj<CmdSession>( sizeof(tagCmdIdentity) );

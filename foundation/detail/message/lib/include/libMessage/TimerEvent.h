@@ -80,9 +80,6 @@ private:
 };
 /** @} end TimerEvent */
 
-inline TimerEvent* GetTimerEventInstance( void )
-{
-	return Singleton<TimerEvent>::instance();
-}
+TimerEvent* GetTimerEventInstance(void);
 
 #endif//__TIMEREVENT_20160504200104_1462363264_H__

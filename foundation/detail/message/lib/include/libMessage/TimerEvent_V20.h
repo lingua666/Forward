@@ -75,9 +75,6 @@ private:
 };
 /** @} end TimerEvent_V20 */
 
-inline TimerEvent_V20* GetTimerEvent_V20Instance( void )
-{
-	return Singleton<TimerEvent_V20>::instance();
-}
+TimerEvent_V20* GetTimerEvent_V20Instance(void);
 
 #endif//__TIMEREVENT_20160504200104_1462363264_H__

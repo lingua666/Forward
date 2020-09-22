@@ -1,6 +1,11 @@
 
 #include <libMessage/TimerEvent_V20.h>
 
+TimerEvent_V20* GetTimerEvent_V20Instance(void)
+{
+	return Singleton<TimerEvent_V20>::instance();
+}
+
 TimerEvent_V20::TimerEvent_V20( void )
 {
 

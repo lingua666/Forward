@@ -1,5 +1,6 @@
 
 #include <libCommon/os/Platform_POSIX.h>
+#include <libCommon/os/Types.h>
 
 #if defined(PLATFORM_OS_FAMILY_UNIX)
 
@@ -8,11 +9,16 @@
 
 	unsigned long GetTickCount( void )
 	{
-		struct timeval tv;
-		if( gettimeofday(&tv, 0) != 0 )
+		/*struct timeval tv;
+		if (gettimeofday(&tv, 0) != 0)
 			return 0;
 
-		return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+		return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);*/
+
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		return (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+
 	}
 
 	//注：在win10 WSL(即win10子系统)中运行，NT内核上模拟UNIX系统时钟非常棘手, 不能使用nanosleep，

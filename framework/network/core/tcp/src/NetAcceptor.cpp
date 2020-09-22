@@ -75,10 +75,6 @@ namespace _io_net_{
 
 		void	NetAcceptor::HandleAccept( tagIOData_INFO* pIOData )
 		{
-			//test
-			printf("NetAcceptor::HandleAccept()\r\n");
-			//test
-
 			tagOverlapped* pOver = (tagOverlapped*)pIOData->_pOverlapped;
 
 			if( pOver->_ADR._Sock == INVALID_SOCKET )

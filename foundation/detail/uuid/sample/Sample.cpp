@@ -230,6 +230,10 @@ void Md5File( void )
 
 void main(int argc, char * argv[])
 {
+	_uuid_::MD5Engine	Md51;
+	Md51.update("1234567890");
+	_string_type s = _uuid_::DigestEngine::digestToHex(Md51.digest());
+
 	_uuid_::UUIDGenerator ger;
 	while(true)
 	{

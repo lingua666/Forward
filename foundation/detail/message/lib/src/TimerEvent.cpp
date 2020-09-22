@@ -1,6 +1,11 @@
 
 #include <libMessage/TimerEvent.h>
 
+TimerEvent* GetTimerEventInstance(void)
+{
+	return Singleton<TimerEvent>::instance();
+}
+
 TimerEvent::TimerEvent( void )
 	: _isRun( false )
 {

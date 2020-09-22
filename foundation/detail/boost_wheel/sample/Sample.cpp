@@ -595,12 +595,12 @@ void EmployeeContainer_Test( void )
 
 
 	//test
-	int iu = boost_wheel::is_class<long>::value;
-	int iu8 = boost_wheel::is_class< boost_wheel::is_tag<int> >::value;
-	int ls = boost_wheel::is_same<int,int>::value;
+	int iu = is_class<long>::value;
+	int iu8 = is_class< boost_wheel::is_tag<int> >::value;
+	int ls = is_same<int,int>::value;
 
-	int yiu3 = boost_wheel::is_base_of< boost_wheel::tag_marker, boost_wheel::is_tag<int> >::value;
-	int yiu4 = boost_wheel::is_base_of< boost_wheel::tag_marker, boost_wheel::tag<int> >::value;
+	int yiu3 = is_base_of< boost_wheel::tag_marker, boost_wheel::is_tag<int> >::value;
+	int yiu4 = is_base_of< boost_wheel::tag_marker, boost_wheel::tag<int> >::value;
 
 
 	typedef boost_wheel::vector3<
@@ -888,8 +888,6 @@ void Multi_Index_Test( void )
 
 namespace MULTI_INDEX_LOCK
 {
-	CLock _Lock;
-
 	TYPEDEF_LOCK_MULTI_INDEX_DECL(map_tp, _Map, Employee*, \
 		INDEX_UNIQUE_ELEMENT(Employee, int, id),\
 		INDEX_NON_UNIQUE_ELEMENT(Employee, std::string, name));
@@ -1003,10 +1001,14 @@ void Multi_Index_Func_Lock_Test(void)
 	Employee_func* sptr2 = new Employee_func(Employee_func(2, "Lock_Robert", 27));
 	Employee_func* sptr3 = new Employee_func(Employee_func(3, "Lock_John", 40));
 
+	Employee_func* sptr4 = new Employee_func(Employee_func(4, "Aock_John", 42));
+
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr0);
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr1);
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr2);
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr3);
+
+	bool isF = MULTI_INDEX_FUNC_LOCK::MultiIndex_Replace_Get_name("Lock_Joe1", sptr4);
 
 	//MULTI_INDEX::MultiIndex_RemoveFrom_name("Robert");
 	Employee_func* spt2 = MULTI_INDEX_FUNC_LOCK::MultiIndex_FindFrom_Get_name("Lock_Robert");
@@ -1017,6 +1019,12 @@ void Multi_Index_Func_Lock_Test(void)
 
 	uc = MULTI_INDEX_FUNC_LOCK::MultiIndex_Count_Get_name("Lock_Joe1");
 	printf("MultiIndex_Count_name:%lld\r\n", uc);
+
+	MULTI_INDEX_FUNC_LOCK::TYPE_MULTI_INDEX(Get_name)& indexOfName = MULTI_INDEX_FUNC_LOCK::_Map.get< MULTI_INDEX_FUNC_LOCK::TAG_MULTI_INDEX(Get_name) >();
+	for (MULTI_INDEX_FUNC_LOCK::ITERATOR_MULTI_INDEX(Get_name) name_iter = indexOfName.begin(); name_iter != indexOfName.end(); name_iter++)
+	{
+		printf("%s:%d\r\n", (*name_iter)->name.c_str(), (*name_iter)->id);
+	}
 
 	int iw = 0;
 	long iwl = 0;
@@ -1042,6 +1050,14 @@ void Multi_Index_Func_Lock_Test(void)
 	INDEX_NON_UNIQUE_ELEMENT(Employee_func, std::string, name) ) );
 
 	printf("%s\r\n", ps);*/
+
+	MULTI_INDEX_FUNC_LOCK::MultiIndex_Clear();
+
+	delete sptr0;
+	delete sptr1;
+	delete sptr2;
+	delete sptr3;
+	delete sptr4;
 }
 
 int main(int argc, char* argv[])

@@ -140,13 +140,14 @@ typedef NETHANDLE		_HASH;
 
 		static void	Send( CmdSession* pSession )
 		{
-			UInt32 UnixTime = Timestamp_type().unixTime();
+			//Timestamp_type::UtcTimeVal UtcTime = Timestamp_type().utcTime();
+			UInt32 UtcTime = Timestamp_type().unixTime();
 
 			//ÐÄÌø°ü
 			_session_hdr Hdr;
 			Hdr._uType = SESSION_HEART_TYPE_DEF;
 			Hdr._uPriority = 0;
-			pSession->Send(&Hdr, reinterpret_cast<char*>(&UnixTime), sizeof(UnixTime));
+			pSession->Send(&Hdr, reinterpret_cast<char*>(&UtcTime), sizeof(UtcTime));
 		}
 
 	private:

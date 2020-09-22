@@ -13,12 +13,14 @@
 	if(p == NULL) { return ; }
 
 #include <libCommon/macro/Macro_for.hpp>
-#include <libCommon/CMyException.h>
-#include <libCommon/WDump.h>
-#include <string>
+#include <libCommon/Type_Basis.h>
 #include <libCommon/ByteOP.h>
 #include <libCommon/Struct.h>
 #include <libCommon/SysInfo.h>
+#include <libCommon/CMyException.h>
+#include <libCommon/WDump.h>
+
+#include <string>
 
 inline void __itoa__(int iValue, char* szBuf, int iLen )
 {

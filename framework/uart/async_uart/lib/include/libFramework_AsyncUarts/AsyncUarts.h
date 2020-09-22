@@ -82,10 +82,7 @@ namespace	_async_{
 			DataList		_DataList;
 		};
 
-		inline AsyncUarts* GetAsyncUartsInstance( void )
-		{
-			return Singleton<AsyncUarts>::instance();
-		}
+		AsyncUarts* GetAsyncUartsInstance(void);
 
 	}// namespace _files_
 

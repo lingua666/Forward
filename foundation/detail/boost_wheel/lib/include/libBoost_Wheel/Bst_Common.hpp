@@ -15,8 +15,6 @@ typedef long        _mpl_nttp_long;
 
 namespace boost_wheel{
 
-	#include <libCommon/Type_Basis.h>
-
 	namespace mpl{
 		template< BOOST_MPL_AUX_NTTP_DECL(int, N) > struct int_;
 	}

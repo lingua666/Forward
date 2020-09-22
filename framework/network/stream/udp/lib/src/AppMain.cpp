@@ -306,6 +306,16 @@ namespace	_server_{
 			return -1;
 		}
 
+		Int32	AppMain::Send(NETHANDLE Node, const char* c_szDstIP, UInt16 uDstPort,
+			const char* c_pData, UInt16 u16Size)
+		{
+			struct sockaddr_in Addr = { 0 };
+			Addr.sin_port = htons(uDstPort);
+			Addr.sin_addr.s_addr = inet_addr(c_szDstIP);
+			Addr.sin_family = AF_INET;
+			return Send(Node, &Addr, c_pData, u16Size);
+		}
+
 		void	AppMain::HandleClose( StreamSession* pSession )
 		{
 			pSession->CloseNotify(pSession->GetLocalNode(),

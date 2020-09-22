@@ -31,16 +31,27 @@ void _CALLTYPE AcceptBackFun( const char* c_szIP, int uPort, NETHANDLE Node )
 	printf("Client Into(%d): %s:%d\r\n", g_AcceptNum, c_szIP, uPort);
 }
 
+struct testobj
+{
+
+	UInt32 i;
+};
+
+struct testobj1
+{
+
+};
+
 int main(int argc, char* argv[])
 {
-	//UInt16 uPort = 18000;
+	//UInt16 uPort = 18000;	
 
 	_string_type s = _file_::RWIni::GetCurrentPath();
 	s += _file_::CMyDirectory::GetSplit();
 	s += "Config";
 	s += _file_::CMyDirectory::GetSplit();
 	s += "Config.ini";
-	UInt16 uPort = _file_::RWIni::ReadInt("SERVER", "Port", s.c_str());
+	UInt16 uPort = 60000;// _file_::RWIni::ReadInt("SERVER", "Port", s.c_str());
 
 	MCmd_SV10_Init(3);
 	while(true)

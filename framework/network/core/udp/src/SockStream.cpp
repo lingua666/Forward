@@ -41,6 +41,14 @@ namespace _io_net_{
 			{
 				printf("failed _udp_::SockStream::HandleRecv error %s, this:%p, soc:%d, pIOData->_pOverlapped:%p\r\n",
 					error_code(error_code::GetLastError()).message().c_str(), this, _Socket.GetLocalPort(), pIOData->_pOverlapped);
+
+#if defined( PLATFORM_OS_FAMILY_UNIX )
+				Close(false, true);
+				pOver->_ADR._Sock = INVALID_SOCKET;
+#elif defined( PLATFORM_OS_FAMILY_WINDOWS )
+				Close();
+#endif	
+				return;
 			}
 #if defined( PLATFORM_OS_FAMILY_UNIX )
 			else if( pIOData->_ibytes_transferred == -1 && error_code::GetLastError() == EAGAIN )

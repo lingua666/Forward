@@ -1,19 +1,23 @@
 
-#ifndef ___GCC_UTF8_20160418173307_1438860785_H__
-#define ___GCC_UTF8_20160418173307_1438860785_H__
+#ifndef __BASE_CHARACTER_ENCODING_20160419111505_1438860785_H__
+#define __BASE_CHARACTER_ENCODING_20160419111505_1438860785_H__
 
 #include <cctype>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+# if defined(linux) || defined(__linux) || defined(__linux__) || defined(__TOS_LINUX__)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <iconv.h>
+# endif
+
+namespace _base_{
+
+	struct Charset
+	{
 
 # if defined(linux) || defined(__linux) || defined(__linux__) || defined(__TOS_LINUX__)
-	#include <errno.h>
-	#include <iconv.h>
-
-	namespace	_string_ {
-
 		static bool gcc_utf8_gbk(char* pInBuf, size_t inLen, char* pOutBuf)
 		{
 			iconv_t cd = iconv_open("gbk", "utf-8");
@@ -59,13 +63,11 @@ extern "C" {
 
 			return isResult;
 		}
+# endif
 
-	}
-	
-#endif
-
-#ifdef  __cplusplus
+	};
 }
+
+
 #endif
 
-#endif // __MODAFX_20160418173305_1438860785_H__

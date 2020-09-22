@@ -208,6 +208,24 @@ struct identity
 	typedef T type;
 };
 
+template<typename T>
+struct reference_type
+{
+	typedef const T& type;
+};
+
+template<typename T>
+struct reference_type<T*>
+{
+	typedef T* type;
+};
+
+template<typename T>
+struct reference_type<const T*>
+{
+	typedef const T* type;
+};
+
 
 // Type modifiers
 // TEMPLATE CLASS remove_const

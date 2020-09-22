@@ -13,12 +13,12 @@ public:
 	{
 		if(_instance ==  NULL)
 		{
-			_Lock.Lock();
+			GetLockInstance()->Lock();
 			if(_instance == NULL)
 			{
 				_instance = (void*)new T(); 
 			}
-			_Lock.UnLock();
+			GetLockInstance()->UnLock();
 		}
 		return (T*)_instance;
 	}
@@ -29,12 +29,12 @@ public:
 	{
 		if(_instance ==  NULL)
 		{
-			_Lock.Lock();
+			GetLockInstance()->Lock();
 			if(_instance == NULL)
 			{
 				_instance = (void*)new T(p1);
 			}
-			_Lock.UnLock();
+			GetLockInstance()->UnLock();
 		}
 		return (T*)_instance;
 	}
@@ -44,13 +44,13 @@ public:
 	{
 		if(_instance !=  NULL)
 		{
-			_Lock.Lock();
+			GetLockInstance()->Lock();
 			if(_instance != NULL)
 			{
 				delete (T*)_instance;
 				_instance = NULL;
 			}
-			_Lock.UnLock();
+			GetLockInstance()->UnLock();
 		}
 	}
 
@@ -58,7 +58,13 @@ protected:
 	Singleton( void ){}    
 	~Singleton( void ){}
 
-	static CLock _Lock;
+	static CLock* GetLockInstance(void)
+	{
+		static CLock Lock;
+		return &Lock;
+	}
+
+	/*static CLock _Lock;*/
 	static void* _instance;
 
 private:
@@ -66,7 +72,7 @@ private:
 	Singleton& operator=( const Singleton& );
 };
 
-template<typename T> CLock Singleton<T>::_Lock;
+/*template<typename T> CLock Singleton<T>::_Lock;*/
 template<typename T> void* Singleton<T>::_instance = NULL;
 
 #endif

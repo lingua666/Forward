@@ -3,7 +3,7 @@
 #define ___STRING_V30_20160418173307_1438860785_H__
 
 #include "share_count.hpp"
-#include "gcc_utf8.hpp"
+#include <libBase/modafx.h>
 
 #if defined(_MSC_VER)
 	typedef signed __int64         int64_tt;
@@ -1404,7 +1404,7 @@ namespace	_string_v30_ {
 		char*	pOutBuf = (char*)MemoryAllocator::Alloc(outLen);
 		char*	pMalloc = pOutBuf;
 		memset(pOutBuf,0,outLen);
-		if( !gcc_utf8_gbk(pInBuf, inLen, pOutBuf) )
+		if( !_base_::Charset::gcc_utf8_gbk(pInBuf, inLen, pOutBuf) )
 			return "";
 
 		string sOut(pOutBuf);
@@ -1447,7 +1447,7 @@ namespace	_string_v30_ {
 		char*	pMalloc = pOutBuf;
 		memset(pOutBuf,0,outLen);
 
-		if( !gcc_gbk_utf8(pInBuf, inLen, pOutBuf) )
+		if( !_base_::Charset::gcc_gbk_utf8(pInBuf, inLen, pOutBuf) )
 			return "";
 		string sOut(pMalloc);
 		MemoryAllocator::Free(pMalloc);

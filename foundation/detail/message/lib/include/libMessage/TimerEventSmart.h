@@ -75,9 +75,6 @@ private:
 };
 /** @} end TimerEventSmart */
 
-inline TimerEventSmart* GetTimerEventSmartInstance( void )
-{
-	return Singleton<TimerEventSmart>::instance();
-}
+TimerEventSmart* GetTimerEventSmartInstance(void);
 
 #endif//__TIMEREVENT_20160504200104_1462363264_H__

@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include <dllLock/Exports.h>
 #include <libLock/Lock.hpp>
 #include <libCommon/macro/Macro_for.hpp>
 

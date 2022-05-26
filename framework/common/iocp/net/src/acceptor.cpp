@@ -32,12 +32,12 @@ namespace _iocp_net_{
 			return 1;
 		}
 
-		int acceptor::bind(  UInt16 u16Port )
+		int acceptor::bind( UInt16 u16Port, const char* c_szIP)
 		{
-			_Sock = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE,-1,-1);
+			_Sock = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, -1, 65535);
 			if( _Sock == INVALID_SOCKET )
 				return -1;
-			if( APIWSABind(_Sock,u16Port) == SOCKET_ERROR )
+			if( APIWSABind(_Sock, u16Port, c_szIP) == SOCKET_ERROR )
 			{
 				APIWSAClose(_Sock);
 				_Sock = INVALID_SOCKET;
@@ -117,7 +117,7 @@ namespace _iocp_net_{
 		void acceptor::accept_handle( const fn_accept_handle& f, tagIOData_INFO* pIOData )
 		{
 			//test
-			//printf("acceptor::accept_handle()\r\n");
+			printf("acceptor::accept_handle()\r\n");
 			//test
 
 			tagOverlapped* pOver = (tagOverlapped*)pIOData->_pOverlapped;

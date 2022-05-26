@@ -24,7 +24,7 @@ public:
 	{
 		Event_type		_Event;
 		Timestamp_type	_Timer;
-		UInt32			_uInterval;	//Œ¢√Î
+		UInt64			_uInterval;	//Œ¢√Î
 	};
 
 	typedef _container_::CycleList<tagEvent_INFO,CNoneLock>	EventList_type;
@@ -73,6 +73,8 @@ public:
 	virtual void	WorkThread( void )
 	{
 		tagEvent_INFO	tagInfo;
+		int iInc = 0;
+
 		while( true )
 		{
 			try
@@ -90,6 +92,7 @@ public:
 							this->_Lock.UnLock();
 							tagInfo._Event();
 							tagInfo._Event.reset();
+							iInc = -1;
 						}
 						else
 						{
@@ -102,11 +105,17 @@ public:
 						this->_Lock.UnLock();
 						goto gt_sleep;
 					}
+
+					if ((++iInc) >= _EventList.size())
+					{//¬÷—Ø“ª¬÷
+						goto gt_sleep;
+					}
 				}
 				else
 				{
 gt_sleep:
-					Sleep(10);
+					iInc = 0;
+					Sleep(_uMillisecond);
 				}
 			}
 			catch (const thread_interrupted& e)
@@ -126,10 +135,17 @@ exit:
 		return ;
 	}
 
+	//µ•Œª∫¡√Î
+	void	SetSleepStep(UInt32 uMillisecond)
+	{
+		_uMillisecond = uMillisecond;
+	}
+
 protected:
 	CLock		_Lock;
 	EventList_type	_EventList;
 	ThreadList	_Threads;
+	UInt32 		_uMillisecond;
 };
 
 
@@ -152,7 +168,9 @@ public:
 	* @return  
 	*/
 	TimerEventSync( void )
-	{}
+	{
+		this->_uMillisecond = 10;
+	}
 
 	/*!
 	* @function   ~TimerEventSync
@@ -164,17 +182,17 @@ public:
 		this->Release();
 	}
 
-	R	push_back( const Event_type& Event, UInt32 uInterval/*∫¡√Î*/ )
+	R	push_back( const Event_type& Event, UInt64 uInterval/*∫¡√Î*/ )
 	{
 		R Ret;
 		int iFinish = -1;
 		tagEvent_INFO	tagInfo;
 		tagInfo._Event = function20_bind(&TimerEventSync::HandleProcess, this, &Ret, Event, &iFinish);
-		tagInfo._Timer = Timestamp_type();
 		tagInfo._uInterval = uInterval * 1000;
 		this->_Lock.Lock();
 		this->_EventList.push_back(tagInfo);
 		this->_Lock.UnLock();
+		tagInfo._Timer = Timestamp_type();
 
 		bool isStart = false;
 		while( iFinish != 1 )
@@ -186,7 +204,7 @@ public:
 			}
 			else
 			{
-				Sleep(1);
+				Sleep(this->_uMillisecond);
 			}
 		}
 
@@ -219,7 +237,9 @@ public:
 	* @return  
 	*/
 	TimerEventSync( void )
-	{}
+	{
+		this->_uMillisecond = 10;
+	}
 
 	/*!
 	* @function   ~TimerEventSync
@@ -231,7 +251,7 @@ public:
 		Release();
 	}
 
-	void	push_back( const Event_type& Event, UInt32 uInterval/*∫¡√Î*/ )
+	void	push_back( const Event_type& Event, UInt64 uInterval/*∫¡√Î*/ )
 	{
 		int iFinish = -1;
 		tagEvent_INFO	tagInfo;
@@ -252,7 +272,7 @@ public:
 			}
 			else
 			{
-				Sleep(1);
+				Sleep(this->_uMillisecond);
 			}
 		}
 	}

@@ -7,6 +7,7 @@
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 	#include <libIOCP_Net/acceptor.h>
+	#include <libIOCP_Net/acceptor_V20.h>
 	#include <libIOCP_Net/connector.h>
 	#include <libIOCP_Net/TcpSocket.h>
 	#include <libIOCP_Net/UdpSocket.h>
@@ -15,6 +16,7 @@
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <libEPoll_Net/acceptor.h>
+	#include <libEPoll_Net/acceptor_V20.h>
 	#include <libEPoll_Net/connector.h>
 	#include <libEPoll_Net/TcpSocket.h>
 	#include <libEPoll_Net/UdpSocket.h>
@@ -43,6 +45,7 @@ namespace _io_net_{
 		_string_type remote_ip;
 		UInt16		remote_port;
 		NETHANDLE	remote_node;
+		SOCKET		sock;
 	};
 
 	struct StreamBuf

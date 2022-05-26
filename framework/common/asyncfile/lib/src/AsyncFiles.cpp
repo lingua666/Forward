@@ -8,16 +8,19 @@ namespace	_async_{
 		AsyncFiles::AsyncFiles( void )
 			: _Pool( sizeof(File_impl) )
 		{
-
+			GetTimerEventInstance()->Init(1);
 		}
 
 		AsyncFiles::~AsyncFiles( void )
 		{
+			GetTimerEventInstance()->Release();
 			Release();
 		}
 
 		int AsyncFiles::Init( UInt8 uThreadNum )
 		{
+			_ioService.Init();
+
 			if( _ioService.open() == -1 )
 				return -1;
 
@@ -64,18 +67,26 @@ namespace	_async_{
 		{
 			if( szPath == NULL )
 				return -1;
-
+			
+			Timestamp_type	Time;
+			THandle Val = (THandle)Time.epochMicroseconds();
 			FileImpl_ptr sptr( _Pool.AllocObj<File_impl>( io_service::io_service_sptr(&_ioService, false)),
 							function20_bind_Ex(&MemPool_type::FreeObj<File_impl>,
 							&_Pool) );
-			HANDLE hFile = sptr->Open(szPath, iMode);
+			HANDLE hFile = sptr->Open(szPath, iMode, Val);
 			if( hFile == INVALID_HANDLE_VALUE )
 				return -1;
-
+		
 			_Lock.Lock();
-			_Map.insert(std::make_pair((THandle)hFile, sptr));
+			if(_Map.find(Val) != _Map.end() )
+			{
+				_Lock.UnLock();
+				printf("AsyncFiles::Open() Has Open\r\n");
+				 _exit(0);
+			}
+			_Map.insert(std::make_pair(Val, sptr));
 			_Lock.UnLock();
-			return (THandle)hFile;
+			return Val;
 		}
 
 		int	AsyncFiles::Close( THandle Handle )
@@ -143,7 +154,7 @@ namespace	_async_{
 			return FileImpl_ptr();	
 		}
 
-		void AsyncFiles::HandleRead( const HFNRead& hRead, HANDLE Handle,
+		void AsyncFiles::HandleRead( const HFNRead& hRead, THandle Handle,
 								const char* szBuf, UInt32 uSize )
 		{
 			if( hRead )
@@ -152,7 +163,7 @@ namespace	_async_{
 			}
 		}
 
-		void AsyncFiles::HandleWrite( const HFNWrite& hWrite, HANDLE Handle,
+		void AsyncFiles::HandleWrite( const HFNWrite& hWrite, THandle Handle,
 								const char* szBuf, UInt32 uSize )
 		{
 			if( hWrite )
@@ -165,6 +176,30 @@ namespace	_async_{
 		{
 			if( hDestroy )
 				hDestroy(Handle);
+		}
+
+		int AsyncFiles::Seek( THandle Handle, Int64 uOffset )
+		{
+			if (!is_open())
+				return -1;
+
+			FileImpl_ptr sptr = FindFileImpl(Handle);
+			if (!sptr)
+				return -1;
+
+			return sptr->Seek_Read(uOffset);
+		}
+
+		Int64 AsyncFiles::Tell( THandle Handle )
+		{
+			if (!is_open())
+				return -1;
+
+			FileImpl_ptr sptr = FindFileImpl(Handle);
+			if (!sptr)
+				return -1;
+
+			return sptr->Tell_Read();
 		}
 
 	} //namespace	_files_

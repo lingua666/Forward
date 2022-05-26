@@ -62,7 +62,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_V20_Init( UInt8 uWorkerThre
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_V20_Listen( UInt16 u16Port,
 															pfnStream_S_V20_Accept pfnAccept,
-															void* pUser );
+															void* pUser, const char* c_szIP = NULL);
 
 /*****************************************************************
 /*函数说明：	关闭服务器

@@ -58,6 +58,7 @@ void	PriorityEvent::WorkThread( void )
 					_Lock.UnLock();
 					Message();
 					Message.reset();
+					goto gt_sleep;
 				}
 				else
 				{
@@ -66,7 +67,12 @@ void	PriorityEvent::WorkThread( void )
 			}
 			else
 			{
+gt_sleep:
+#if defined(LOW_POWER_FLAG_DEL)
+				Sleep(10);
+#else
 				Sleep(1);
+#endif
 			}
 		}
 		catch (const thread_interrupted& e)

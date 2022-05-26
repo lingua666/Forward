@@ -30,27 +30,33 @@
 
 		_STD_END
 
+		#ifndef STDEXT_STRING_HASH
 
-		namespace stdext {
+			#define STDEXT_STRING_HASH
 
-			template <class _InIt>
-			inline size_t __Hash_value(_InIt _Begin, _InIt _End)
-			{	// hash range of elements
-				size_t _Val = 2166136261U;
+					namespace stdext {
 
-				while (_Begin != _End)
-					_Val = 16777619U * _Val ^ (size_t)*_Begin++;
-				return (_Val);
-			}
+					template <class _InIt>
+					inline size_t __Hash_value(_InIt _Begin, _InIt _End)
+					{	// hash range of elements
+						size_t _Val = 2166136261U;
 
-			inline size_t hash_value(const _string_::string& _Str)
-			{	// hash string to size_t value
-				const _string_::_Elem *_Ptr = _Str.c_str();
+						while (_Begin != _End)
+							_Val = 16777619U * _Val ^ (size_t)*_Begin++;
+						return (_Val);
+					}
 
-				return (__Hash_value(_Ptr, _Ptr + _Str.size()));
-			}
+					inline size_t hash_value(const _string_::string& _Str)
+					{	// hash string to size_t value
+						const _string_::_Elem *_Ptr = _Str.c_str();
 
-		}
+						return (__Hash_value(_Ptr, _Ptr + _Str.size()));
+					}
+
+				}
+
+		#endif // !STDEXT_STRING_HASH
+
 	#endif
 
 #endif // __MODAFX_20160418173305_1438860785_H__

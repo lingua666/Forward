@@ -42,7 +42,7 @@
 	//基于select的毫秒级封装
 	void selectsleep(int milliseconds) 
 	{
-		struct timeval timeout = {milliseconds / 1000, (milliseconds % 1000)};
+		struct timeval timeout = {milliseconds / 1000, (milliseconds * 1000)};
 		while (true) 
 		{
 			(void)select(0, NULL, NULL, NULL, &timeout);

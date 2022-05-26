@@ -31,7 +31,7 @@ public:
 		Event_type		_Event;
 		Event_type		_End;
 		Timestamp_type	_Timer;
-		UInt32			_uInterval;	//Œ¢√Î
+		UInt64			_uInterval;	//Œ¢√Î
 	};
 
 	typedef _container_::CycleList<tagEvent_INFO,CNoneLock>	EventList_type;
@@ -57,21 +57,31 @@ public:
 
 	void	CloseAll( void );
 
-	void	push_back( const Event_type& Event, UInt32 uInterval/*∫¡√Î*/,
+	int		push_back( const Event_type& Event, UInt64 uInterval/*∫¡√Î*/,
 					const Event_type& Begin = Event_type(), const Event_type& _End = Event_type() );
 
 	void	Release( void );
 
 	void	Clear( void );
+
+	void	Lock(void);
+
+	void	UnLock(void);
+
+	void	UpdateTime(const Timestamp_type& LocalTime, const Timestamp_type& NewTime);
+
+	//µ•Œª∫¡√Î
+	void	SetSleepStep(UInt32 uMillisecond);
 	
 protected:
 
 	void	WorkThread( void );
 
 private:
-	CLock		_Lock;
+	CLock			_Lock;
 	EventList_type	_EventList;
-	ThreadList	_Threads;
+	ThreadList		_Threads;
+	UInt32 			_uMillisecond;
 };
 /** @} end TimerEvent_V20 */
 

@@ -46,10 +46,12 @@ namespace _io_net_{
 
 			bool	Listen( void );
 
-			int	Connect( const char* szIP, UInt16 uPort );
+			int	Connect( const char* szIP, UInt16 uPort,
+				int iSocketRecv = -1, int iSocketSend = -1 );
 
 			int	Connect( const char* szIP, UInt16 uPort,
-						const fn_connect_handle& hConnect );
+						const fn_connect_handle& hConnect,
+				int iSocketRecv = -1, int iSocketSend = -1 );
 
 			void	Stop( void );
 

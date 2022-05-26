@@ -18,8 +18,8 @@ endif()
 
 add_target(${TARGET} StaticLib ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGET_HPP_LIST} ${TARGET_INI_SRC_LIST})
 
-add_dependencies(${TARGET} libFunction_v20)
-target_link_libraries(${TARGET} libFunction_v20)
+add_dependencies(${TARGET} libFunction_v20 libTimestamp)
+target_link_libraries(${TARGET} libFunction_v20 libTimestamp)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

@@ -2,6 +2,40 @@
 #include <libFrameWork_Rtsp/H264Info.h>
 #include <libFrameWork_Rtsp/Base64.h>
 
+/**
+* H264的NAL起始码防竞争机制
+*
+* @param buf SPS数据内容
+*
+* @无返回值
+*/
+static void de_emulation_prevention(UInt8* buf, UInt32* buf_size)
+{
+	int i = 0, j = 0;
+	BYTE* tmp_ptr = NULL;
+	unsigned int tmp_buf_size = 0;
+	int val = 0;
+
+	tmp_ptr = buf;
+	tmp_buf_size = *buf_size;
+	for (i = 0; i<(tmp_buf_size - 2); i++)
+	{
+		//check for 0x000003
+		val = (tmp_ptr[i] ^ 0x00) + (tmp_ptr[i + 1] ^ 0x00) + (tmp_ptr[i + 2] ^ 0x03);
+		if (val == 0)
+		{
+			//kick out 0x03
+			for (j = i + 2; j<tmp_buf_size - 1; j++)
+				tmp_ptr[j] = tmp_ptr[j + 1];
+
+			//and so we should devrease bufsize
+			(*buf_size)--;
+		}
+	}
+
+	return;
+}
+
 H264Info::H264Info( void )
 	: _Ready(0)
 {
@@ -15,16 +49,24 @@ H264Info::~H264Info( void )
 
 }
 
-void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo )
+void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo, bool isNormalize)
 {
 	Nalu264 Nal;
 	Nal.Init(c_szData, uLen);
-	switch( Nal.Get_Type(c_szData[0]) )
+	pPlayloadInfo->uHeadType = Nal.Get_Type(c_szData[0]);
+	switch(pPlayloadInfo->uHeadType)
 	{
 	case NAL_UNIT_TYPE_SPS: 
 		{
+			UInt32 uSize = uLen;
 			_sSPSRaw.resize(0);
 			_sSPSRaw.append(c_szData, uLen);
+
+			if (isNormalize)
+			{//NAL起始码防竞争机制
+				de_emulation_prevention((UInt8*)&_sSPSRaw[0], &uSize);
+				_sSPSRaw.update_size(uSize);
+			}
 
 			Nal.GetSPS(&_SPS);
 			_Info.uWidth = (_SPS.pic_width_in_mbs_minus1+1) * 16;
@@ -41,7 +83,7 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 				else //if (_Info.sps.vui.num_units_in_tick != 0)
 					_Info.uMax_Framerate = (float)(_SPS.vui.time_scale) / (float)(_SPS.vui.num_units_in_tick);
 			}
-			pPlayloadInfo->uHeadType = NAL_UNIT_TYPE_SPS;
+
 			pPlayloadInfo->isFull = true;
 			pPlayloadInfo->pData = c_szData;
 			pPlayloadInfo->uDataLen = uLen;
@@ -54,7 +96,7 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 			_sPPSRaw.append(c_szData, uLen);
 
 			Nal.GetPPS(&_PPS, &_SPS);
-			pPlayloadInfo->uHeadType = NAL_UNIT_TYPE_PPS;
+
 			pPlayloadInfo->isFull = true;
 			pPlayloadInfo->pData = c_szData;
 			pPlayloadInfo->uDataLen = uLen;
@@ -63,7 +105,6 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 		break;
 	case NAL_UNIT_TYPE_SEI:
 		{
-			pPlayloadInfo->uHeadType = NAL_UNIT_TYPE_SEI;
 			pPlayloadInfo->isFull = true;
 			pPlayloadInfo->pData = c_szData;
 			pPlayloadInfo->uDataLen = uLen;
@@ -72,7 +113,6 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 	case NAL_UNIT_TYPE_FU_A:
 		{
 			tagFU_A_HEADER* pFuA = ((tagFU_A_HEADER*)&c_szData[0]);
-			pPlayloadInfo->uHeadType = NAL_UNIT_TYPE_FU_A;
 			pPlayloadInfo->isFull = pFuA->E;
 			if( pFuA->S )
 			{//第一个包，修改负载类型
@@ -103,7 +143,6 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 		break;
 	case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR:
 		{
-			pPlayloadInfo->uHeadType = NAL_UNIT_TYPE_CODED_SLICE_NON_IDR;
 			pPlayloadInfo->isFull = true;
 			pPlayloadInfo->pData = &c_szData[0];
 			pPlayloadInfo->uDataLen = uLen;
@@ -111,7 +150,11 @@ void H264Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 		break;
 	case NAL_UNIT_TYPE_CODED_SLICE_IDR:
 		{
-			if( _sIDRSlice == "" )
+			pPlayloadInfo->isFull = true;
+			pPlayloadInfo->pData = &c_szData[0];
+			pPlayloadInfo->uDataLen = uLen;
+
+			//if( _sIDRSlice == "" )
 			{
 				_sIDRSlice = _string_type(c_szData, uLen);
 				_Ready |= 0x4;

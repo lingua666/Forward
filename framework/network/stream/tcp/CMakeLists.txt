@@ -5,3 +5,4 @@ set( NetFrame_MediaSession_ENABLE 1 )
 
 add_subdirectory(streamclients)
 add_subdirectory(streamserver)
+add_subdirectory(streamserver_V20)

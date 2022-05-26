@@ -152,12 +152,12 @@ namespace	_string_v30_ {
 	public:
 		static sp_counted_base* GetInstance( void* pBuf, long BufSize )
 		{
-			return new(pBuf) sp_counted_impl_buf( reinterpret_cast<char*>(pBuf) + STRING_OBJ_SIZE, BufSize);
+			return new(pBuf) sp_counted_impl_buf( reinterpret_cast<char*>(pBuf) + STRING_OBJ_SIZE_V30, BufSize);
 		}
 
 		static char* GetBuffer( char* pBuf )
 		{
-			return pBuf + STRING_OBJ_SIZE;
+			return pBuf + STRING_OBJ_SIZE_V30;
 		}
 
 	public:

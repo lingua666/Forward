@@ -1,4 +1,4 @@
-LIBRARY  dllFramework_Uart
+LIBRARY  dllFrameWork_Uart
 
 EXPORTS
 

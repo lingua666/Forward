@@ -44,10 +44,12 @@
 
 				int listen( void );
 
-				int async_connect( const char* szIP, UInt16 uPort );
+				int async_connect( const char* szIP, UInt16 uPort,
+					int iSocketRecv = -1, int iSocketSend = -1 );
 
 				int async_connect( const char* szIP, UInt16 uPort,
-							const fn_connect_handle& handle );
+							const fn_connect_handle& handle,
+					int iSocketRecv = -1, int iSocketSend = -1);
 
 				void connect_handle( const fn_connect_handle& f, tagIOData_INFO* pIOData);
 

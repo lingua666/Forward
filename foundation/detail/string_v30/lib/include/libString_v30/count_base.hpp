@@ -26,9 +26,9 @@
 #endif
 
 #if defined(_WIN64) || defined(__LP64__)
-	#define	STRING_OBJ_SIZE				32
+	#define	STRING_OBJ_SIZE_V30			32
 #else
-	#define	STRING_OBJ_SIZE				24
+	#define	STRING_OBJ_SIZE_V30			24
 #endif
 
 #define STRING_RESERVED_BUF_SIZE		16

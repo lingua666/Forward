@@ -17,6 +17,8 @@ if(UNIX)
 	if(NOT BUILD_ANDROID)	#非android系统
 		target_link_libraries(${TARGET} pthread dl)
 	endif()
+	#操作超过2G大文件
+	target_compile_definitions(${TARGET} PRIVATE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE)
 endif()
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)

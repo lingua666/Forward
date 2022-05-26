@@ -67,9 +67,10 @@
 			struct epoll_event ev = { 0, { 0 } };
 			ev.data.ptr = NULL;
 			ev.data.fd = 0;
-			while( epoll_ctl(hCompletionPort, EPOLL_CTL_MOD, Handle, &ev) < 0 )
+			if( epoll_ctl(hCompletionPort, EPOLL_CTL_MOD, Handle, &ev) < 0 )
 			{
-				printf("CAsynIO::DettachHandle epoll_ctl failed!!\r\n");
+				printf("CAsynIO::DettachHandle epoll_ctl(%d) failed!!\r\n", errno);
+				return -1;
 			};
 			
 			return epoll_ctl(hCompletionPort, EPOLL_CTL_DEL, Handle, &ev) < 0 ? -1 : 1;

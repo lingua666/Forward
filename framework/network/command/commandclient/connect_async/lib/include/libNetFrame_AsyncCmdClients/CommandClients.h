@@ -54,14 +54,19 @@ namespace	_client_{
 
 			void Init( UInt8 uIOThreadNum = 0, UInt8 uProcThreadNum = 0 );
 
-			int Connect( const char* c_szIP, UInt16 uPort );
+			int Connect( const char* c_szIP, UInt16 uPort,
+						int iSocketRecv = -1, int iSocketSend = -1 );
 
 			int Connect( const char* c_szIP, UInt16 uPort,
-				const Comamand_HConnect& hConnect );
+				const Comamand_HConnect& hConnect,
+				int iSocketRecv = -1, int iSocketSend = -1 );
 
 			int Close( NETHANDLE Node );
-			int	SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
-			int	Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
+			int	SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize );
+			int	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
+
+			//单位毫秒
+			void	SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS);
 
 			/********************事件注册*****************************/
 			EVENT_REGISTER_LIST_BEGIN(CmdSession)
@@ -186,6 +191,8 @@ namespace	_client_{
 			CLock				_Lock;
 			CLock				_ReadLock;
 			CLock				_QuitLock;
+			UInt32 				_uWorkMS;
+			UInt32 				_uDestroyMS;
 		};
 		/** @} end CoZmmandClient */
 

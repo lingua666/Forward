@@ -5,8 +5,8 @@ namespace	_session_{
 
 	namespace	_udp_{
 
-		StreamCtrl::StreamCtrl( UInt16 uSendSize,
-			UInt16 ReservedSize )
+		StreamCtrl::StreamCtrl( UInt32 uSendSize,
+			UInt32 ReservedSize )
 			: _isSending(false)
 			, _Pack(sizeof(sockaddr_in), uSendSize, ReservedSize)
 		{
@@ -15,30 +15,50 @@ namespace	_session_{
 
 		StreamCtrl::~StreamCtrl( void )
 		{
+			Release();
+		}
+
+		int StreamCtrl::Init(void)
+		{
+			return 1;
+		}
+
+		void StreamCtrl::Release(void)
+		{
 
 		}
 
 		UInt32	StreamCtrl::Send( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt16 u16Size )
+			const char* pData, UInt32 uSize, UInt16 uBufNum)
 		{
-			(u16Size + u8AddSize) > _Pack.GetSendSize() ? MorePack(pDest, pAddtion, u8AddSize,
-				pData, u16Size) \
-				: OnePack(pDest, pAddtion, u8AddSize, pData, u16Size);
-			SendData();
+			(uSize + u8AddSize) > _Pack.GetSendSize() ? MorePack(pDest, pAddtion, u8AddSize,
+				pData, uSize) \
+				: OnePack(pDest, pAddtion, u8AddSize, pData, uSize);
+
+			if (_SendList.size() > uBufNum)
+			{
+				SendData();
+			}
+
 			return 1;
 		}
 
-		UInt32	StreamCtrl::Send( sockaddr_in* pDest, const char* pData, UInt16 u16Size )
+		UInt32	StreamCtrl::Send( sockaddr_in* pDest, const char* pData, UInt32 uSize, UInt16 uBufNum)
 		{
-			u16Size > _Pack.GetSendSize() ? MorePack(pDest, pData, u16Size) \
-				: OnePack(pDest, pData, u16Size);
-			SendData();
+			uSize > _Pack.GetSendSize() ? MorePack(pDest, pData, uSize) \
+				: OnePack(pDest, pData, uSize);
+
+			if (_SendList.size() > uBufNum)
+			{
+				SendData();
+			}
+
 			return 1;
 		}
 
-		int	StreamCtrl::MorePack( sockaddr_in* pDest, const char* pData, UInt16 u16Size )
+		int	StreamCtrl::MorePack( sockaddr_in* pDest, const char* pData, UInt32 uSize )
 		{
-			MPList_ptr sptr = _Pack.BigPackage(pData, u16Size, pDest, sizeof(sockaddr_in));
+			MPList_ptr sptr = _Pack.BigPackage(pData, uSize, pDest, sizeof(sockaddr_in));
 			if( sptr )
 			{
 				_SendLock.Lock();
@@ -53,9 +73,9 @@ namespace	_session_{
 			return -1;
 		}
 
-		int	StreamCtrl::OnePack( sockaddr_in* pDest, const char* pData, UInt16 u16Size )
+		int	StreamCtrl::OnePack( sockaddr_in* pDest, const char* pData, UInt32 uSize )
 		{
-			MediaDBuf_ptr sptr = _Pack.Package(pData, u16Size, pDest, sizeof(sockaddr_in));
+			MediaDBuf_ptr sptr = _Pack.Package(pData, uSize, pDest, sizeof(sockaddr_in));
 
 			if( sptr )
 			{
@@ -68,10 +88,10 @@ namespace	_session_{
 		}
 
 		int	StreamCtrl::MorePack( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt16 u16Size )
+			const char* pData, UInt32 uSize )
 		{
 			MPList_ptr sptr = _Pack.BigPackage(pAddtion, u8AddSize, 
-				pData, u16Size, pDest, sizeof(sockaddr_in));
+				pData, uSize, pDest, sizeof(sockaddr_in));
 			if( sptr )
 			{
 				_SendLock.Lock();
@@ -87,10 +107,10 @@ namespace	_session_{
 		}
 
 		int	StreamCtrl::OnePack( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt16 u16Size )
+			const char* pData, UInt32 uSize )
 		{
 			MediaDBuf_ptr sptr = _Pack.Package(pAddtion, u8AddSize,
-				pData, u16Size, pDest, sizeof(sockaddr_in));
+				pData, uSize, pDest, sizeof(sockaddr_in));
 
 			if( sptr )
 			{
@@ -148,7 +168,7 @@ namespace	_session_{
 		}
 
 		void	StreamCtrl::HandleSend( const STREAM_HANDLE& Stream, sockaddr_in* pDest, 
-			const char* pData, UInt32 u32Size )
+			const char* pData, UInt32 uSize )
 		{
 			SendQue();
 			_Pack.FreeBuf(pData);

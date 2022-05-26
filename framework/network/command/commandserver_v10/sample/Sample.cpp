@@ -29,11 +29,11 @@ void _CALLTYPE AcceptBackFun( const char* c_szIP, int uPort, NETHANDLE Node )
 	MCmd_SV10_SetClientDisConnect(Node, CloseBackFun);
 	CASAddAndFetch(&g_AcceptNum);
 	printf("Client Into(%d): %s:%d\r\n", g_AcceptNum, c_szIP, uPort);
+	printf("AcceptBackFun(%s:%d)\r\n", GetIPv4SFromNETNODE(Node).c_str(), GetPortFromNETNODE(Node));
 }
 
 struct testobj
 {
-
 	UInt32 i;
 };
 
@@ -51,12 +51,12 @@ int main(int argc, char* argv[])
 	s += "Config";
 	s += _file_::CMyDirectory::GetSplit();
 	s += "Config.ini";
-	UInt16 uPort = 60000;// _file_::RWIni::ReadInt("SERVER", "Port", s.c_str());
+	UInt16 uPort = 61000;// _file_::RWIni::ReadInt("SERVER", "Port", s.c_str());
 
 	MCmd_SV10_Init(3);
 	while(true)
 	{
-		if( MCmd_SV10_Listen(uPort, AcceptBackFun) )
+		if( MCmd_SV10_Listen(uPort, AcceptBackFun, "192.168.1.58") )
 		{
 			printf("=====================================================\r\n");
 			printf("Command Server is Runing,\r\nHost:%s, "

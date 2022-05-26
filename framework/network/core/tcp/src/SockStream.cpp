@@ -120,8 +120,8 @@ namespace _io_net_{
 				function20_bind(&self_type::HandleSend, shared_from_this(), c_szData, 
 				_foundation_::_1) ) == -1 )
 			{
-				printf("failed SockStream::PostSend error %s, this:%p, soc:%p\r\n",
-					error_code(error_code::GetLastError()).message().c_str(), this, &_Socket);
+				printf("failed SockStream::PostSend(%d) error %s, this:%p, soc:%p\r\n",
+					u32Size, error_code(error_code::GetLastError()).message().c_str(), this, &_Socket);
 
 				Close();
 			}
@@ -137,7 +137,8 @@ namespace _io_net_{
 			if(pIOData->_ibytes_transferred == 0)
 #endif
 			{
-				printf("SockStream::HandleSend error %s\r\n",
+				printf("SockStream::HandleSend(%d,%p) error %s\r\n",
+					pIOData->_ibytes_transferred, pOver,
 					error_code(error_code::GetLastError()).message().c_str());
 
 #if defined( PLATFORM_OS_FAMILY_UNIX )
@@ -155,6 +156,7 @@ namespace _io_net_{
 				while(true)
 				{
 					printf("SockStream::HandleSend failed!!!\r\n");
+					Sleep(1000);
 				}
 				//test
 			}

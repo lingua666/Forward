@@ -31,6 +31,8 @@ namespace	_iocp_net_{
 			typedef SOCKET				HSOCKET;
 			typedef OverlappedManage<>	OverlappedManage_type;
 
+			static void CloseSocket(const HSOCKET& Sock);
+
 		public:
 			/*!
 			* @function   TcpSocket
@@ -46,7 +48,8 @@ namespace	_iocp_net_{
 			*/
 			~TcpSocket( void );
 
-			TcpSocket::HSOCKET Connect( const _string_type& sIP, UInt16 u16Port );
+			TcpSocket::HSOCKET Connect( const _string_type& sIP, UInt16 u16Port,
+									int iSocketRecv = -1, int iSocketSend = -1 );
 
 			int Bind( const HSOCKET& Sock );
 

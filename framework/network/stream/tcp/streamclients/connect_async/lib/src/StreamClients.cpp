@@ -11,6 +11,8 @@ namespace	_client_{
 									reinterpret_cast<void*>(this)))
 			, _Count( 0 )
 			, _isSequence( false )
+			, _uWorkMS(1)
+			, _uDestroyMS(1)
 		{
 			
 		}
@@ -42,6 +44,8 @@ namespace	_client_{
 
 		void	StreamClients::Init( UInt8 uIOThreadNum, UInt8 uProcThreadNum, bool isSequence )
 		{
+			((io_service&)_AsynConnector.GetIoServer()).Init();
+
 			_AsynConnector.Listen();
 			_AsynConnector.Run(uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum);
 			uProcThreadNum = (uProcThreadNum == 0 ? 1 : uProcThreadNum);
@@ -61,6 +65,8 @@ namespace	_client_{
 		{
 			StreamClients* Server = reinterpret_cast<StreamClients*>(pParamter);
 			StreamSession*	pSession = NULL;
+			bool			isLock = false;
+
 			while(true)
 			{
 				try
@@ -74,18 +80,33 @@ namespace	_client_{
 							StreamBuf_ptr ptr = Server->_MQueue.front();
 							Server->_MQueue.pop();
 							pSession = Server->GetStreamIdentity(ptr);
-							if( Server->_isSequence )
+							if (Server->_isSequence)
 							{
-								pSession->Lock();
+								pSession->push(ptr);
+								isLock = pSession->TryLock();
 							}
-							Server->_ReadLock.UnLock();	
+							Server->_ReadLock.UnLock();
+
+							if (Server->_isSequence)
+							{
+								if (!isLock)
+								{
+									pSession->Lock();
+									isLock = true;
+								}
+
+								ptr = pSession->pop_front();
+							}
 
 							//增加结束符，防止打印字符串出现乱码
 							ptr->data[ptr->payload] = 0;
 							pSession->RecvNotify(pSession->GetLocalNode(), ptr, pSession->GetUseRef() - 1);
-							if( Server->_isSequence )
+							if (Server->_isSequence)
 							{
-								pSession->UnLock();
+								if (isLock)
+								{
+									pSession->UnLock();
+								}
 							}
 
 							ptr.reset();
@@ -98,7 +119,7 @@ namespace	_client_{
 					}
 					else
 					{//没有数据休眠
-						Sleep(1);
+						Sleep(Server->_uWorkMS);
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -127,23 +148,25 @@ namespace	_client_{
 			_Map.clear();
 		}
 
-		int StreamClients::Connect( const char* c_szIP, UInt16 uPort )
+		int StreamClients::Connect( const char* c_szIP, UInt16 uPort,
+								int iSocketRecv, int iSocketSend )
 		{
 			if( !_AsynConnector.is_open() ) 
 				return -1;
 
-			return _AsynConnector.Connect(c_szIP, uPort);
+			return _AsynConnector.Connect(c_szIP, uPort, iSocketRecv, iSocketSend);
 		}
 
 		int StreamClients::Connect( const char* c_szIP, UInt16 uPort,
-					const Stream_HConnect& hConnect )
+					const Stream_HConnect& hConnect,
+					int iSocketRecv, int iSocketSend )
 		{
 			if( !_AsynConnector.is_open() )
 				return -1;
 
 			return _AsynConnector.Connect(c_szIP, uPort,
 				function20_bind(&StreamClients::HandleConnect, this,
-				hConnect, _foundation_::_1) );
+				hConnect, _foundation_::_1), iSocketRecv, iSocketSend);
 		}
 
 		int StreamClients::Close( NETHANDLE Node )
@@ -191,12 +214,19 @@ namespace	_client_{
 			_Pool.FreeObj(reinterpret_cast<StreamSession*>(pSession));
 		}
 
-		Int32	StreamClients::Send( NETHANDLE Node, const char* c_pData, UInt16 uSize )
+		Int32	StreamClients::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
 				return sptr->Send(c_pData, uSize);
 			return -1;
+		}
+
+		//单位毫秒
+		void	StreamClients::SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS)
+		{
+			_uWorkMS = uWorkMS;
+			_uDestroyMS = uDestroyMS;
 		}
 
 		void	StreamClients::HandleConnect( const Stream_HConnect& hConnect,
@@ -325,7 +355,7 @@ gt_error:
 					}
 					else
 					{
-						Sleep(1);
+						Sleep(Clients->_uDestroyMS);
 					}
 				}
 				catch (const thread_interrupted& e)

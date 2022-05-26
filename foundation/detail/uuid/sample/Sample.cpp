@@ -228,8 +228,37 @@ void Md5File( void )
 	}
 }
 
+#include <map>
 void main(int argc, char * argv[])
 {
+	std::map<_string_type, int>	Map;
+	for (int i = 0; i < 1000000; i ++)
+	{
+		_string_type s = _uuid_::UUIDGenerator::UUIDToString();
+		if (Map.find(s) == Map.end())
+		{
+			Map.insert(std::make_pair(s, 0));
+		}
+		else
+		{
+			int i = 0;
+		}
+	}
+
+	Map.clear();
+	for (int i = 0; i < 1000000; i++)
+	{
+		_string_type s = _uuid_::UUIDGenerator().create().toString();
+		if (Map.find(s) == Map.end())
+		{
+			Map.insert(std::make_pair(s, 0));
+		}
+		else
+		{
+			int i = 0;
+		}
+	}
+
 	_uuid_::MD5Engine	Md51;
 	Md51.update("1234567890");
 	_string_type s = _uuid_::DigestEngine::digestToHex(Md51.digest());

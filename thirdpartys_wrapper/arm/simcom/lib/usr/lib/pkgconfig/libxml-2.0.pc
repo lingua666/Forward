@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+modules=1
+
+Name: libXML
+Version: 2.9.2
+Description: libXML library version2.
+Requires:
+Libs: -L${libdir} -lxml2
+Libs.private:   -L/home/code/workspace/ASR1803L_2967/openwrt/staging_dir/target-arm_cortex-a7+neon-vfpv4_uClibc-1.0.25_eabi/usr/lib -lz   -lm  
+Cflags: -I${includedir}/libxml2 

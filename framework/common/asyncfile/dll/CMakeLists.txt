@@ -1,6 +1,6 @@
 
 set( TARGET
-	dllFramework_AsyncFiles
+	dllFrameWork_AsyncFiles
 	)
 	
 #Traverse the file
@@ -17,8 +17,8 @@ add_target(${TARGET} ${GEN_DLL_TYPE} ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGE
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
 		
-add_dependencies(${TARGET} libFramework_AsyncFiles)
-target_link_libraries(${TARGET} libFramework_AsyncFiles)
+add_dependencies(${TARGET} libFrameWork_AsyncFiles)
+target_link_libraries(${TARGET} libFrameWork_AsyncFiles)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

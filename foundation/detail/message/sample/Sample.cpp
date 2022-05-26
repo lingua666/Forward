@@ -12,6 +12,7 @@
 #include <libContainer/Queue.hpp>
 #include <libContainer/CycleList.hpp>
 #include <libMessage/TimerEvent.h>
+#include <libMessage/TimerEventKM.h>
 #include <libMessage/TimerEventSync.h>
 #include <list>
 #include <deque>
@@ -20,7 +21,9 @@
 using namespace _container_;
 
 
-TimerEvent	g_Timer;
+TimerEvent		g_Timer;
+TimerEventKM	g_TimerKM;
+TimerEventKM	g_TimerKM_int;
 TimerEventSync<void>	g_TimerV20;
 TimerEventSync<int>	g_TimerV20_int;
 int			g_Num = 0;
@@ -107,6 +110,52 @@ void TimeEventV20Test( void )
 		g_TimerV20.push_back(function20_bind_Ex(TimeCallBackV20), 0);
 		int i = g_TimerV20_int.push_back(function20_bind_Ex(TimeCallBackV20_int), 0);
 		printf("开启V20计时器 i:%d end\r\n", i);
+		//std::cin.get();
+		Sleep(100);
+	}
+}
+
+void TimeEventKMTest(void)
+{
+	while (true)
+	{
+		g_TimerKM.Init(1);
+		g_TimerKM_int.Init(1);
+
+		/*SmartPTR<CTest> Ptr(new CTest);
+
+		{
+			g_TimerKM.Init(1);
+			g_TimerKM.push_back(function20_bind_Ex(&CTest::yst, Ptr), 10000);
+			g_TimerKM.Clear();
+			int i = 0;
+		}*/
+
+
+
+		printf("开启KM计时器 begin\r\n");
+		while(true)
+		{
+			printf("11111\r\n");
+			TimerEventKM::_string_ sUid1 = g_TimerKM.push_back(function20_bind_Ex(TimeCallBackV20), 3000);
+			TimerEventKM::_string_ sUid2 = g_TimerKM_int.push_back(function20_bind_Ex(TimeCallBackV20_int), 3000);
+			printf("2222\r\n");
+			//test
+			g_TimerKM.Lock();
+			Timestamp_type Local;
+			system("time 12:23:20"); // 修改时间
+			Timestamp_type New;
+			g_TimerKM.UpdateTime(Local, New);
+			g_TimerKM.UnLock();
+			printf("333\r\n");
+			Sleep(10000000);
+			//test
+
+			g_TimerKM.Remove(sUid1);
+			g_TimerKM_int.Remove(sUid2);
+			Sleep(10);
+		}
+		printf("开启KM计时器 end\r\n");
 		//std::cin.get();
 		Sleep(100);
 	}
@@ -279,6 +328,8 @@ void EventTestDll_Test()
 
 int main(int argc, char* argv[])
 {
+	TimeEventKMTest();
+
 	//EventTestDll_Test();
 
 	TimeEventV20Test();

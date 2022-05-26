@@ -61,7 +61,7 @@ namespace	_log_{
 	private:
 		File_type	_File;
 		CLock		_Lock;
-		tm			_CreateTime;
+		struct tm			_CreateTime;
 		_string_type	_sFilePath;
 	};
 
@@ -104,11 +104,11 @@ namespace	_log_{
 	{
 		virtual ~ILogger( void ) {}
 
+		virtual void Debug(const char *format, ...) = 0;
+
 		virtual void Info( const char *format, ... ) = 0;
 
 		virtual void Warning( const char *format, ... ) = 0;
-
-		virtual void Debug( const char *format, ... ) = 0;
 
 		virtual void Error( const char *format, ... ) = 0;
 
@@ -184,19 +184,19 @@ namespace	_log_{
 			_Log->Close();
 		}
 
+		void Debug(const char *format, ...)
+		{
+			LOG_PRINF_DECL(1, "[Debug]")
+		}
+
 		void Info( const char *format, ... )
 		{
-			LOG_PRINF_DECL(1,"[Info]")
+			LOG_PRINF_DECL(2,"[Info]")
 		}
 
 		void Warning( const char *format, ... )
 		{
-			LOG_PRINF_DECL(2,"[Warning]")
-		}
-
-		void Debug( const char *format, ... )
-		{
-			LOG_PRINF_DECL(3,"[Debug]")
+			LOG_PRINF_DECL(3,"[Warning]")
 		}
 
 		void Error( const char *format, ... )

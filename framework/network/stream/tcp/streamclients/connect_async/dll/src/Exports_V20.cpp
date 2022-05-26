@@ -11,15 +11,15 @@ static fpnMStream_C_V20_Connect	g_fpnMStream_C_Connect20160526;
 
 void _CALLTYPE	g_StreamRecvBack201610040936_V20( fpnMStream_C_V20_RecData fnRecv,
 											 void* pUser,
-                                             NETHANDLE handle,
+                                             NETHANDLE Handle,
 											 const StreamBuf_ptr& BStream,
 											 long lRemain )
 {
-	//GetAsynStreamClientsInstance()->Send(handle, BStream->data, BStream->payload);
+	//GetAsynStreamClientsInstance()->Send(Handle, BStream->data, BStream->payload);
 
 	if( fnRecv != NULL )
 	{
-		fnRecv(pUser, handle, BStream->data, BStream->payload);
+		fnRecv(pUser, Handle, BStream->data, BStream->payload);
 	}
 }
 
@@ -27,7 +27,7 @@ void _CALLTYPE	g_ConnectResultBack20160526_V20( fpnMStream_C_V20_Connect fpnConn
 										void* pUser,
 										const _string_type& sIP,
 										UInt16 u16Port,
-										NETHANDLE Handle )
+										NETHANDLE Handle)
 {
 	if( fpnConnect != NULL )
 	{
@@ -105,59 +105,59 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_Connect( const char* c_
 	return GetAsynStreamClientsInstance()->Connect(c_szIP, u16Port,
 							function20_bind(g_ConnectResultBack20160526_V20,
 									g_fpnMStream_C_Connect20160526, pUser,
-									_string_type(c_szIP), u16Port, _function_::_1));
+									_string_type(c_szIP), u16Port, _function_::_1), -1, -1);
 }
 
 /*****************************************************************
 /*函数说明：	关闭连接
-/*参数说明：	handle: 64bit连接句柄
+/*参数说明：	Handle: 64bit连接句柄
 /*				
 /*返回值：
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_Close( NETHANDLE handle )
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_Close( NETHANDLE Handle)
 {
-	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_Close():\n\thandle:%lld",handle)
+	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_Close():\n\tHandle:%lld", Handle)
 
-	GetAsynStreamClientsInstance()->Close(handle);
+	GetAsynStreamClientsInstance()->Close(Handle);
 	return 1;
 }
 
 /*****************************************************************
 /*函数说明：	设置断开回调函数
-/*参数说明：	handle: 64bit连接句柄
+/*参数说明：	Handle: 64bit连接句柄
 				pCMD_ClientRecData: 回调函数地址
 /*返回值：		
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SetClose( NETHANDLE handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SetClose( NETHANDLE Handle,
 															fpnMStream_C_V20_Close fpnClose,
 															void* pUser )
 {
-	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SetClose():\n\thandle:%lld",handle)
+	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SetClose():\n\tHandle:%lld", Handle)
 
-	/*GetAsynCmdClientsInstance()->SetCloseHandle(handle,
-							function20_bind(fpnClose, GetIPv4ToString(handle),
-							GetPort(handle),_function_::_1));*/
+	/*GetAsynCmdClientsInstance()->SetCloseHandle(Handle,
+							function20_bind(fpnClose, GetIPv4ToString(Handle),
+							GetPort(Handle),_function_::_1));*/
 
-	return GetAsynStreamClientsInstance()->SetDestroyHandle(handle,
+	return GetAsynStreamClientsInstance()->SetDestroyHandle(Handle,
 							function20_bind(g_CloseBack20160526_V20, fpnClose,
-							pUser, GetIPv4ToString(handle),
-							GetPort(handle),_function_::_1));
+							pUser, GetIPv4SFromNETNODE(Handle),
+							GetPortFromNETNODE(Handle),_function_::_1));
 }
 
 
 /*****************************************************************
 /*函数说明：	设置接收回调函数
-/*参数说明：	handle: 64bit连接句柄
+/*参数说明：	Handle: 64bit连接句柄
 				pCMD_ClientRecData: 回调函数地址
 /*返回值：		
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SetRecData( NETHANDLE handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SetRecData( NETHANDLE Handle,
 															fpnMStream_C_V20_RecData fpnRecData,
 															void* pUser )
 {
-	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SetRecData():\n\thandle:%lld",handle)
+	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SetRecData():\n\tHandle:%lld", Handle)
 
-	GetAsynStreamClientsInstance()->SetRecvHandle(handle, function20_bind(g_StreamRecvBack201610040936_V20, 
+	GetAsynStreamClientsInstance()->SetRecvHandle(Handle, function20_bind(g_StreamRecvBack201610040936_V20,
 																		fpnRecData, pUser,
 																		_function_::_1,
 																		_function_::_2,
@@ -167,18 +167,18 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SetRecData( NETHANDLE h
 
 /*****************************************************************
 /*函数说明：	发送数据
-/*参数说明：	handle: 64bit连接句柄
+/*参数说明：	Handle: 64bit连接句柄
 				c_pData: 数据缓冲区
 				u32Size: 数据长度
 /*				
 /*返回值：		>0:成功		<=0:失败
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SentData( NETHANDLE handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_V20_SentData( NETHANDLE Handle,
 														const char* c_pData,
 														UInt32 u32Size )
 {
-	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SentData():\n\thandle:%lld\n\tSize:%d\n\tData:%s",
-					handle, u32Size, c_pData)
+	LOG_Print_Info(Stream_C_V20_Module,"MStream_C_V20_SentData():\n\tHandle:%lld\n\tSize:%d\n\tData:%s",
+		Handle, u32Size, c_pData)
 
-	return GetAsynStreamClientsInstance()->Send(handle, c_pData, u32Size);
+	return GetAsynStreamClientsInstance()->Send(Handle, c_pData, u32Size);
 }

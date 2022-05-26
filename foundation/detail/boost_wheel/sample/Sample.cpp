@@ -1008,9 +1008,26 @@ void Multi_Index_Func_Lock_Test(void)
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr2);
 	MULTI_INDEX_FUNC_LOCK::MultiIndex_Insert(sptr3);
 
+	{
+		/*MULTI_INDEX_FUNC_LOCK::MultiIndex_RemoveFrom_Get_name("Lock_Joe1");
+
+		MULTI_INDEX_FUNC_LOCK::TYPE_MULTI_INDEX(Get_name)& indexOfName = MULTI_INDEX_FUNC_LOCK::_Map.get< MULTI_INDEX_FUNC_LOCK::TAG_MULTI_INDEX(Get_name) >();
+		for (MULTI_INDEX_FUNC_LOCK::ITERATOR_MULTI_INDEX(Get_name) name_iter = indexOfName.begin(); name_iter != indexOfName.end(); name_iter++)
+		{
+			printf("%s:%d\r\n", (*name_iter)->name.c_str(), (*name_iter)->id);
+		}*/
+	}
+	
+
 	bool isF = MULTI_INDEX_FUNC_LOCK::MultiIndex_Replace_Get_name("Lock_Joe1", sptr4);
 
-	//MULTI_INDEX::MultiIndex_RemoveFrom_name("Robert");
+	Employee_func* tmp = new Employee_func(Employee_func(3, "YYY", 40));
+	
+	MULTI_INDEX_FUNC_LOCK::MultiIndex_Replace_Get_name("Lock_John", tmp);
+
+	MULTI_INDEX_FUNC_LOCK::MultiIndex_RemoveFrom_Get_name("YYY");
+
+
 	Employee_func* spt2 = MULTI_INDEX_FUNC_LOCK::MultiIndex_FindFrom_Get_name("Lock_Robert");
 	printf("age:%d, id:%d, name:%s\r\n", spt2->age, spt2->id, spt2->name.c_str());
 

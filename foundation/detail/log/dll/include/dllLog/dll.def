@@ -14,6 +14,8 @@ MLog_Info			@9
 MLog_Warning			@10
 MLog_Debug			@11
 MLog_Error			@12
-MLog_FATAL			@13	
+MLog_FATAL				@13	
 MLog_AllocObjWithPath		@14
+MLog_SetAllLevel	@15
+MLog_GetAllLevel	@16
 

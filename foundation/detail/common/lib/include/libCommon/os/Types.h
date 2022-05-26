@@ -220,6 +220,7 @@
 	typedef	intptr_t	IntPtr;
 	typedef	uintptr_t	UIntPtr;
 	typedef	Int64		THandle;
+	typedef unsigned char BYTE;
 
 	#if defined(_WIN32) 
 		#if defined(_DLL_)
@@ -246,6 +247,12 @@
 
 	#define _OUT	
 	#define _IN
+
+	#if defined(__GNUC__) && (__GNUC__ > 3 ||(__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+		# define _INLINE_ __attribute__ ((always_inline)) inline 
+	#else
+		# define _INLINE_ inline
+	#endif
 
 #endif //__INCLUDE_TYPE_HEAD__20150828
 

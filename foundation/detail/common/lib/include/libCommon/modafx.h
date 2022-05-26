@@ -19,6 +19,8 @@
 #include <libCommon/SysInfo.h>
 #include <libCommon/CMyException.h>
 #include <libCommon/WDump.h>
+#include <libCommon/digest/crc16.h>
+#include <libCommon/digest/crc32.h>
 
 #include <string>
 

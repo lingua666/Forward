@@ -1,0 +1,9 @@
+
+#ifndef __EXTERNAL_RTMP_20201009174504_3344199361_H__
+#define __EXTERNAL_RTMP_20201009174504_3344199361_H__
+
+#include <libFrameWork_RtmpCommon/RtmpSession.h>
+
+LOG_OBJ_DECL(libFrameWork_RtmpClients)
+
+#endif//__EXTERNAL_20150914105604_3344199361_H__

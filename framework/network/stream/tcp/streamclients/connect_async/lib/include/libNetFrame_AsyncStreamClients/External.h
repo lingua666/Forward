@@ -6,6 +6,7 @@
 #include <libNetFrame_Core/NetAsyncConnector.h>
 #include <libNetFrame_StreamSession/StreamSession.h>
 #include <libFoundation/modafx.h>
+#include <dllLog/Exports.h>
 
 namespace	_client_{
 
@@ -14,11 +15,9 @@ namespace	_client_{
 		typedef	_session_::_tcp_::StreamSession	StreamSession;
 		typedef	SmartPTR< StreamSession >	StreamSession_sptr;
 
-		struct __M_ALIGNED_PACKED__ tagStreamIdentity
-		{
-			StreamSession*	_Identity;
-		};
 	}//namespace	_async_
+
+	LOG_OBJ_DECL(libNetFrame_AsyncStreamClients)
 
 } //namespace _client_
 

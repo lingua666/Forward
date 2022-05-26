@@ -3,12 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <dllSystem_Info/dllSystem_Info.h>
+
 
 
 #include <windows.h>
 #include <iostream>
 #include <string>
+
+#include <dllSystem_Info/dllSystem_Info.h>
+
 
 
 
@@ -237,6 +240,17 @@ void __fastcall ReadPhysicalDriveOnNT()
 
 void _CALLTYPE MGetDiskInfo_test(tagDisk_INFO* pInfo)
 {
+	printf("MGetDiskInfo_test\r\n");
+	printf("pManufacturer:%s\r\n", pInfo->pManufacturer);
+	printf("pModel:%s\r\n", pInfo->pModel);
+	printf("pSerialNumber:%s\r\n", pInfo->pSerialNumber);
+	printf("pInterfaceType:%s\r\n", pInfo->pInterfaceType);
+	printf("Size:%lld\r\n", pInfo->uSize);
+}
+
+void MGetDiskInfo_test1(tagDisk_Detail_INFO* pInfo)
+{
+	printf("MGetDiskInfo_test1\r\n");
 	printf("pManufacturer:%s\r\n", pInfo->pManufacturer);
 	printf("pModel:%s\r\n", pInfo->pModel);
 	printf("pSerialNumber:%s\r\n", pInfo->pSerialNumber);
@@ -246,15 +260,17 @@ void _CALLTYPE MGetDiskInfo_test(tagDisk_INFO* pInfo)
 
 int main(int argc, char* argv[])
 {
-	/*ReadPhysicalDriveOnNT(); 
+	ReadPhysicalDriveOnNT(); 
 	printf("main ser:%s\r\n", GetDiskSerialNumber("\\\\.\\PhysicalDrive0", 0).c_str());
 
 	tagCpu_INFO* p = GetCpuInfo();
 	printf("pBrand:%s, pSerialNumber:%s, pVendor:%s\r\n",p->pBrand, p->pSerialNumber, p->pVendor);
-	MGetDiskInfo(MGetDiskInfo_test);*/
+	MGetDiskInfo(MGetDiskInfo_test);
 
-	MGetPicFormDllEx("D:\\WeChat Files\\wxid_izobr64bgqqv21\\FileStorage\\File\\2019-02\\Õº∆¨¡˜÷∏’Î≤‚ ‘BufV4.0\\ClientBG.png",
-		"D:\\ClientBG.png");
+	get_disk_detail(MGetDiskInfo_test1);
+
+	/*MGetPicFormDllEx("D:\\WeChat Files\\wxid_izobr64bgqqv21\\FileStorage\\File\\2019-02\\Õº∆¨¡˜÷∏’Î≤‚ ‘BufV4.0\\ClientBG.png",
+		"D:\\ClientBG.png");*/
 
 	std::cin.get();
 	return 0;

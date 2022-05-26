@@ -101,7 +101,7 @@ typedef NETHANDLE		_HASH;
 			{
 				s_Lock.Lock();
 				stHeartInfo* pHeart = s_List.current();
-				if( GetTickCount() - pHeart->_u32CurrentTimer > HEART_INTERVAL_TIME * HEART_RESEND_TIME + 5000 )
+				if( (unsigned long)GetTickCount() - pHeart->_u32CurrentTimer > HEART_INTERVAL_TIME * HEART_RESEND_TIME + 5000 )
 				{
 					s_List.pop();
 					if( pHeart->_u32CurrentTimer != 0 )

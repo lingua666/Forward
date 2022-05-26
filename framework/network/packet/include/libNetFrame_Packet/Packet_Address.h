@@ -57,26 +57,26 @@ public:
 		_Head = Head;
 	}
 
-	int	AppendHead( const char* c_szData, UInt16 u16Size )
+	int	AppendHead( const char* c_szData, UInt32 uSize )
 	{
-		_Head.Append(c_szData, u16Size);
+		_Head.Append(c_szData, uSize);
 		return 1;
 	}
 
-	int	AppendData( const char* c_szData, UInt16 u16Size )
+	int	AppendData( const char* c_szData, UInt32 uSize )
 	{
-		_sData.append(c_szData, u16Size);
+		_sData.append(c_szData, uSize);
 		return 1;
 	}
 
-	int	Parse( const char* c_szData, UInt32 u32Size )
+	int	Parse( const char* c_szData, UInt32 uSize )
 	{
-		if( _Head.HeadSize() > u32Size )
+		if( _Head.HeadSize() > uSize )
 			return -1;
 
-		int iOffset = _Head.Parse(c_szData, u32Size);
-		if( iOffset < u32Size )
-			_sData.append(&c_szData[iOffset], u32Size - iOffset);
+		int iOffset = _Head.Parse(c_szData, uSize);
+		if( iOffset < uSize )
+			_sData.append(&c_szData[iOffset], uSize - iOffset);
 
 		return 1;
 	}

@@ -11,6 +11,8 @@ namespace	_server_{
 					reinterpret_cast<void*>(this)))
 			, _Count( 0 )
 			, _isSequence( false )
+			, _uWorkMS(1)
+			, _uDestroyMS(1)
 		{
 
 		}
@@ -22,6 +24,8 @@ namespace	_server_{
 
 		int AppMain::Init( UInt8 uIOThreadNum, UInt8 uProcThreadNum, bool isSequence )
 		{
+			_ioService.Init();
+
 			if( _ioService.open() == -1 )
 			{
 				return -1;
@@ -55,7 +59,6 @@ namespace	_server_{
 				_Message.interrupt(ThreadData::en_INTERRUPTED_EXIT);
 				_Message.join();
 				_QuitQueue.clear();
-				_Pool.Release();
 			}
 		}
 
@@ -74,16 +77,16 @@ namespace	_server_{
 			_Map.clear();
 		}
 
-		NETHANDLE	AppMain::Open( UInt16 u16Port )
+		NETHANDLE	AppMain::Open( UInt16 u16Port, const char* c_szIP, UInt16 uBufNum)
 		{
-			_SOCKET_::HSOCKET hSock = _SOCKET_(_ioService).Open(u16Port);
+			_SOCKET_::HSOCKET hSock = _SOCKET_(_ioService).Open(u16Port, c_szIP);
 			if( hSock == INVALID_SOCKET )
 			{
 				return -1;
 			}
 
 			StreamSession* Session = _Pool.AllocObj<StreamSession>( sizeof(tagStreamIdentity) + sizeof(struct sockaddr_in) );
-			if( Session->Init(_ioService, hSock) != 1 )
+			if( Session->Init(_ioService, hSock, uBufNum) != 1 )
 			{
 				int iError = error_code::GetLastError();
 				printf("AppMain::Open is Error:%d\r\n",iError);
@@ -167,7 +170,8 @@ namespace	_server_{
 		{
 			if( _IOProcs.size() <= 0 )
 			{
-				uIOThreadNum = (uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum);
+				//uIOThreadNum = (uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum);
+				uIOThreadNum = (uIOThreadNum == 0 ? get_processor_number() : uIOThreadNum);
 				for(std::size_t i = 0; i < uIOThreadNum; ++ i)
 				{
 					Thread_ptr thread( new Thread_type(
@@ -179,7 +183,8 @@ namespace	_server_{
 			
 			if( _Workers.size() <= 0 )
 			{
-				uProcThreadNum = (uProcThreadNum == 0 ? 1 : uProcThreadNum);
+				//uProcThreadNum = (uProcThreadNum == 0 ? 1 : uProcThreadNum);
+				uProcThreadNum = (uProcThreadNum == 0 ? get_processor_number() + 2 : uProcThreadNum);
 				_isSequence = isSequence;
 				for(std::size_t i = 0; i < uProcThreadNum; ++ i)
 				{
@@ -232,6 +237,8 @@ namespace	_server_{
 		{
 			AppMain* Server = reinterpret_cast<AppMain*>(pParamter);
 			StreamSession*	pSession = NULL;
+			bool			isLock = false;
+
 			while(true)
 			{
 				try
@@ -245,18 +252,34 @@ namespace	_server_{
 							StreamBuf_ptr ptr = Server->_MQueue.front();
 							Server->_MQueue.pop();
 							pSession = Server->GetStreamIdentity(ptr);
-							if( Server->_isSequence )
-							{
-								pSession->Lock();
+
+							if (Server->_isSequence)
+							{//顺序队列
+								pSession->push(ptr);
+								isLock = pSession->TryLock();
 							}
 							Server->_ReadLock.UnLock();
+
+							if (Server->_isSequence)
+							{//顺序队列
+								if (!isLock)
+								{
+									pSession->Lock();
+									isLock = true;
+								}
+
+								ptr = pSession->pop_front();
+							}
 
 							//增加结束符，防止打印字符串出现乱码
 							ptr->data[ptr->payload] = 0;				
 							pSession->RecvNotify(pSession->GetLocalNode(), Server->GetStreamSrcAddr(ptr), ptr);
-							if( Server->_isSequence )
+							if (Server->_isSequence)
 							{
-								pSession->UnLock();
+								if (isLock)
+								{
+									pSession->UnLock();
+								}
 							}
 
 							ptr.reset();
@@ -269,7 +292,7 @@ namespace	_server_{
 					}
 					else
 					{//没有数据休眠
-						Sleep(1);
+						Sleep(Server->_uWorkMS);
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -289,31 +312,38 @@ namespace	_server_{
 		}
 
 		Int32	AppMain::Send( NETHANDLE Node, sockaddr_in* pDest, UInt32 MediaType,
-								const char* c_pData, UInt16 u16Size )
+								const char* c_pData, UInt32 uSize, UInt16 uBufNum)
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
-				return sptr->Send(pDest, MediaType, c_pData, u16Size);
+				return sptr->Send(pDest, MediaType, c_pData, uSize, uBufNum);
 
 			return -1;
 		}
 
-		Int32	AppMain::Send( NETHANDLE Node, sockaddr_in* pDest, const char* c_pData, UInt16 u16Size )
+		Int32	AppMain::Send( NETHANDLE Node, sockaddr_in* pDest, const char* c_pData, UInt32 uSize, UInt16 uBufNum)
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
-				return sptr->Send(pDest, c_pData, u16Size);
+				return sptr->Send(pDest, c_pData, uSize, uBufNum);
 			return -1;
 		}
 
 		Int32	AppMain::Send(NETHANDLE Node, const char* c_szDstIP, UInt16 uDstPort,
-			const char* c_pData, UInt16 u16Size)
+			const char* c_pData, UInt32 uSize, UInt16 uBufNum)
 		{
 			struct sockaddr_in Addr = { 0 };
 			Addr.sin_port = htons(uDstPort);
 			Addr.sin_addr.s_addr = inet_addr(c_szDstIP);
 			Addr.sin_family = AF_INET;
-			return Send(Node, &Addr, c_pData, u16Size);
+			return Send(Node, &Addr, c_pData, uSize, uBufNum);
+		}
+
+		//单位毫秒
+		void	AppMain::SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS)
+		{
+			_uWorkMS = uWorkMS;
+			_uDestroyMS = uDestroyMS;
 		}
 
 		void	AppMain::HandleClose( StreamSession* pSession )
@@ -374,7 +404,7 @@ namespace	_server_{
 					}
 					else
 					{
-						Sleep(1);
+						Sleep(pServer->_uDestroyMS);
 					}
 				}
 				catch (const thread_interrupted& e)

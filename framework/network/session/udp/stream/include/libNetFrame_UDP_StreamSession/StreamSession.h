@@ -23,6 +23,9 @@ namespace	_session_{
 		class StreamSession
 		{
 		public:
+			typedef LinkList_type<StreamBuf_ptr>		LList;
+
+		public:
 			/*!
 			* @function   StreamSession
 			* @brief    
@@ -55,7 +58,8 @@ namespace	_session_{
 					_Stream_ptr->Close();
 			}
 
-			int	Init( io_service& ioService, const _SOCKET_::HSOCKET& Socket )
+			//
+			int	Init( io_service& ioService, const _SOCKET_::HSOCKET& Socket, UInt16 uBufNum = 0 )
 			{
 				_Stream_ptr = SockStream::Create(&ioService, 
 					_StreamCtrl.GetBufSize(),
@@ -66,6 +70,8 @@ namespace	_session_{
 
 				_Stream_ptr->Init();
 
+				_StreamCtrl.Init();
+
 				EVENT_REGISTER(_Stream_ptr.get(),&_StreamCtrl);
 				EVENT_REGISTER(_Stream_ptr.get(),this);
 				EVENT_REGISTER(&_StreamCtrl,this);
@@ -73,15 +79,15 @@ namespace	_session_{
 				return 1;
 			}
 
-			int Send( sockaddr_in* pDest, UInt32 CommandType, const char* c_pData, UInt16 u16Size )
+			int Send( sockaddr_in* pDest, UInt32 CommandType, const char* c_pData, UInt32 uSize, UInt16 uBufNum = 0)
 			{			
 				return _StreamCtrl.Send(pDest, &CommandType, sizeof(CommandType),
-					c_pData, u16Size);
+					c_pData, uSize, uBufNum);
 			}
 
-			int Send( sockaddr_in* pDest, const char* c_pData, UInt16 u16Size )
+			int Send( sockaddr_in* pDest, const char* c_pData, UInt32 uSize, UInt16 uBufNum = 0)
 			{
-				return _StreamCtrl.Send(pDest, c_pData, u16Size);
+				return _StreamCtrl.Send(pDest, c_pData, uSize, uBufNum);
 			}
 
 			void	HandleRecv( sockaddr_in* pSrc, const StreamBuf_ptr& Buf_ptr )
@@ -147,6 +153,21 @@ namespace	_session_{
 				return _Stream_ptr;
 			}
 
+			void push(const StreamBuf_ptr& ptr)
+			{
+				_DQueue.push_back(ptr);
+			}
+
+			StreamBuf_ptr pop_front(void)
+			{
+				return _DQueue.pop_front();
+			}
+
+			LList::size_type size(void)
+			{
+				return _DQueue.size();
+			}
+
 			void Lock()
 			{
 				_Lock.Lock();
@@ -155,6 +176,11 @@ namespace	_session_{
 			void UnLock()
 			{
 				_Lock.UnLock();
+			}
+
+			bool TryLock()
+			{
+				return _Lock.TryLock();
 			}
 
 			void	SetCloseHandle( const Stream_HClose& Handle )
@@ -228,6 +254,7 @@ namespace	_session_{
 			Stream_HClose		_CloseHandle;
 			Stream_HDestroy		_DestroyHandle;
 			CLock				_Lock;
+			LList				_DQueue;
 		};
 		/** @} end StreamSession */
 

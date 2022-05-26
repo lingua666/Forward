@@ -1,6 +1,6 @@
 
 set( TARGET
-	SampleFramework_Uart
+	SampleFrameWork_Uart
 	)
 	
 #Traverse the file
@@ -14,8 +14,8 @@ add_target(${TARGET} ConsoleApp ${TARGET_SRC_LIST})
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
 		
-add_dependencies(${TARGET} dllFramework_Uart)
-target_link_libraries(${TARGET} dllFramework_Uart)
+add_dependencies(${TARGET} dllFrameWork_Uart)
+target_link_libraries(${TARGET} dllFrameWork_Uart)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

@@ -3178,7 +3178,7 @@ void Function_v20Test( void )
 
 void LogTest( void )
 {
-	//CMyDirectory::Recursive("c:\\1",0);
+	//CMyDirectory::RecursiveOnlyFile("c:\\1",0);
 	CMyDirectory::Create("E:\\1\\22\\33\\44");
 
 	LogFile_Capacity	logDate(100);

@@ -14,8 +14,8 @@ add_target(${TARGET} ConsoleApp ${TARGET_SRC_LIST})
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
 		
-add_dependencies(${TARGET} dllNetFrame_CmdServer_V10 dllNetFrame_CmdServer dllNetFrame_AsyncCmdClients dllNetFrame_RawServer dllNetFrame_AsyncRawClients dllNetFrame_StreamServer dllNetFrame_AsyncStreamClients)
-target_link_libraries(${TARGET} dllNetFrame_CmdServer_V10 dllNetFrame_CmdServer dllNetFrame_AsyncCmdClients dllNetFrame_RawServer dllNetFrame_AsyncRawClients dllNetFrame_StreamServer dllNetFrame_AsyncStreamClients)
+add_dependencies(${TARGET} dllNetFrame_CmdServer_V10 dllNetFrame_CmdServer dllNetFrame_AsyncCmdClients dllNetFrame_StreamServer dllNetFrame_AsyncStreamClients)
+target_link_libraries(${TARGET} dllNetFrame_CmdServer_V10 dllNetFrame_CmdServer dllNetFrame_AsyncCmdClients dllNetFrame_StreamServer dllNetFrame_AsyncStreamClients)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

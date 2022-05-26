@@ -4,6 +4,7 @@
 
 #include <libString_v30/string.hpp>
 #include <libMempool/MemPool.h>
+#include <libContainer/LinkList.h>
 
 namespace	_foundation_{
 
@@ -13,7 +14,15 @@ namespace	_foundation_{
 	class ScanChar
 	{
 	public:
-		static _string_t FindValueAndInc(char** szBuf, const _string_t& Start, const _string_t& End);
+		typedef LinkList_type<_string_t>		ContentList;
+
+		static void FindValues(const char* szBuf, const _string_t& sSeparate, ContentList* pList);
+		
+		//"SOF":内容的起始位置			"EOF":内容的结束位置  
+		static _string_t FindValue(const char* c_szBuf, const _string_t& Start, const _string_t& End, char cSeparator = '|');
+
+		//"SOF":内容的起始位置			"EOF":内容的结束位置
+		static _string_t FindValueAndInc(char** szBuf, const _string_t& Start, const _string_t& End, char cSeparator = '|');
 
 	public:
 		ScanChar(void);

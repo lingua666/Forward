@@ -38,7 +38,7 @@ namespace	_async_{
 					}
 					else
 					{
-						Sleep(10);
+						Sleep(pUart->_uMillisecond);
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -58,6 +58,7 @@ exit:
 
 		AsyncUarts::AsyncUarts( void )
 			: _Pool( sizeof(Uart_impl) )
+			, _uMillisecond(10)
 		{
 
 		}
@@ -70,6 +71,8 @@ exit:
 		//IO底层最少两个线程(在IC2000系统里面一个线程会出现接收的数据乱码问题)
 		int AsyncUarts::Init( UInt8 uThreadNum, UInt8 uProcNum )
 		{
+			_ioService.Init();
+
 			if( _ioService.open() == -1 )
 				return -1;
 
@@ -211,6 +214,12 @@ exit:
 				return -1;
 
 			return sptr->Send(szData, uSize);
+		}
+
+		//单位毫秒
+		void	AsyncUarts::SetSleepStep(UInt32 uMillisecond)
+		{
+			_uMillisecond = uMillisecond;
 		}
 
 		AsyncUarts::UartImpl_ptr  AsyncUarts::FindUartImpl( THandle Handle )

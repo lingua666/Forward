@@ -59,6 +59,9 @@ namespace	_async_{
 
 			int Send( THandle Handle, const char* szData, UInt32 uSize );
 
+			//µ•Œª∫¡√Î
+			void	SetSleepStep(UInt32 uMillisecond);
+
 		protected:
 			AsyncUarts::UartImpl_ptr  FindUartImpl( THandle Handle );
 
@@ -80,6 +83,7 @@ namespace	_async_{
 			CLock			_ReadLock;
 			io_service 		_ioService;
 			DataList		_DataList;
+			UInt32			_uMillisecond;
 		};
 
 		AsyncUarts* GetAsyncUartsInstance(void);

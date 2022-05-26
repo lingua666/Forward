@@ -16,12 +16,14 @@ namespace _io_net_{
 		typedef _iocp_net_::_tcp_::TcpSocket		socket_type;
 		typedef _iocp_net_::_tcp_::tagOverlapped	tagOverlapped;
 		typedef	_iocp_net_::_tcp_::acceptor			acceptor_type;
+		typedef	_iocp_net_::_tcp_::acceptor_V20		acceptor_V20_type;
 		typedef	_iocp_net_::_tcp_::connector		connector_type;
 	#elif defined( PLATFORM_OS_FAMILY_UNIX )
 		typedef _epoll_net_::_tcp_::io_service		io_service;
 		typedef _epoll_net_::_tcp_::TcpSocket		socket_type;
 		typedef _epoll_net_::_tcp_::tagOverlapped	tagOverlapped;
 		typedef	_epoll_net_::_tcp_::acceptor		acceptor_type;
+		typedef	_epoll_net_::_tcp_::acceptor_V20	acceptor_V20_type;
 		typedef	_epoll_net_::_tcp_::connector		connector_type;
 	#endif
 
@@ -64,9 +66,10 @@ namespace _io_net_{
 		#endif
 			}
 
-			socket_type::HSOCKET	Connect( const char* c_szIP, UInt16 u16Port )
+			socket_type::HSOCKET	Connect( const char* c_szIP, UInt16 u16Port,
+				int iSocketRecv = -1, int iSocketSend = -1 )
 			{
-				return _Sock.Connect(c_szIP,u16Port);
+				return _Sock.Connect(c_szIP, u16Port, iSocketRecv, iSocketSend);
 			}
 
 			bool isOpen( void ) const

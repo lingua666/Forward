@@ -87,15 +87,15 @@ namespace	_session_{
 				return 1;
 			}
 
-			int Send( T* pAddtion, const char* c_pData, UInt16 u16Size )
+			int Send( T* pAddtion, const char* c_pData, UInt32 uSize )
 			{
 				return _StreamCtrl.Send(pAddtion, sizeof(T),
-									c_pData, u16Size);
+									c_pData, uSize);
 			}
 
-			int Send( const char* c_pData, UInt16 u16Size )
+			int Send( const char* c_pData, UInt32 uSize )
 			{
-				return _StreamCtrl.Send(c_pData, u16Size);
+				return _StreamCtrl.Send(c_pData, uSize);
 			}
 
 			void	HandleRecv( const CmdDBuf_ptr& Buf_ptr )

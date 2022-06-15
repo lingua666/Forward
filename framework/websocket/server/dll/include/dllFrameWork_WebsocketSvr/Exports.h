@@ -1,0 +1,10 @@
+
+#ifndef __EXPORTS_20201222142242_1451301281_H__
+#define __EXPORTS_20201222142242_1451301281_H__
+
+#include "External.h"
+
+DLL_LOG_DECL_DEF(Framework_WebsocketSvr_Module)
+
+
+#endif//__PLC_OMRON_20151228191441_1451301281_H__

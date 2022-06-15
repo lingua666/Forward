@@ -1,0 +1,25 @@
+LIBRARY  dllThirdWrap_Mysql
+
+EXPORTS
+
+Mysql_Init					@1
+Mysql_Connect					@2
+Mysql_DisConnect				@3
+Mysql_CreateDB					@4
+Mysql_DeleteDB					@5
+Mysql_ExecuteSQL				@6
+Mysql_Query_Open				@7
+Mysql_Query_Close				@8
+Mysql_Query_MoveFirst				@9
+Mysql_Query_MoveNext				@10
+Mysql_Query_MoveLast				@11
+Mysql_Query_GetValue				@12
+Mysql_Query_RowCount				@13
+Mysql_Query_ColumnCount				@14
+Mysql_Query_ValueToInt				@15
+Mysql_Query_ValueToLong				@16
+Mysql_Query_ValueToFloat			@17
+Mysql_Query_ValueToDouble			@18
+SetDebugModule					@20
+GetModuleInfo					@21
+Mysql_Release					@22	

@@ -23,6 +23,9 @@ namespace	_session_{
 		class StreamSession
 		{
 		public:
+			typedef LinkList_type<StreamBuf_ptr>		LList;
+
+		public:
 			/*!
 			* @function   StreamSession
 			* @brief    
@@ -32,7 +35,7 @@ namespace	_session_{
 				: _iUseRef(0)
 				, _StreamCtrl( REVBUF_SIZE, uHeadSpace )
 			{
-		
+
 			}
 
 			/*!
@@ -73,15 +76,15 @@ namespace	_session_{
 				return 1;
 			}
 
-			int Send( UInt32 CommandType, const char* c_pData, UInt16 u16Size )
+			int Send( UInt32 CommandType, const char* c_pData, UInt32 uSize )
 			{
 				return _StreamCtrl.Send(&CommandType, sizeof(CommandType),
-					c_pData, u16Size);
+					c_pData, uSize);
 			}
 
-			int Send( const char* c_pData, UInt16 u16Size )
+			int Send( const char* c_pData, UInt32 uSize )
 			{
-				return _StreamCtrl.Send(c_pData, u16Size);
+				return _StreamCtrl.Send(c_pData, uSize);
 			}
 
 			void	HandleRecv( const StreamBuf_ptr& Buf_ptr )
@@ -147,6 +150,21 @@ namespace	_session_{
 				return _Stream_ptr;
 			}
 
+			void push(const StreamBuf_ptr& ptr)
+			{
+				_DQueue.push_back(ptr);
+			}
+
+			StreamBuf_ptr pop_front(void)
+			{
+				return _DQueue.pop_front();
+			}
+
+			LList::size_type size(void)
+			{
+				return _DQueue.size();
+			}
+
 			void Lock()
 			{
 				_Lock.Lock();
@@ -155,6 +173,11 @@ namespace	_session_{
 			void UnLock()
 			{
 				_Lock.UnLock();
+			}
+
+			bool TryLock()
+			{
+				return _Lock.TryLock();
 			}
 
 			void	SetCloseHandle( const Stream_HClose& Handle )
@@ -228,6 +251,7 @@ namespace	_session_{
 			Stream_HClose		_CloseHandle;
 			Stream_HDestroy		_DestroyHandle;
 			CLock				_Lock;
+			LList				_DQueue;
 		};
 		/** @} end StreamSession */
 

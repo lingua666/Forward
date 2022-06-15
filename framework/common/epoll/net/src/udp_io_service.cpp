@@ -52,6 +52,20 @@
 				return *this;
 			}
 
+			int io_service::Init(void)
+			{
+				//test
+				LOG_Print_SetLog(libEPoll_Net, MLog_GetAllLevel());
+				//test
+
+				return 1;
+			}
+
+			void io_service::Release(void)
+			{
+
+			}
+
 			int io_service::open( void )
 			{
 				_io_handle = CAsynIO::CreateAsynIO();
@@ -212,8 +226,8 @@
 
 								if( pOver->_ProcRef < 0 && pOver->_hfnComplete )
 								{
-									printf("io_service::process vvvvv lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, uOP:%d, p->_ADR._Sock:%d\r\n", pOver,pOver->_ProcRef,
-										pOver->_SWSAOverlapp.wsaOverlapped.uOP, uOP, pOver->_ADR._Sock);
+									printf("io_service::process vvvvv lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, uOP:%d, p->_ADR._Sock:%d, iType:%d\r\n", pOver,pOver->_ProcRef,
+										pOver->_SWSAOverlapp.wsaOverlapped.uOP, uOP, pOver->_ADR._Sock, iType);
 									_exit(0);
 								}
 

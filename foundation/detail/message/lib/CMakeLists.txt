@@ -14,8 +14,8 @@ FILE(GLOB_RECURSE TARGET_SRC_LIST "src/*.cpp")
 
 add_target(${TARGET} StaticLib ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGET_HPP_LIST})
 
-add_dependencies(${TARGET} dllContainer dllSmart_ptr dllSmart_ptr_v20 dllFunction_v20 libLock dllThread dllTimestamp)
-target_link_libraries(${TARGET} dllContainer dllSmart_ptr dllSmart_ptr_v20 dllFunction_v20 libLock dllThread dllTimestamp)
+add_dependencies(${TARGET} dllContainer dllSmart_ptr dllSmart_ptr_v20 dllFunction_v20 libLock dllThread dllTimestamp libUUID libString_v30)
+target_link_libraries(${TARGET} dllContainer dllSmart_ptr dllSmart_ptr_v20 dllFunction_v20 libLock dllThread dllTimestamp libUUID libString_v30)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

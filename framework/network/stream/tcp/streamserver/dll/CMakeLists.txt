@@ -16,7 +16,7 @@ FILE(GLOB_RECURSE TARGET_SRC_LIST "src/*.cpp")
 add_target(${TARGET} ${GEN_DLL_TYPE} ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGET_HPP_LIST} ${TARGET_DEF_LIST})
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
-		
+
 add_dependencies(${TARGET} libNetFrame_StreamServer)
 target_link_libraries(${TARGET} libNetFrame_StreamServer)
 

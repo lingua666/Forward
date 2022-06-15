@@ -105,8 +105,9 @@ int main(int argc, char* argv[])
 	_string_type s = _file_::RWIni::GetCurrentPath();
 	s.append("\\Config\\Stream_Config.ini");
 	const int iPort = 21000;//_file_::RWIni::ReadInt("SERVER","Port",s.c_str());
+	g_Server.Init();
 
-	if( g_Server.Listen(iPort, function20_bind_Ex(AcceptBackFun)) )
+	if( g_Server.Listen(iPort, function20_bind_Ex(AcceptBackFun), "192.168.1.58") )
 	{
 		int iThreadNum = get_processor_number();
 		g_Server.Run( __max(iThreadNum / 2, 2), __max(iThreadNum / 2, 2) );

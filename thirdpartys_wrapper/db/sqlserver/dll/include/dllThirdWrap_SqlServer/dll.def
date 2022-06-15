@@ -1,0 +1,21 @@
+LIBRARY  dllThirdWrap_SqlServer
+
+EXPORTS
+
+MSQLServer_Connect						@1
+MSQLServer_DisConnect					@2
+MSQLServer_ExecuteSQL					@3
+MSQLServer_Query_Open					@4
+MSQLServer_Query_Close					@5
+MSQLServer_Query_MoveFirst				@6
+MSQLServer_Query_MoveNext				@7
+MSQLServer_Query_MoveLast				@8
+MSQLServer_Query_GetValue				@9
+MSQLServer_Query_RowCount				@10
+MSQLServer_Query_ColumnCount			@11
+MSQLServer_Query_ValueToInt				@12
+MSQLServer_Query_ValueToLong			@13
+MSQLServer_Query_ValueToFloat			@14
+MSQLServer_Query_ValueToDouble			@15
+SetDebugModule							@16
+GetModuleInfo							@17

@@ -12,6 +12,8 @@ namespace	_server_{
 		, _Worker(function20_bind(&CommandServer::WorkThread, reinterpret_cast<void*>(this)))
 		, _Message(function20_bind(&CommandServer::MessageThread, reinterpret_cast<void*>(this)))
 		, _Count( 0 )
+		, _uWorkMS(1)
+		, _uDestroyMS(1)
 	{
 
 	}
@@ -19,6 +21,12 @@ namespace	_server_{
 	CommandServer::~CommandServer( void )
 	{
 		Release();
+	}
+
+	int CommandServer::Init(void)
+	{
+		((io_service&)_Accept.GetIoServer()).Init();
+		return 1;
 	}
 
 	void CommandServer::Release( void )
@@ -111,7 +119,7 @@ namespace	_server_{
 		_Accept.RunLoop(uThreadNum == 0 ? get_processor_number() * 2 + 2 : uThreadNum);
 	}
 
-	int	CommandServer::SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+	int	CommandServer::SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 	{
 		CmdSession_sptr sptr = FindSession(Node);
 		if( sptr )
@@ -119,21 +127,28 @@ namespace	_server_{
 			_session_hdr Hdr;
 			Hdr._uPriority = 4;
 			Hdr._uType = 0;
-			return sptr->Send(&Hdr, c_pData, u16Size);
+			return sptr->Send(&Hdr, c_pData, uSize);
 		}
 
 		return -1;
 	}
 
-	int	CommandServer::Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+	int	CommandServer::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 	{
 		CmdSession_sptr sptr = FindSession(Node);
 		if( sptr )
 		{
 			_session_hdr Hdr = {0};
-			return sptr->Send(&Hdr, c_pData, u16Size);
+			return sptr->Send(&Hdr, c_pData, uSize);
 		}
 		return -1;
+	}
+
+	//单位毫秒
+	void	CommandServer::SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS)
+	{
+		_uWorkMS = uWorkMS;
+		_uDestroyMS = uDestroyMS;
 	}
 
 	void	CommandServer::HandleAccept( const _SOCKET_::HSOCKET& Socket )
@@ -271,7 +286,7 @@ namespace	_server_{
 				}
 				else
 				{//没有数据休眠
-					Sleep(1);
+					Sleep(Server->_uWorkMS);
 				}
 			}
 			catch (const thread_interrupted& e)
@@ -326,7 +341,7 @@ exit:
 				}
 				else
 				{
-					Sleep(1);
+					Sleep(Server->_uDestroyMS);
 				}
 			}
 			catch (const thread_interrupted& e)

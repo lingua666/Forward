@@ -32,7 +32,7 @@ typedef struct tagWSAOverlapped
 #pragma pack(pop)
 
 
-SOCKET	APIWSACreate( int iSocketType, int iRevSize, int iSendSize );
+SOCKET	APIWSACreate( int iSocketType, int iRevSize, int iSendSize, const char* c_szIP = NULL);
 BOOL	APIWSAClose( SOCKET Sock );
 int		APIWSABind( SOCKET Sock, u_short usPort, const char* c_szIP = NULL );
 int		APIWSAListen( SOCKET Sock, u_int ListenNum, LPFN_ACCEPTEX& lpfnAcceptEx,

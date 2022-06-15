@@ -64,7 +64,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_SV10_Init( int uWorkerThreads = 
 /*返回值：		1:成功  <0: 错误码
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_SV10_Listen( int u16Port,
-															pfnCmd_SV10_Accept pfnAccept );
+															pfnCmd_SV10_Accept pfnAccept,
+															const char* c_szIP = NULL );
 
 /*****************************************************************
 /*函数说明：	关闭服务器

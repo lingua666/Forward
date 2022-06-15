@@ -13,6 +13,8 @@ namespace	_server_{
 						reinterpret_cast<void*>(this)))
 			, _Count( 0 )
 			, _isSequence( false )
+			, _uWorkMS(1)
+			, _uDestroyMS(1)
 		{
 
 		}
@@ -24,6 +26,8 @@ namespace	_server_{
 
 		void StreamServer::Init(UInt8 uWorkerThreads)
 		{
+			((io_service&)_Accept.GetIoServer()).Init();
+
 			if (_Workers.size() <= 0)
 			{
 				uWorkerThreads = (uWorkerThreads == 0 ? 1 : uWorkerThreads);
@@ -133,6 +137,8 @@ namespace	_server_{
 		{
 			StreamServer* Server = reinterpret_cast<StreamServer*>(pParamter);
 			StreamSession*	pSession = NULL;
+			bool			isLock = false;
+
 			while(true)
 			{
 				try
@@ -146,17 +152,35 @@ namespace	_server_{
 							StreamBuf_ptr ptr = Server->_MQueue.front();
 							Server->_MQueue.pop();
 							pSession = Server->GetStreamIdentity(ptr);
-							if( !Server->_isSequence )
-							{
-								Server->_ReadLock.UnLock();
+							
+							if (Server->_isSequence)
+							{//顺序队列
+								pSession->push(ptr);
+								isLock = pSession->TryLock();
+							}
+							Server->_ReadLock.UnLock();
+
+							if (Server->_isSequence)
+							{//顺序队列
+								if (!isLock)
+								{
+									pSession->Lock();
+									isLock = true;
+								}
+
+								ptr = pSession->pop_front();
 							}
 
 							//增加结束符，防止打印字符串出现乱码
 							ptr->data[ptr->payload] = 0;
+
 							pSession->RecvNotify(pSession->GetRemoteNode(), ptr, pSession->GetUseRef() - 1);
-							if( Server->_isSequence )
+							if (Server->_isSequence)
 							{
-								Server->_ReadLock.UnLock();
+								if (isLock)
+								{
+									pSession->UnLock();
+								}
 							}
 
 							ptr.reset();
@@ -169,7 +193,7 @@ namespace	_server_{
 					}
 					else
 					{//没有数据休眠
-						Sleep(1);
+						Sleep(Server->_uWorkMS);
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -189,21 +213,28 @@ namespace	_server_{
 		}
 
 		Int32	StreamServer::Send( NETHANDLE Node, UInt32 MediaType,
-								const char* c_pData, UInt16 u16Size )
+								const char* c_pData, UInt32 uSize )
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
-				return sptr->Send(MediaType, c_pData, u16Size);
+				return sptr->Send(MediaType, c_pData, uSize);
 
 			return -1;
 		}
 
-		Int32	StreamServer::Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+		Int32	StreamServer::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
-				return sptr->Send(c_pData, u16Size);
+				return sptr->Send(c_pData, uSize);
 			return -1;
+		}
+
+		//单位毫秒
+		void	StreamServer::SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS)
+		{
+			_uWorkMS = uWorkMS;
+			_uDestroyMS = uDestroyMS;
 		}
 
 		void	StreamServer::HandleAccept( const _SOCKET_::HSOCKET& Socket )
@@ -326,7 +357,7 @@ namespace	_server_{
 					}
 					else
 					{
-						Sleep(1);
+						Sleep(pServer->_uDestroyMS);
 					}
 				}
 				catch (const thread_interrupted& e)

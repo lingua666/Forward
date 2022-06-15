@@ -131,7 +131,7 @@ namespace	_client_{
 			_Pool.FreeObj(reinterpret_cast<StreamSession*>(pSession));
 		}
 
-		Int32	StreamClients::Send( NETHANDLE Node, const char* c_pData, UInt16 uSize )
+		Int32	StreamClients::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			StreamSession_sptr sptr = FindSession(Node);
 			if( sptr )
@@ -201,7 +201,11 @@ namespace	_client_{
 					}
 					else
 					{
+#if defined(LOW_POWER_FLAG_DEL)
+						Sleep(1000);
+#else
 						Sleep(1);
+#endif
 					}
 				}
 				catch (const thread_interrupted& e)

@@ -26,12 +26,13 @@ void _CALLTYPE g_CmdSvrClientClose201609141640_V20( fpnMCmd_S_V20_Close fpnClien
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Listen( UInt16 u16Port,
 											fpnMCmd_S_V20_Accept fpnAccept,
-											void* pUser, UInt8 uIOThreadNum )
+											void* pUser, UInt8 uIOThreadNum,
+											const char* c_szIP )
 {
 	LOG_Print_Info(Cmd_S_V20_Module,"MCmd_S_V20_Listen():\n\t16Port:%d", u16Port)
 
 	if( GetCommandServerInstance()->Listen(u16Port,
-		function20_bind(fpnAccept, pUser, _function_::_1, _function_::_2, _function_::_3)))
+		function20_bind(fpnAccept, pUser, _function_::_1, _function_::_2, _function_::_3), c_szIP))
 	{
 		GetCommandServerInstance()->Run( uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum );
 		return 1;
@@ -103,7 +104,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_SetClientDisConnect( NETHA
 
 	return GetCommandServerInstance()->SetDestroyHandle(handle,
 										function20_bind(g_CmdSvrClientClose201609141640_V20, fpnClientClose,
-													pUser, GetIPv4ToString(handle), GetPort(handle), _function_::_1));
+													pUser, GetIPv4SFromNETNODE(handle), GetPortFromNETNODE(handle), _function_::_1));
 }
 
 /*****************************************************************

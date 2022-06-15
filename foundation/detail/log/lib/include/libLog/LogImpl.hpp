@@ -14,6 +14,7 @@
 #endif
 
 #include <libFile/CMyFile.h>
+#include <libTimestamp/Timestamp.h>
 
 #define log_ansi_snprintf	snprintf
 #define log_ansi_vsprintf	vsprintf
@@ -21,7 +22,7 @@
 
 
 #define LOG_MAX_LEVEL		5
-#define	LOG_BUF_MAX_SIZE	2049
+#define	LOG_BUF_MAX_SIZE	8192//2049
 
 #define VA_ARGS_LIST(format)\
 	char log_buffer[LOG_BUF_MAX_SIZE] = {0};\
@@ -55,29 +56,27 @@ static	unsigned int	my_get_current_thread_id( void )
 
 static	_string_type	my_get_localtime( int iShowType = SHOW_DATETIME )
 {
-	time_t rawtime;
-	struct tm * timeinfo;
+	struct tm timeinfo = {0};
+	Timestamp_type().epochTM(&timeinfo);
 
-	time ( &rawtime );
-	timeinfo = localtime ( &rawtime );
 	char szTime[1024] = {0};
 	switch(iShowType)
 	{
 	case SHOW_DATE:
 		sprintf ( szTime,"[%04d-%02d-%02d]", 
-			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
-			timeinfo->tm_mday);
+			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+			timeinfo.tm_mday);
 		break;
 	case SHOW_TIME:
 		sprintf ( szTime,"[%02d:%02d:%02d]", 
-			timeinfo->tm_hour,
-			timeinfo->tm_min,timeinfo->tm_sec);
+			timeinfo.tm_hour,
+			timeinfo.tm_min,timeinfo.tm_sec);
 		break;
 	case SHOW_DATETIME:
 		sprintf ( szTime,"[%04d-%02d-%02d %02d:%02d:%02d]", 
-			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
-			timeinfo->tm_mday,timeinfo->tm_hour,
-			timeinfo->tm_min,timeinfo->tm_sec);
+			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+			timeinfo.tm_mday,timeinfo.tm_hour,
+			timeinfo.tm_min,timeinfo.tm_sec);
 		break;
 	}
 

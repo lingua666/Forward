@@ -14,8 +14,8 @@ FILE(GLOB_RECURSE TARGET_SRC_LIST "src/*.cpp")
 
 add_target(${TARGET} StaticLib ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGET_HPP_LIST})
 
-add_dependencies(${TARGET} libCommon)
-target_link_libraries(${TARGET} libCommon)
+add_dependencies(${TARGET} libCommon libLock)
+target_link_libraries(${TARGET} libCommon libLock)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

@@ -132,5 +132,32 @@ namespace	_iocp_file_{
 		}
 	}
 
+	int FileIO::seek_read(Int64 uOffset)
+	{
+		if (!is_open())
+			return -1;
+
+		return 1;
+		/*LARGE_INTEGER newPos = {0};
+		//newPos.LowPart = uOffset;
+		newPos.QuadPart = uOffset;
+		//z 将file pointer移动到新的位置 
+		int iRet = SetFilePointerEx(_hFile, newPos, NULL, FILE_BEGIN) ? 1 : GetLastError() * (-1);
+		return iRet;*/
+	}
+
+	Int64 FileIO::tell_read(void)
+	{
+		if (!is_open())
+			return -1;
+
+		return 1;
+		/*LARGE_INTEGER newPos;
+		newPos.QuadPart = 0;
+		//z 将file pointer移动到新的位置 
+		SetFilePointerEx(_hFile, newPos, &newPos, SEEK_CUR);
+		return newPos.QuadPart;*/
+	}
+
 } //_iocp_net_
 

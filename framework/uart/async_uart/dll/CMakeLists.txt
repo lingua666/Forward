@@ -1,6 +1,6 @@
 
 set( TARGET
-	dllFramework_AsyncUarts
+	dllFrameWork_AsyncUarts
 	)
 	
 #Traverse the file
@@ -17,8 +17,8 @@ add_target(${TARGET} ${GEN_DLL_TYPE} ${TARGET_SRC_LIST} ${TARGET_H_LIST} ${TARGE
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
 		
-add_dependencies(${TARGET} libFramework_AsyncUarts)
-target_link_libraries(${TARGET} libFramework_AsyncUarts)
+add_dependencies(${TARGET} libFrameWork_AsyncUarts)
+target_link_libraries(${TARGET} libFrameWork_AsyncUarts)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

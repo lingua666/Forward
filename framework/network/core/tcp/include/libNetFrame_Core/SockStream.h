@@ -89,6 +89,7 @@ namespace _io_net_{
 					_Info.remote_ip = _Socket.GetRemoteIP();
 					_Info.remote_port = _Socket.GetRemotePort();
 					_Info.remote_node = _Socket.GetRemoteNetNode();
+					_Info.sock = _Socket.GetSocket().GetSocket();
 				}
 			}
 

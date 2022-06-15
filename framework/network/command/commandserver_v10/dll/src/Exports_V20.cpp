@@ -40,10 +40,11 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Init( int uWorkerThreads )
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Listen( int u16Port,
 											pfnCmd_S_V20_Accept pfnAccept,
-											void* pUser, UInt8 uIOThreadNum )
+											void* pUser, UInt8 uIOThreadNum,
+											const char* c_szIP )
 {
 	if( GetCommandServer_V10Instance()->Listen(u16Port,
-		function20_bind(pfnAccept, pUser, _function_::_1, _function_::_2, _function_::_3)) )
+		function20_bind(pfnAccept, pUser, _function_::_1, _function_::_2, _function_::_3), c_szIP) )
 	{
 		GetCommandServer_V10Instance()->Run( uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum );
 		return 1;
@@ -107,8 +108,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_SetClientDisConnect( NETHA
 
 	return GetCommandServer_V10Instance()->SetDestroyHandle(handle,
 		function20_bind(g_CmdSvr10ClientClose201609141640_V20, pClientClose,
-		pUser, GetIPv4ToString(handle),
-		GetPort(handle), _function_::_1));
+		pUser, GetIPv4SFromNETNODE(handle),
+		GetPortFromNETNODE(handle), _function_::_1));
 }
 
 /*****************************************************************

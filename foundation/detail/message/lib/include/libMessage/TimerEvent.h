@@ -29,7 +29,7 @@ public:
 	{
 		Event_type		_Event;
 		Timestamp_type	_Timer;
-		UInt32			_uInterval;	//Œ¢√Î
+		UInt64			_uInterval;	//Œ¢√Î
 		bool			_isExec;	//÷¥––
 	};
 
@@ -56,15 +56,24 @@ public:
 
 	void	CloseAll( void );
 
-	void	push_back( const Event_type& Event, UInt32 uInterval/*∫¡√Î*/ );
+	int		push_back( const Event_type& Event, UInt64 uInterval/*∫¡√Î*/ );
 
-	int		push_back_sync( const Event_type& Event, UInt32 uInterval/*∫¡√Î*/ );
+	int		push_back_sync( const Event_type& Event, UInt64 uInterval/*∫¡√Î*/ );
 
 	void	Release( void );
 
 	void	Clear( void );
 
 	int		size( void );
+
+	void	Lock(void);
+
+	void	UnLock(void);
+
+	void	UpdateTime(const Timestamp_type& LocalTime, const Timestamp_type& NewTime);
+
+	//µ•Œª∫¡√Î
+	void	SetSleepStep(UInt32 uMillisecond);
 	
 protected:
 
@@ -73,10 +82,11 @@ protected:
 	void	HandleSync( const Event_type& Event, Int8* iRet );
 
 private:
-	CLock		_Lock;
+	CLock			_Lock;
 	EventList_type	_EventList;
-	ThreadList	_Threads;
-	bool		_isRun;
+	ThreadList		_Threads;
+	bool			_isRun;
+	UInt32 			_uMillisecond;
 };
 /** @} end TimerEvent */
 

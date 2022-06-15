@@ -837,7 +837,7 @@ void	boostFunction_string_Invoke( void )
 }
 
 int main(int argc, char* argv[])
-{	
+{
 	int i = 0, iNum = 5;
 
 	{
@@ -1138,6 +1138,21 @@ int main(int argc, char* argv[])
 	for( i = 0; i < iNum; i ++)
 	{
 		boostFunction_string_Invoke();
+	}
+
+	_string_type sRet;
+	while (true)
+	{
+		sRet = _foundation_::MathChar<_string_type>::Calculation(" (100-40/2+100+50*2+(300+40*2)) ");//660
+
+		Timestamp_type Time;
+		sRet = _foundation_::MathChar<_string_type>::Calculation(" ((100-40/2/2*5)+100+50*2+(300+40*2)) ");//630
+		printf("time:%lld\r\n", Timestamp_type().epochMicroseconds() - Time.epochMicroseconds());
+
+		sRet = _foundation_::MathChar<_string_type>::Calculation("100-40/2+100+50*2+300+40*2"); //660
+
+		sRet = _foundation_::MathChar<_string_type>::Calculation("100 + 20 - 30"); //90
+		sRet = _foundation_::MathChar<_string_type>::Calculation("100 - 20 + 30");	//110
 	}
 
 	std::cin.get();

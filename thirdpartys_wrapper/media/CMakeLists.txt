@@ -1,0 +1,6 @@
+add_subdirectory(ffmpeg)
+add_subdirectory(onvif)
+add_subdirectory(rtsp)
+add_subdirectory(pjsip)
+add_subdirectory(audio)
+add_subdirectory(rtmp)

@@ -32,6 +32,11 @@ namespace	_server_{
 			typedef LinkList_type<StreamBuf_ptr>		LList;
 			typedef Container_HashMap_type<_HASH, StreamSession_sptr>				HashMap_type;
 
+			struct __M_ALIGNED_PACKED__ tagStreamIdentity
+			{
+				StreamSession*	_Identity;
+			};
+
 			static	void	MessageThread( void* pParamter );
 			static	void	WorkThread( void* pParamter );
 		public:
@@ -54,14 +59,17 @@ namespace	_server_{
 			void Release( void );
 
 			Int32	Send( NETHANDLE Node, UInt32 MediaType,
-						const char* c_pData, UInt16 u16Size );
+						const char* c_pData, UInt32 uSize );
 
-			Int32	Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
+			Int32	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
 
 			void	Stop( void );
 			void	Run( UInt8 uIOThreadNum = 0,  bool isSequence = false );
 			void	RunLoop( UInt8 uIOThreadNum = 0, bool isSequence = false );
-			int	Close( NETHANDLE Node );
+			int		Close( NETHANDLE Node );
+
+			//µ•Œª∫¡√Î
+			void	SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS);
 
 			template<typename H>
 			void	Post( H handle )
@@ -69,11 +77,11 @@ namespace	_server_{
 				_Accept.Post(handle);
 			}
 
-			bool	Listen( UInt16 u16Port, const Stream_HAccept& Handle )
+			bool	Listen( UInt16 u16Port, const Stream_HAccept& Handle, const char* c_szIP = NULL )
 			{
 				try
 				{
-					if( _Accept.Listen(u16Port) )
+					if( _Accept.Listen(u16Port, c_szIP) )
 					{
 						EVENT_REGISTER(&_Accept, this);
 						_AcceptHandle = Handle;
@@ -216,6 +224,8 @@ namespace	_server_{
 			CLock			_Lock;
 			Stream_HAccept	_AcceptHandle;
 			bool			_isSequence;
+			UInt32 			_uWorkMS;
+			UInt32 			_uDestroyMS;
 		};
 		/** @} end StreamServer */
 

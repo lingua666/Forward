@@ -142,7 +142,7 @@ namespace	_client_{
 			_Pool.FreeObj(reinterpret_cast<CmdSession*>(pSession));
 		}
 
-		int	CommandClients::SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+		int	CommandClients::SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			CmdSession_sptr sptr = FindSession(Node);
 			if( sptr )
@@ -150,19 +150,19 @@ namespace	_client_{
 				_session_hdr Hdr;
 				Hdr._uPriority = 4;
 				Hdr._uType = 0;
-				return sptr->Send(&Hdr, c_pData, u16Size);
+				return sptr->Send(&Hdr, c_pData, uSize);
 			}
 
 			return -1;
 		}
 
-		int	CommandClients::Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+		int	CommandClients::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			CmdSession_sptr sptr = FindSession(Node);
 			if( sptr )
 			{
 				_session_hdr Hdr = {0};
-				return sptr->Send(&Hdr, c_pData, u16Size);
+				return sptr->Send(&Hdr, c_pData, uSize);
 			}
 			return -1;
 		}
@@ -245,7 +245,11 @@ namespace	_client_{
 					}
 					else
 					{//没有数据休眠
+#if defined(LOW_POWER_FLAG_DEL)
+						Sleep(10);
+#else
 						Sleep(1);
+#endif
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -299,7 +303,11 @@ exit:
 					}
 					else
 					{
+#if defined(LOW_POWER_FLAG_DEL)
+						Sleep(1000);
+#else
 						Sleep(1);
+#endif
 					}
 				}
 				catch (const thread_interrupted& e)

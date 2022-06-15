@@ -8,6 +8,10 @@
 #include <sys/stat.h>
 #include <stdarg.h>
 
+#define S_ISREAD(m) (((m) & ~0170000) & (00400))  
+#define S_ISWRITE(m) (((m) & ~0170000) & (00200))  
+#define S_ISEXEC(m) (((m) & ~0170000) & (00100))
+
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 #include <direct.h>
 #include <io.h>
@@ -17,6 +21,7 @@
 #define MKDIR(a) _mkdir((a)) 
 #define S_ISREG(m) (((m) & 0170000) == (0100000))   
 #define S_ISDIR(m) (((m) & 0170000) == (0040000))  
+
 #define S_IFDIR  0040000
 #define SPLIT_CHAR_DEF '\\'
 #define SPLIT_STRING_DEF "\\"
@@ -69,7 +74,9 @@ namespace	_file_{
 	{
 		typedef	 function20_handle<void (const char*, const char*)>	HFNFile;
 
-		static bool IsExit( const _string_type& sPath );
+		typedef	 function20_handle<void(bool, const char*)>	HFNFileV20;
+
+		static bool IsExit( const char* c_szPath );
 
 		static int IsDir( const _string_type& sPath );
 
@@ -83,11 +90,23 @@ namespace	_file_{
 
 		static	bool Create( const _string_type& sPath );
 
-		static void Recursive( const _string_type& sPath,
+		static void RecursiveOnlyFile( const _string_type& sPath,
 							const HFNFile& hfnNotify,
 							int iDepth = 0 );
 
+		static void RecursiveAll(const _string_type& sPath,
+							const HFNFileV20& hfnNotify,
+							int iDepth = 0);
+
+		static void RecursiveAllToDepth(const _string_type& sPath,
+							const HFNFileV20& hfnNotify,
+							UInt32 uDepth = -1);
+
 		static UInt64 GetDirectSize( const char* c_szDir );
+
+		static bool RemoveDir( const char* c_szDir );
+
+		static _string_type NormcasePath(const _string_type& sDir);
 	};
 
 }

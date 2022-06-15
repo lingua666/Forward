@@ -240,6 +240,17 @@ int main(int argc, char* argv[])
 	MCmd_C_Init();
 	MCmd_C_SetConnect(ClientConnect);
 
+	for (int i = 0; i < 100; i++)
+	{
+		//if (MCmd_C_Connect("192.168.1.188", 60000) == -1)
+		if (MCmd_C_Connect("192.168.1.246", 60000) == -1)
+		{
+			int i = 0;
+		}
+	}
+
+	while (true);
+
 	MCmd_C_Error("11111");
 
 	while(true)

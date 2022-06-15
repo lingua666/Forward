@@ -47,7 +47,8 @@ namespace _io_net_{
 
 			static io_service& GetIoServer( void );
 
-			static _SOCKET_::HSOCKET Connect( const char* c_szIP, UInt16 u16Port );
+			static _SOCKET_::HSOCKET Connect( const char* c_szIP, UInt16 u16Port,
+				int iSocketRecv = -1, int iSocketSend = -1 );
 
 			template<typename H>
 			static void	Post( H handle )

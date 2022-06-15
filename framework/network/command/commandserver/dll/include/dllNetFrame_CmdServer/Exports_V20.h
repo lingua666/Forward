@@ -55,7 +55,8 @@ typedef void (_CALLTYPE *fpnMCmd_S_V20_RecData)( void* pUser, NETHANDLE handle,
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Listen( UInt16 u16Port,
 														fpnMCmd_S_V20_Accept fpnAccept,
-														void* pUser, UInt8 uIOThreadNum = 0 );
+														void* pUser, UInt8 uIOThreadNum = 0,
+														const char* c_szIP = NULL );
 
 /*****************************************************************
 /*函数说明：	关闭服务器

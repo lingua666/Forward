@@ -2,7 +2,14 @@ add_subdirectory(common)
 add_subdirectory(network)
 add_subdirectory(uart)
 add_subdirectory(rtsp)
+add_subdirectory(ftp)
+add_subdirectory(websocket)
 add_subdirectory(sample)
-
-
+add_subdirectory(gb28181)
+add_subdirectory(http)
+add_subdirectory(https)
+add_subdirectory(sip)
+add_subdirectory(modbus)
+add_subdirectory(rtmp)
+add_subdirectory(ntp)
 

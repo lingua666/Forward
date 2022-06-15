@@ -282,9 +282,11 @@ start:
 			{
 
 			}
-			else if( *iPriority != 0 )
+			else if( *iPriority >= 0 )
 			{
 				*iPriority = NextValidPriority(*iPriority);
+				if (_Queue[*iPriority].empty())
+					(*iPriority) --;
 				goto start;
 			}
 

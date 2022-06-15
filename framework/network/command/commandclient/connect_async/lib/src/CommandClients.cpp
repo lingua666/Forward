@@ -11,10 +11,10 @@ namespace	_client_{
 			//, _Worker(function20_bind(&CommandClients::WorkThread, reinterpret_cast<void*>(this)))
 			, _Message(function20_bind(&CommandClients::MessageThread, reinterpret_cast<void*>(this)))
 			, _Count( 0 )
+			, _uWorkMS(1)
+			, _uDestroyMS(1)
 		{
-			//test
-			LOG_Print_SetLog(NetFrame_AsyncCmdClients, 0)
-			//test
+
 		}
 
 		CommandClients::~CommandClients( void )
@@ -48,6 +48,11 @@ namespace	_client_{
 
 		void	CommandClients::Init( UInt8 uIOThreadNum, UInt8 uProcThreadNum )
 		{
+			//test
+			LOG_Print_SetLog(NetFrame_AsyncCmdClients, MLog_GetAllLevel());
+			((io_service&)_AsynConnector.GetIoServer()).Init();
+			//test
+
 			_AsynConnector.Listen();
 			_AsynConnector.Run(uIOThreadNum == 0 ? get_processor_number() * 2 + 2 : uIOThreadNum);
 
@@ -73,23 +78,25 @@ namespace	_client_{
 			_Map.clear();
 		}
 
-		int CommandClients::Connect( const char* c_szIP, UInt16 uPort )
+		int CommandClients::Connect( const char* c_szIP, UInt16 uPort,
+									int iSocketRecv, int iSocketSend )
 		{
 			if( !_AsynConnector.is_open() ) 
 				return -1;
 
-			return _AsynConnector.Connect(c_szIP, uPort);
+			return _AsynConnector.Connect(c_szIP, uPort, iSocketRecv, iSocketSend);
 		}
 
 		int CommandClients::Connect( const char* c_szIP, UInt16 uPort,
-							const Comamand_HConnect& hConnect )
+							const Comamand_HConnect& hConnect,
+							int iSocketRecv, int iSocketSend )
 		{
 			if( !_AsynConnector.is_open() ) 
 				return -1;
 
 			return _AsynConnector.Connect(c_szIP, uPort,
 				function20_bind(&CommandClients::HandleConnect, this,
-				hConnect, _foundation_::_1) );
+				hConnect, _foundation_::_1), iSocketRecv, iSocketSend);
 		}
 
 		int CommandClients::Close( NETHANDLE Node )
@@ -138,7 +145,7 @@ namespace	_client_{
 			_Pool.FreeObj(reinterpret_cast<CmdSession*>(pSession));
 		}
 
-		int	CommandClients::SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+		int	CommandClients::SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			CmdSession_sptr sptr = FindSession(Node);
 			if( sptr )
@@ -146,21 +153,28 @@ namespace	_client_{
 				_session_hdr Hdr;
 				Hdr._uPriority = 4;
 				Hdr._uType = 0;
-				return sptr->Send(&Hdr, c_pData, u16Size);
+				return sptr->Send(&Hdr, c_pData, uSize);
 			}
 
 			return -1;
 		}
 
-		int	CommandClients::Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size )
+		int	CommandClients::Send( NETHANDLE Node, const char* c_pData, UInt32 uSize )
 		{
 			CmdSession_sptr sptr = FindSession(Node);
 			if( sptr )
 			{
 				_session_hdr Hdr = {0};
-				return sptr->Send(&Hdr, c_pData, u16Size);
+				return sptr->Send(&Hdr, c_pData, uSize);
 			}
 			return -1;
+		}
+
+		//单位毫秒
+		void	CommandClients::SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS)
+		{
+			_uWorkMS = uWorkMS;
+			_uDestroyMS = uDestroyMS;
 		}
 
 		void	CommandClients::HandleConnect( const Comamand_HConnect& hConnect,
@@ -172,7 +186,12 @@ namespace	_client_{
 				if( Session->Init((io_service&)_AsynConnector.GetIoServer(), Socket) == -1 )
 				{//SOCKET已经无效
 					int iError = error_code::GetLastError();
-					printf("CommandClients::HandleConnect is Error:%d\r\n",iError);
+
+					//test
+					LOG_Print_Error(NetFrame_AsyncCmdClients,
+						"CommandClients::HandleConnect() Alloc CmdSession Failed, Error:%d!!", iError);
+					//test
+
 					_Pool.FreeObj(Session);
 					APIWSAClose(Socket);
 					goto gt_error ;
@@ -182,7 +201,11 @@ namespace	_client_{
 
 				if( FindSession(Node) )
 				{
-					printf("CommandClients::HandleAccept Node is exsit\r\n");
+					//test
+					LOG_Print_Error(NetFrame_AsyncCmdClients,
+						"CommandClients::HandleAccept() Node:%lld is exsit!!", Node);
+					//test
+
 					_Pool.FreeObj(Session);
 					goto gt_error;
 				}
@@ -299,7 +322,7 @@ gt_error:
 					}
 					else
 					{//没有数据休眠
-						Sleep(1);
+						Sleep(Clients->_uWorkMS);
 					}
 				}
 				catch (const thread_interrupted& e)
@@ -355,7 +378,7 @@ exit:
 					else
 					{
 						Clients->_QuitLock.UnLock();
-						Sleep(1);
+						Sleep(Clients->_uDestroyMS);
 					}
 				}
 				catch (const thread_interrupted& e)

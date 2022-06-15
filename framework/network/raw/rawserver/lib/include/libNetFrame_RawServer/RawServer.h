@@ -42,6 +42,8 @@ namespace	_server_{
 		*/
 		~RawServer( void );
 
+		int Init(void);
+
 		void Release( void );
 
 		int	Send( NETHANDLE Node, const char* c_pData, UInt32 u32Size );

@@ -50,10 +50,11 @@ namespace _io_net_{
 			return Singleton<InitConnector>::instance()->_ioService;
 		}
 
-		_SOCKET_::HSOCKET NetConnector::Connect( const char* c_szIP, UInt16 u16Port )
+		_SOCKET_::HSOCKET NetConnector::Connect( const char* c_szIP, UInt16 u16Port,
+											int iSocketRecv, int iSocketSend )
 		{
 			_SOCKET_	Socket(Singleton<InitConnector>::instance()->_ioService);
-			_SOCKET_::HSOCKET hSocket = Socket.Connect(c_szIP, u16Port);
+			_SOCKET_::HSOCKET hSocket = Socket.Connect(c_szIP, u16Port, iSocketRecv, iSocketSend);
 			if( hSocket == INVALID_SOCKET )
 				return	INVALID_SOCKET;
 

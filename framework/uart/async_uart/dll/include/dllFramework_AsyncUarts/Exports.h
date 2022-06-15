@@ -9,7 +9,7 @@
 	DLL_INIT_DECL_DEF()
 #endif
 
-DLL_LOG_DECL_DEF(Framework_AsyncFiles_Module)
+DLL_LOG_DECL_DEF(FrameWork_AsyncFiles_Module)
 
 /*****************************************************************
 /*原型声明：	接收回调函数
@@ -27,7 +27,7 @@ typedef void (_CALLTYPE *fpnMAsyncUart_RecData)( void* pUser, THandle Handle,
 /*****************************************************************
 /*函数说明：	初始化串口
 /*参数说明：	
-/*				
+/*
 /*返回值：		1:成功  <0:错误码
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MAsyncUart_Init( void );
@@ -44,15 +44,24 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MAsyncUart_Free( void );
 
 
 /*****************************************************************
+/*函数说明：	通过索引获取COM名称(该接口只对windows下有效)
+/*参数说明：	uComNO: COM索引
+/*
+/*返回值：		1:成功  <0: 错误码
+*****************************************************************/
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MAsyncUart_GetWinComName(UInt8 uComNO, std::string& sOut);
+
+
+/*****************************************************************
 /*函数说明：	打开串口
-/*参数说明：	Com_No: 串口索引（从0开始，即COM0）
-/*				Baudrate: 波特率
-				ByteSize: 数据位
-				StopBit: 停止位
-				isParity: 校验位
+/*参数说明：	c_szComName: 串口名称
+/*			Baudrate: 波特率
+			ByteSize: 数据位
+			StopBit: 停止位
+			isParity: 校验位
 /*返回值：		> 0: 句柄		<0:错误码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS THandle _CALLTYPE MAsyncUart_Open( int Com_No, int Baudrate, int ByteSize = 8,
+EXTERN_C _SYMBOL_DLL_EXPORTS THandle _CALLTYPE MAsyncUart_Open( const char* c_szComName, int Baudrate, int ByteSize = 8,
 															UInt8 StopBit = 1, bool isParity = false );
 
 

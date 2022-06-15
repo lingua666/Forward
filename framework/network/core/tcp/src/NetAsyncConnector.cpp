@@ -23,23 +23,25 @@ namespace _io_net_{
 			return true;
 		}
 
-		int	NetAsyncConnector::Connect( const char* szIP, UInt16 uPort )
+		int	NetAsyncConnector::Connect( const char* szIP, UInt16 uPort,
+			int iSocketRecv, int iSocketSend )
 		{
 			if( !is_open() )
 				return -1;
 
-			return _Connector.async_connect(szIP, uPort);
+			return _Connector.async_connect(szIP, uPort, iSocketRecv, iSocketSend);
 		}
 
 		int	NetAsyncConnector::Connect( const char* szIP, UInt16 uPort,
-			const fn_connect_handle& hConnect )
+			const fn_connect_handle& hConnect,
+			int iSocketRecv, int iSocketSend )
 		{
 			if( !is_open() )
 				return -1;
 
 			return _Connector.async_connect(szIP, uPort, 
 				function20_bind(&NetAsyncConnector::HandleConnect, this,
-				hConnect, _foundation_::_1));
+				hConnect, _foundation_::_1), iSocketRecv, iSocketSend);
 		}
 
 		void	NetAsyncConnector::Stop( void )

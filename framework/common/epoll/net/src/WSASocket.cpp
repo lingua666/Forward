@@ -3,7 +3,7 @@
 
 #if defined( PLATFORM_OS_FAMILY_UNIX )
 
-	SOCKET APIWSACreate( int iSocketType, int iRevSize, int iSendSize )
+	SOCKET APIWSACreate( int iSocketType, int iRevSize, int iSendSize, const char* c_szIP )
 	{
 		SOCKET sock = socket( AF_INET, iSocketType, 0);
 
@@ -68,6 +68,10 @@
 			}
 		}
 
+		if (c_szIP != NULL)
+		{
+			APIWSABind(sock, 0, c_szIP);
+		}
 
 		return sock;
 	}
@@ -122,7 +126,9 @@
 
 		int nRet = 0;
 		struct sockaddr_in local = {0};
-		local.sin_port				= htons( usPort );
+		if(usPort > 0)
+			local.sin_port				= htons( usPort );
+
 		if(c_szIP != NULL)
 			local.sin_addr.s_addr	= inet_addr( c_szIP );
 		else

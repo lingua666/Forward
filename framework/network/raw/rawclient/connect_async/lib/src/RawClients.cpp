@@ -33,6 +33,8 @@ namespace	_client_{
 
 		void	RawClients::Init( UInt8 uThreadNum )
 		{
+			((io_service&)_AsynConnector.GetIoServer()).Init();
+
 			_AsynConnector.Listen();
 			_AsynConnector.Run(uThreadNum);
 		}

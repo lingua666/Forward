@@ -8,6 +8,8 @@
 #include <ws2tcpip.h>
 #include <MSWSock.h>
 #pragma comment(lib, "WS2_32.lib")	// Á´½Óµ½WS2_32.lib
+#include <iphlpapi.h>
+#pragma comment(lib, "iphlpapi.lib")
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -168,7 +170,7 @@ inline _string_type GetIPByDomain( const _string_type& Domain, int* nCount )
 	if ( he )
 	{
 		struct       sockaddr_in   sAddr;
-			
+
 		*nCount = 0;
 		while ( he->h_addr_list[*nCount] )
 		{
@@ -183,6 +185,69 @@ inline _string_type GetIPByDomain( const _string_type& Domain, int* nCount )
 	}
 
 	return "";
+}
+
+inline _string_type	GetMacFromIP(const _string_type& sDstIP)
+{
+	DWORD dwRetVal = 0;
+	IPAddr DestIp = 0;
+	IPAddr SrcIp = 0;       /* default for src ip */
+	ULONG MacAddr[2];       /* for 6-byte hardware addresses */
+	ULONG PhysAddrLen = 6;  /* default to length of six bytes */
+
+	char *SrcIpString = NULL;
+	BYTE *bPhysAddr = NULL;
+	_string_type sDstMac;
+
+	DestIp = inet_addr(sDstIP.c_str());
+	memset(&MacAddr, 0xff, sizeof(MacAddr));
+	dwRetVal = SendARP(DestIp, SrcIp, &MacAddr, &PhysAddrLen);
+
+	if (dwRetVal == NO_ERROR) 
+	{
+		bPhysAddr = (BYTE *)& MacAddr;
+		if (PhysAddrLen) 
+		{
+			for (unsigned int i = 0; i < (int)PhysAddrLen; i++) 
+			{
+				sDstMac += _string_type::HexToStr((char*)&bPhysAddr[i], 1);
+			}
+		}
+		else
+		{
+			sDstMac = "000000000000";
+		}
+
+		return sDstMac;
+	}
+	else 
+	{
+		printf("Error: SendArp failed with error: %d", dwRetVal);
+		switch (dwRetVal) 
+		{
+		case ERROR_GEN_FAILURE:
+			break;
+		case ERROR_INVALID_PARAMETER:
+			break;
+		case ERROR_INVALID_USER_BUFFER:
+			break;
+		case ERROR_BAD_NET_NAME:
+			break;
+		case ERROR_BUFFER_OVERFLOW:
+			break;
+		case ERROR_NOT_FOUND:
+			break;
+		default:
+			break;
+		}
+	}
+
+	return "";
+}
+
+inline bool Ping(const _string_type& sDst)
+{
+	return GetMacFromIP(sDst) != "" ? true : false;
 }
 
 namespace _iocp_net_{

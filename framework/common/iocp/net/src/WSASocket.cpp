@@ -1,7 +1,7 @@
 
 #include <libIOCP_Net/WSASocket.h>
 
-SOCKET APIWSACreate( int iSocketType, int iRevSize, int iSendSize )
+SOCKET APIWSACreate( int iSocketType, int iRevSize, int iSendSize, const char* c_szIP )
 {
 	SOCKET sock = WSASocket( AF_INET
 		, iSocketType
@@ -102,6 +102,11 @@ SOCKET APIWSACreate( int iSocketType, int iRevSize, int iSendSize )
 #endif
 	}
 
+	if (c_szIP != NULL)
+	{
+		APIWSABind(sock, 0, c_szIP);
+	}
+
 	return sock;
 }
 
@@ -123,7 +128,10 @@ int APIWSABind( SOCKET Sock, u_short usPort, const char* c_szIP  )
 
 	int nRet = 0;
 	sockaddr_in local;
-	local.sin_port				= htons( usPort );
+
+	if(usPort > 0)
+		local.sin_port				= htons( usPort );
+
 	if(c_szIP != NULL)
 		local.sin_addr.S_un.S_addr	= inet_addr( c_szIP );
 	else

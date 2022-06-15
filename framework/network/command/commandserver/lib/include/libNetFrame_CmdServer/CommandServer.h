@@ -42,22 +42,27 @@ namespace	_server_{
 		*/
 		~CommandServer( void );
 
+		int Init(void);
+
 		void Release( void );
 
-		int	SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
+		int	SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize );
 
-		int	Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
+		int	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
 
 		void	Stop( void );
 		void	Run( UInt8 uThreadNum = 0 );
 		void	RunLoop( UInt8 uThreadNum = 0 );
-		int	Close( NETHANDLE Node );
+		int		Close( NETHANDLE Node );
 
-		bool	Listen( UInt16 u16Port, const Comamand_HAccept& Handle )
+		//µ•Œª∫¡√Î
+		void	SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS);
+
+		bool	Listen( UInt16 u16Port, const Comamand_HAccept& Handle, const char* c_szIP = NULL)
 		{
 			try
 			{
-				if( _Accept.Listen(u16Port) )
+				if( _Accept.Listen(u16Port, c_szIP) )
 				{
 					EVENT_REGISTER(&_Accept, this);
 					_AcceptHandle = Handle;
@@ -200,6 +205,8 @@ namespace	_server_{
 		CLock			_ReadLock;
 		CLock			_QuitLock;
 		Comamand_HAccept	_AcceptHandle;
+		UInt32 				_uWorkMS;
+		UInt32 				_uDestroyMS;
 	};
 	/** @} end CommandServer */
 

@@ -51,6 +51,10 @@
 		
 			io_service& operator=( const self_type& self );
 
+			int Init(void);
+
+			void Release(void);
+
 			int open( void );
 
 			int close( void );
@@ -60,6 +64,8 @@
 			int post_read( HANDLE Handle, tagOverlapped* pOverlapped );
 
 			int post_write( HANDLE Handle, tagOverlapped* pOverlapped );
+
+			int post_cancel( tagOverlapped* pOverlapped );
 
 			int post_delete( HANDLE Handle );
 

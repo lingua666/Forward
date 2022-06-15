@@ -14,11 +14,6 @@ namespace	_server_{
 		typedef	_session_::_tcp_::StreamSession	StreamSession;
 		typedef	SmartPTR<StreamSession>			StreamSession_sptr;
 
-		struct __M_ALIGNED_PACKED__ tagStreamIdentity
-		{
-			StreamSession*	_Identity;
-		};
-
 	} //namespace	_tcp_
 
 } //namespace	_server_

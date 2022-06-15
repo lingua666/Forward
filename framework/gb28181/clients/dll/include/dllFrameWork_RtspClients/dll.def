@@ -1,0 +1,12 @@
+LIBRARY  dllFrameWork_RtspClients
+
+EXPORTS
+
+MRtspClients_Init			@1
+MRtspClients_Free			@2
+MRtspClients_Open			@3
+MRtspClients_SetResultEvent		@4
+MRtspClients_SetDataEvent		@5
+MRtspClients_Play			@6
+MRtspClients_Close			@7
+	

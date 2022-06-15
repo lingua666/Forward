@@ -58,9 +58,9 @@ namespace _io_net_{
 		#endif
 			}
 
-			socket_type::HSOCKET	Open( UInt16 u16Port )
+			socket_type::HSOCKET	Open( UInt16 u16Port, const char* c_szIP = NULL )
 			{
-				return _Sock.Listen(u16Port);
+				return _Sock.Listen(u16Port, c_szIP);
 			}
 
 			bool isOpen( void ) const

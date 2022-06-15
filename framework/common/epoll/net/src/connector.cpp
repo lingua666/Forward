@@ -35,12 +35,12 @@
 				return 1;
 			}
 
-			int connector::async_connect( const char* szIP, UInt16 uPort )
+			int connector::async_connect( const char* szIP, UInt16 uPort, int iSocketRecv, int iSocketSend )
 			{
 				if( !_f )
 					return -1;
 
-				SOCKET s = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, -1, -1);
+				SOCKET s = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, iSocketRecv, iSocketSend);
 				if( s != INVALID_SOCKET )
 				{
 					tagOverlapped* p = _OverlappedManage.Alloc();
@@ -81,9 +81,10 @@
 			}
 
 			int connector::async_connect( const char* szIP, UInt16 uPort,
-										const fn_connect_handle& handle )
+										const fn_connect_handle& handle,
+										int iSocketRecv, int iSocketSend )
 			{
-				SOCKET s = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, -1, -1);
+				SOCKET s = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, iSocketRecv, iSocketSend);
 				if( s != INVALID_SOCKET )
 				{
 					tagIOData_INFO	IODataINFO;

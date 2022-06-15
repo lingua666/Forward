@@ -86,6 +86,7 @@ namespace	_thread_{
 	void	ThreadData::clear( void )
 	{
 		_isInterrupted = false;
+		_u16Code = en_INTERRUPTED_NULL;
 	}
 
 	void	ThreadData::set( UInt16 u16Code )
@@ -163,6 +164,7 @@ namespace	_thread_{
 		if( _Handle != NULL )
 			exit();	
 
+		_ThrdData.clear();
 		_ThreadProc = handle;
 		_Handle = ThreadAPI::CreateThread( WorkerThread, this, _uThreadId );
 		return _Handle != NULL ? 1 : -1;
@@ -172,6 +174,11 @@ namespace	_thread_{
 	{
 		while( !_is_run )
 			Sleep(0);
+	}
+
+	bool	ThreadWrap::is_run(void)
+	{
+		return _is_run;
 	}
 
 	void	ThreadWrap::join( UInt32 u32Milliseconds )

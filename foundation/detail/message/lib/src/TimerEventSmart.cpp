@@ -7,12 +7,14 @@ TimerEventSmart* GetTimerEventSmartInstance(void)
 }
 
 TimerEventSmart::TimerEventSmart( void )
+	: _uMillisecond(10)
 {
 
 }
 
 //注意: 该构造函数不可用于全局变量，否则会导致由于主线程还未启动，导致出现错误
 TimerEventSmart::TimerEventSmart( UInt8 uThread )
+		: _uMillisecond(10)
 {
 	Init(uThread);
 }
@@ -43,23 +45,28 @@ void	TimerEventSmart::CloseAll( void )
 	}
 }
 
-void	TimerEventSmart::push_back( const Event_type& Event, UInt32 uInterval,
+int	TimerEventSmart::push_back( const Event_type& Event, UInt64 uInterval,
 	const Event_type& Begin, const Event_type& _End )
 {
+	if (_Threads.size() <= 0)
+		return -1;
+
 	tagEvent_INFO	tagInfo;
 	tagInfo._Begin = Begin;
 	tagInfo._Event = Event;
 	tagInfo._End = _End;
 	tagInfo._uInterval = uInterval * 1000;
-	tagInfo._Timer = Timestamp_type();
 	_Lock.Lock();
 	_EventList.push_back(tagInfo);
+	tagInfo._Timer = Timestamp_type();
 	_Lock.UnLock();
+	return 1;
 }
 
 void	TimerEventSmart::WorkThread( void )
 {
 	tagEvent_INFO tagInfo;
+	int iInc = 0;
 
 	while( true )
 	{
@@ -86,11 +93,18 @@ void	TimerEventSmart::WorkThread( void )
 						{
 							tagInfo._End();
 						}
+
+						iInc = -1;
 					}
 					else
 					{
 						_EventList.next();
 						_Lock.UnLock();
+					}
+
+					if ((++iInc) >= _EventList.size())
+					{//轮询一轮
+						goto gt_sleep;
 					}
 				}
 				else
@@ -102,7 +116,8 @@ void	TimerEventSmart::WorkThread( void )
 			else
 			{
 gt_sleep:
-				Sleep(10);
+				iInc = 0;
+				Sleep(_uMillisecond);
 			}
 		}
 		catch (const thread_interrupted& e)
@@ -139,5 +154,11 @@ void	TimerEventSmart::Clear( void )
 	_Lock.Lock();
 	_EventList.clear();
 	_Lock.UnLock();
+}
+
+//单位毫秒
+void	TimerEventSmart::SetSleepStep(UInt32 uMillisecond)
+{
+	_uMillisecond = uMillisecond;
 }
 

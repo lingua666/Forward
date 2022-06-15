@@ -46,7 +46,7 @@ extern "C" {
 		return -1;
 	}
 
-	/// 获取当前进程的cpu使用率，返回-1失败 单位/百分比
+	/// 获取当前进程的cpu使用率，返回-1失败
 	int get_process_cpu_usage( void )
 	{//未实现
 		return -1;
@@ -64,7 +64,7 @@ extern "C" {
 		return -1;
 	}
 
-	//获取内存信息 单位/K
+	//获取内存信息
 	void get_memory_info( UInt64_t* total, UInt64_t* free )
 	{
 

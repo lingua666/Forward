@@ -27,7 +27,7 @@ public:
 	* @brief    
 	* @return  
 	*/
-	Packet_Raw_V2( UInt32 uHeadSize, UInt32 uSendSize, UInt32 ReservedSize )
+	Packet_Raw_V2( UInt16 uHeadSize, UInt16 uSendSize, UInt16 ReservedSize )
 		: _uHeadSize( uHeadSize )
 		, _uSendSize( uSendSize )
 		, _uReservedSize( ReservedSize )
@@ -52,12 +52,12 @@ public:
 
 	}
 
-	UInt32	GetHeadSize( void ) const
+	UInt16	GetHeadSize( void ) const
 	{
 		return sizeof(tagBuf) - 1;
 	}
 
-	UInt32	GetSendSize( void ) const
+	UInt16	GetSendSize( void ) const
 	{
 		return _uSendSize;
 	}
@@ -67,21 +67,21 @@ public:
 		_Function = Function;
 	}
 
-	const tagBuf_sptr	Package( const char* c_InData, UInt32 uInSize,
-		UInt32 uInPayload, void* pHead = NULL,
-		UInt32 uHeadSize = 0 )
+	const tagBuf_sptr	Package( const char* c_InData, UInt16 u16InSize,
+							UInt16 u16InPayload, void* pHead = NULL,
+							UInt16 uHeadSize = 0 )
 	{
 		tagBuf* p = reinterpret_cast<tagBuf*>(_MemPool.Alloc());
 		if( p != NULL )
 		{
-			p->_uPayload = uInPayload;
-			memcpy(p->_Data, c_InData, uInSize);
+			p->_uPayload = u16InPayload;
+			memcpy(p->_Data, c_InData, u16InSize);
 
 			//head
 			if( pHead != NULL && uHeadSize > 0 )
 			{
 				uHeadSize = __min(uHeadSize, _uHeadSize);
-				p->_pHead = &p->_Data[uInPayload + _uReservedSize];
+				p->_pHead = &p->_Data[u16InPayload + _uReservedSize];
 				memcpy(p->_pHead, pHead, uHeadSize);
 			}
 			return tagBuf_sptr(p, false);
@@ -89,20 +89,20 @@ public:
 		return tagBuf_sptr();
 	}
 
-	const tagBuf_sptr	Package( const char* c_InData, UInt32 uInSize,
-						void* pHead = NULL, UInt32 uHeadSize = 0 )
+	const tagBuf_sptr	Package( const char* c_InData, UInt16 u16InSize,
+						void* pHead = NULL, UInt16 uHeadSize = 0 )
 	{
-		return Package(c_InData, uInSize, uInSize, pHead, uHeadSize);
+		return Package(c_InData, u16InSize, u16InSize, pHead, uHeadSize);
 	}
 
 	const tagBuf_sptr	Package( void* pAddtion, UInt8 u8AddSize, 
-							const char* c_InData, UInt32 uInSize,
-							void* pHead = NULL, UInt32 uHeadSize = 0 )
+							const char* c_InData, UInt16 u16InSize,
+							void* pHead = NULL, UInt16 uHeadSize = 0 ) 
 	{
 		tagBuf* p = reinterpret_cast<tagBuf*>(_MemPool.Alloc());
-		p->_uPayload = u8AddSize + uInSize ;
+		p->_uPayload = u8AddSize + u16InSize ;
 		memcpy(&p->_Data, pAddtion, u8AddSize);
-		memcpy(&p->_Data[u8AddSize], c_InData, uInSize);
+		memcpy(&p->_Data[u8AddSize], c_InData, u16InSize);
 
 		//head
 		if( pHead != NULL && uHeadSize > 0 )
@@ -115,29 +115,29 @@ public:
 		return tagBuf_sptr(p, false);
 	}
 
-	const BufList_sptr	BigPackage( const char* c_InData, UInt32 uInSize,
-		void* pHead = NULL, UInt32 uHeadSize = 0 )
+	const BufList_sptr	BigPackage( const char* c_InData, UInt16 u16InSize,
+		void* pHead = NULL, UInt16 uHeadSize = 0 )
 	{
-		UInt32	uInLen = 0, uInOffset = 0;
+		UInt16	u16InLen = 0, u16InOffset = 0;
 		BufList* pList = _ListPool.AllocObj<BufList>();
 		if( pList == NULL )
 			return BufList_sptr();
 
 		//第一个包
-		uInLen = __min(uInSize, GetSendSize());
-		pList->push_back( Package(c_InData, uInLen, pHead, uHeadSize) );
-		uInSize -= uInLen;
-		uInOffset += uInLen;
+		u16InLen = __min(u16InSize, GetSendSize());
+		pList->push_back( Package(c_InData, u16InLen, pHead, uHeadSize) );
+		u16InSize -= u16InLen;
+		u16InOffset += u16InLen;
 
 		//后续包
 		tagBuf* p = NULL;
-		while( uInSize > 0 )
+		while( u16InSize > 0 )
 		{
 			p = reinterpret_cast<tagBuf*>(_MemPool.Alloc());
 
-			uInLen = __min(uInSize, GetSendSize());
-			memcpy(p->_Data, &c_InData[uInOffset], uInLen);
-			p->_uPayload = uInLen;
+			u16InLen = __min(u16InSize, GetSendSize());
+			memcpy(p->_Data, &c_InData[u16InOffset], u16InLen);
+			p->_uPayload = u16InLen;
 			
 			//head
 			if( pHead != NULL && uHeadSize > 0 )
@@ -149,8 +149,8 @@ public:
 
 			pList->push_back( tagBuf_sptr(p, false) );
 
-			uInSize -= uInLen;
-			uInOffset += uInLen;
+			u16InSize -= u16InLen;
+			u16InOffset += u16InLen;
 		};
 
 		return BufList_sptr(pList, 
@@ -158,19 +158,19 @@ public:
 	}
 
 	const BufList_sptr	BigPackage( void* pAddtion, UInt8 u8AddSize,
-									const char* c_InData, UInt32 uInSize,
-									void* pHead = NULL, UInt32 uHeadSize = 0 )
+									const char* c_InData, UInt16 u16InSize,
+									void* pHead = NULL, UInt16 uHeadSize = 0 ) 
 	{
-		UInt32	uInLen = 0, uInOffset = 0;
+		UInt16	u16InLen = 0, u16InOffset = 0;
 		tagBuf* pBuf = NULL;
 		BufList* pList = _ListPool.AllocObj<BufList>();
 		if( pList == NULL )
 			return BufList_sptr();
 
 		tagBuf_sptr sptr = Package((char*)pAddtion, u8AddSize);
-		uInLen = __min(uInSize, GetSendSize() - sptr->_uPayload);
-		memcpy( &sptr->_Data[sptr->_uPayload], c_InData, uInLen );
-		sptr->_uPayload += uInLen;
+		u16InLen = __min(u16InSize, GetSendSize() - sptr->_uPayload);
+		memcpy( &sptr->_Data[sptr->_uPayload], c_InData, u16InLen );
+		sptr->_uPayload += u16InLen;
 
 		//head
 		if( pHead != NULL && uHeadSize > 0 )
@@ -182,27 +182,27 @@ public:
 
 		pList->push_back(sptr);
 
-		uInSize -= uInLen;
-		uInOffset += uInLen;
+		u16InSize -= u16InLen;
+		u16InOffset += u16InLen;
 
 		tagBuf* p = NULL;
-		while( uInSize > 0 )
+		while( u16InSize > 0 )
 		{
 			p = reinterpret_cast<tagBuf*>(_MemPool.Alloc());
 
-			uInLen = __min(uInSize, GetSendSize());
-			memcpy(p->_Data, &c_InData[uInOffset], uInLen);
-			p->_uPayload = uInLen;
+			u16InLen = __min(u16InSize, GetSendSize());
+			memcpy(p->_Data, &c_InData[u16InOffset], u16InLen);
+			p->_uPayload = u16InLen;
 			pList->push_back( tagBuf_sptr(p,false) );
-			uInSize -= uInLen;
-			uInOffset += uInLen;
+			u16InSize -= u16InLen;
+			u16InOffset += u16InLen;
 		} ;
 
 		return BufList_sptr(pList, 
 			function20_bind(&MemPool_type::FreeMemObj<BufList>, &_ListPool, _foundation_::_1));
 	}
 
-	int	Parse( void* pUser, const char* c_szInData, UInt32 uInSize,
+	int	Parse( void* pUser, const char* c_szInData, UInt16 u16InSize,
 			const StreamBuf_ptr& Buf_ptr ) 
 	{
 		_Function(pUser, Buf_ptr);
@@ -220,9 +220,9 @@ public:
 	}
 
 private:
-	const UInt32 _uHeadSize;
-	const UInt32 _uSendSize;
-	const UInt32 _uReservedSize;
+	const UInt16 _uHeadSize;
+	const UInt16 _uSendSize;
+	const UInt16 _uReservedSize;
 
 	MemPool_type		_MemPool;
 	MemPool_type		_ListPool;

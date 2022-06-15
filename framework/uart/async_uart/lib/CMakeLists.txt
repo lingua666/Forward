@@ -1,6 +1,6 @@
 
 set( TARGET
-	libFrameWork_AsyncUarts
+	libFramework_AsyncUarts
 	)
 	
 #Traverse the file

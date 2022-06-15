@@ -13,44 +13,11 @@ namespace	_file_{
 	class	CMyFile
 	{
 	public:
-		typedef struct tagTime_INFO
-		{
-			UInt16	Year;
-			UInt8	Month;
-			UInt8	Day;
-			UInt8	Hour;
-			UInt8	Minute;
-			UInt8	Second;
-		}tagTime_INFO;
+		static	bool IsExit( const _string_type& sPath );
 
-		typedef struct tagPermissions_INFO
-		{
-			bool isRead;			//读权限
-			bool isWrite;			//写权限
-			bool isExec;			//执行权限
-		}tagPermissions_INFO;
+		static	int	GetFileSize( const _string_type& sPath );
 
-		typedef struct tagFile_INFO
-		{
-			bool isDir;						//是否目录
-			tagPermissions_INFO	Permissions;//文件权限
-			UInt16				HardTime;	//硬连接次数
-			_string_type		Ower;		//文件拥有者
-			UInt64				Size;		//文件大小
-			tagTime_INFO		Time;		//文件创建日期
-			_string_type		Name;		//文件名
-		}tagFile_INFO;
-
-	public:
-		static	bool IsExit( const char* c_szPath );
-
-		static	Int64	GetFileSize( const _string_type& sPath );
-
-		static	int GetFileCreateTime( const _string_type& sPath, struct tm* Time );
-
-		static	int CopyFile(const _string_type& sSrcPath, const _string_type& sDstPath);
-
-		static	int MoveFile(const _string_type& sSrcPath, const _string_type& sDstPath);
+		static	tm* GetFileCreateTime( const _string_type& sPath );
 
 		static	int	DeleteFile( const _string_type& sPath );
 
@@ -61,8 +28,6 @@ namespace	_file_{
 		static	_string_type GetSuffix( const _string_type& sPath );
 
 		static _string_type NormalPath( const _string_type& sPath );
-
-		static int GetDetailedInfo(const _string_type& sPath, tagFile_INFO* pInfo);
 
 	public:
 		CMyFile( void );
@@ -95,7 +60,7 @@ namespace	_file_{
 
 		_string_type	GetLineData( void );
 
-		int GetCreateTime(struct tm* Time);
+		tm* GetCreateTime( void );
 
 		const _string_type& GetPath( void ) const;
 

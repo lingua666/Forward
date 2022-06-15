@@ -5,11 +5,6 @@ namespace	_iocp_net_{
 
 	namespace _tcp_{
 
-		void TcpSocket::CloseSocket(const HSOCKET& Sock)
-		{
-			APIWSAClose(Sock);
-		}
-
 		TcpSocket::TcpSocket( const io_service& service )
 			: _Service(service)
 			, _Sock(INVALID_SOCKET)
@@ -22,10 +17,9 @@ namespace	_iocp_net_{
 
 		}
 
-		TcpSocket::HSOCKET TcpSocket::Connect( const _string_type& sIP, UInt16 u16Port,
-											int iSocketRecv, int iSocketSend )
+		TcpSocket::HSOCKET TcpSocket::Connect( const _string_type& sIP, UInt16 u16Port )
 		{
-			_Sock = APIWSACreate(SOCK_STREAM, iSocketRecv, iSocketSend);
+			_Sock = APIWSACreate(SOCK_STREAM,-1,-1);
 			if( _Sock == SOCKET_ERROR )
 				return INVALID_SOCKET;
 

@@ -220,28 +220,6 @@ namespace	_async_{
 			}
 			options.c_cflag |= CLOCAL | CREAD;
 			options.c_cflag &= ~CSIZE; 
-			
-			// 硬件流控制模式，flow control
-			int fctl = '0';
-			switch (fctl) 
-			{
-			case '0':
-				{
-					options.c_cflag &= ~CRTSCTS;        //no flow control
-				}
-				break;
-			case '1': 
-				{
-					options.c_cflag |= CRTSCTS;         //hardware flow control
-				}
-			break;
-			case '2': 
-				{
-					options.c_iflag |= IXON | IXOFF | IXANY; //software flow control
-				}
-				break;
-			}
-
 			switch (DataBits) /*设置数据位数*/
 			{   
 			case 7:		

@@ -7,7 +7,7 @@
 struct tagRoute_INFO
 {
 	tagAddress_HEAD	_hAddr;
-	UInt32	_uHop;			//ÌøÊý
+	UInt16	_uHop;			//ÌøÊý
 	char	_Data[1];
 };
 
@@ -35,15 +35,15 @@ public:
 		return *this;
 	}
 
-	void	Fill( UInt8 u8Flag, NETHANDLE Src, NETHANDLE Dst, UInt32 uHop )
+	void	Fill( UInt8 u8Flag, NETHANDLE Src, NETHANDLE Dst, UInt16 uHop )
 	{
 		_Head.Fill(u8Flag, Src, Dst);
 		_Head.Append((char*)&uHop, sizeof(uHop));
 	}
 
-	void	Append( const char* szData, UInt32 uSize )
+	void	Append( const char* szData, UInt16 u16Size )
 	{
-		_Head.Append(szData, uSize);
+		_Head.Append(szData, u16Size);
 	}
 
 	_string_type	RemoveAddress( void )
@@ -85,7 +85,7 @@ public:
 
 	inline UInt8	HeadSize( void ) const
 	{
-		return _Head.HeadSize() + sizeof(UInt32);
+		return _Head.HeadSize() + sizeof(UInt16);
 	}
 
 private:
@@ -128,7 +128,7 @@ public:
 		return *this;
 	}
 
-	void	Fill( NETHANDLE Dst, UInt32 uHop );
+	void	Fill( NETHANDLE Dst, UInt16 uHop );
 
 	PAddressHead* GetHeadObj( void );
 
@@ -136,11 +136,11 @@ public:
 
 	tagAddress_HEAD*	GetHeadInfo( void );
 
-	int	AppendHead( const char* c_szData, UInt32 uSize );
+	int	AppendHead( const char* c_szData, UInt16 u16Size );
 
-	int	AppendData( const char* c_szData, UInt32 uSize );
+	int	AppendData( const char* c_szData, UInt16 u16Size );
 
-	int	Parse( const char* c_szData, UInt32 uInSize );
+	int	Parse( const char* c_szData, UInt32 u32Size );
 
 	_string_type	GetString( void );
 

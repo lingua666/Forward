@@ -9,7 +9,7 @@
 	DLL_INIT_DECL_DEF()
 #endif
 
-DLL_LOG_DECL_DEF(FrameWork_AsyncFiles_Module)
+DLL_LOG_DECL_DEF(Framework_AsyncFiles_Module)
 
 
 #endif//__PLC_OMRON_20151228191441_1451301281_H__

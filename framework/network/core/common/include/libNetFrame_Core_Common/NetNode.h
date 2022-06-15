@@ -14,22 +14,13 @@ NETNODE _CALLTYPE GetEndPointFromSIPv4( const char* c_szIP, unsigned short usPor
 NETNODE _CALLTYPE GetEndPointFromUIPv4( unsigned long uIP, unsigned short usPort );
 
 // 从指定的节点中获取端口信息
-uint16_t _CALLTYPE GetPortFromNETNODE( NETNODE ep );
+uint16_t _CALLTYPE GetPort( NETNODE ep );
 
 // 从指定的节点中获取IP信息
-uint32_t _CALLTYPE GetIPv4IFromNETNODE( NETNODE ep );
+uint32_t _CALLTYPE GetIPv4ToInt( NETNODE ep );
 
 //获取IP地址
-_string_type _CALLTYPE GetIPv4SFromNETNODE( NETNODE ep );
-
-//转换为sockaddr_in
-int _CALLTYPE GetSockAddrInFormIPPort(const char* c_szIP, UInt16 uPort, struct sockaddr_in* pAddr);
-
-//获取IP地址
-_string_type _CALLTYPE GetIPv4FromAddr(const struct sockaddr_in& Addr);
-
-//获取端口
-uint16_t _CALLTYPE GetPortFromAddr(const struct sockaddr_in& Addr);
+_string_type _CALLTYPE GetIPv4ToString( NETNODE ep );
 
 class XorNetNode
 {

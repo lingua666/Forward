@@ -13,7 +13,7 @@ public:
 
 	~H264Info( void );
 
-	void Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo, bool isNormalize = true);
+	void Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo );
 
 	bool isReady( void );
 
@@ -31,16 +31,6 @@ public:
 	UInt8	GetVideoType( void ) const
 	{
 		return IVideoInfo::ENUM_ENC_H264;
-	}
-
-	const _string_type&	GetSPS(void) const
-	{
-		return _sSPSRaw;
-	}
-
-	const _string_type&	GetPPS(void) const
-	{
-		return _sPPSRaw;
 	}
 
 	bool is_I_Frame( UInt8 uHeadType, const char* Nalu_Header )

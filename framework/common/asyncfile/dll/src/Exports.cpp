@@ -1,5 +1,5 @@
 
-#include <dllFrameWork_AsyncFiles/Exports.h>
+#include <dllFramework_AsyncFiles/Exports.h>
 
 DLL_INIT_DEF(g_pTagTModuleInfoRecord_201602172205,
 			"45000001000V2016021700000000VZZZ10000000",
@@ -8,5 +8,5 @@ DLL_INIT_DEF(g_pTagTModuleInfoRecord_201602172205,
 			"20160217",
 			"")
 
-DLL_LOG_DEF(FrameWork_AsyncFiles_Module)
+DLL_LOG_DEF(Framework_AsyncFiles_Module)
 

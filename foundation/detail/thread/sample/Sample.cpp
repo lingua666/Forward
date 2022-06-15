@@ -6,6 +6,8 @@
 #include <libThread/ThreadWrap.h>
 #include <dllThread/Exports.h>
 
+class IEvent
+
 struct tagTest
 {
 	char s1[50];
@@ -51,15 +53,6 @@ gt_exit:*/
 
 int main(int argc, char* argv[])
 {
-	//test
-	while (true)
-	{
-		ThreadWrap	ter1;
-		ter1.interrupt(ThreadData::en_INTERRUPTED_EXIT);
-		ter1.join();
-	};
-	//test
-
 	while(true)
 	{
 		ThreadWrap	ter(function20_bind_Ex(TTestVoid));

@@ -72,13 +72,13 @@ int main(int argc, char* argv[])
 {
 	_string_type s = _file_::RWIni::GetCurrentPath();
 	s.append("\\Config\\Stream_Config.ini");
-	g_ServerIP = "192.168.1.246";// _file_::RWIni::Read("SERVER", "IP", s.c_str());
-	g_ServerPort = 60000;// _file_::RWIni::ReadInt("SERVER", "Port", s.c_str());
+	g_ServerIP = _file_::RWIni::Read("SERVER","IP",s.c_str());
+	g_ServerPort = _file_::RWIni::ReadInt("SERVER","Port",s.c_str());
 
-	g_tagNetCfg._iClientNum = 10;// _file_::RWIni::ReadInt("NET", "ClientNum", s.c_str());
-	g_tagNetCfg._iCloseDelay = 10000000;// _file_::RWIni::ReadInt("NET", "CloseDelay", s.c_str());
+	g_tagNetCfg._iClientNum = _file_::RWIni::ReadInt("NET","ClientNum",s.c_str());
+	g_tagNetCfg._iCloseDelay = _file_::RWIni::ReadInt("NET","CloseDelay",s.c_str());
 	g_tagNetCfg._iLoopDelay = _file_::RWIni::ReadInt("NET","LoopDelay",s.c_str());
-	g_tagNetCfg._iPacketLen = 100;// _file_::RWIni::ReadInt("NET", "PacketLen", s.c_str());
+	g_tagNetCfg._iPacketLen = _file_::RWIni::ReadInt("NET","PacketLen",s.c_str());
 
 	printf("g_tagNetCfg._iClientNum:%d,g_tagNetCfg._iCloseDelay:%d,"
 		"g_tagNetCfg._iLoopDelay:%d,g_tagNetCfg._iPacketLen:%d\r\n",

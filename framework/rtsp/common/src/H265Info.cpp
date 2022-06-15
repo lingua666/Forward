@@ -2,40 +2,6 @@
 #include <libFrameWork_Rtsp/H265Info.h>
 #include <libFrameWork_Rtsp/Base64.h>
 
-/**
-* NAL起始码防竞争机制
-*
-* @param buf SPS数据内容
-*
-* @无返回值
-*/
-static void de_emulation_prevention(UInt8* buf, UInt32* buf_size)
-{
-	int i = 0, j = 0;
-	BYTE* tmp_ptr = NULL;
-	unsigned int tmp_buf_size = 0;
-	int val = 0;
-
-	tmp_ptr = buf;
-	tmp_buf_size = *buf_size;
-	for (i = 0; i < (tmp_buf_size - 2); i++)
-	{
-		//check for 0x000003
-		val = (tmp_ptr[i] ^ 0x00) + (tmp_ptr[i + 1] ^ 0x00) + (tmp_ptr[i + 2] ^ 0x03);
-		if (val == 0)
-		{
-			//kick out 0x03
-			for (j = i + 2; j < tmp_buf_size - 1; j++)
-				tmp_ptr[j] = tmp_ptr[j + 1];
-
-			//and so we should devrease bufsize
-			(*buf_size)--;
-		}
-	}
-
-	return;
-}
-
 H265Info::H265Info( void )
 	: _Ready(0)
 {
@@ -49,7 +15,7 @@ H265Info::~H265Info( void )
 
 }
 
-void H265Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo, bool isNormalize)
+void H265Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo )
 {
 	Nalu265 Nal;
 	Nal.Init(c_szData, uLen);
@@ -65,15 +31,8 @@ void H265Info::Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayl
 		break;
 	case NAL_UNIT_SPS: 
 		{
-			UInt32 uSize = uLen;
 			_sSPSRaw.resize(0);
 			_sSPSRaw.append(c_szData, uLen);
-
-			if (isNormalize)
-			{//NAL起始码防竞争机制
-				de_emulation_prevention((UInt8*)&_sSPSRaw[0], &uSize);
-				_sSPSRaw.update_size(uSize);
-			}
 
 			Nal.GetSPS(&_SPS);
 			_Info.uWidth = Nal.GetVideoInfo()->width;

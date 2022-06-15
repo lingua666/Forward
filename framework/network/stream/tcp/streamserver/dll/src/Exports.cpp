@@ -56,10 +56,9 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_Init( UInt8 uWorkerThreads 
 /*返回值：		>0:成功  <1: 失败
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_Listen( UInt16 u16Port,
-											pfnStream_S_Accept pfnAccept,
-											const char* c_szIP )
+											pfnStream_S_Accept pfnAccept )
 {
-	if( GetStreamSvrInstance()->Listen(u16Port, function20_bind_Ex(pfnAccept), c_szIP) )
+	if( GetStreamSvrInstance()->Listen(u16Port, function20_bind_Ex(pfnAccept)) )
 	{
 		int iThreadNum = get_processor_number();
 		GetStreamSvrInstance()->Run( __max(iThreadNum / 2, 2), __max(iThreadNum / 2, 2) );
@@ -122,8 +121,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_SetClientDisConnect( NETHAN
 
 	return GetStreamSvrInstance()->SetDestroyHandle(handle,
 		function20_bind(g_StreamSvrClientClose201609141640, pClientClose,
-		GetIPv4SFromNETNODE(handle),
-		GetPortFromNETNODE(handle), _function_::_1));
+		GetIPv4ToString(handle),
+		GetPort(handle), _function_::_1));
 }
 
 /*****************************************************************

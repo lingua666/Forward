@@ -7,7 +7,7 @@
 
 long g_AcceptNum = 0;
 
-/*void _CALLTYPE RecvBackFun( NETHANDLE Node, const char* pData, UInt32 u32Size )
+void _CALLTYPE RecvBackFun( NETHANDLE Node, const char* pData, UInt32 u32Size )
 {
 	MCmd_S_SentData(Node, pData, u32Size);
 }
@@ -31,7 +31,7 @@ void _CALLTYPE AcceptBackFun( const char* c_szIP, UInt16 uPort, NETHANDLE Node )
 	printf("Client Into(%d): %s:%d\r\n", g_AcceptNum, c_szIP, uPort);
 }
 
-/ *
+/*
 _string_type GetHostIP( void )
 {
 	char ip[20] = {0};
@@ -39,7 +39,7 @@ _string_type GetHostIP( void )
 	char *p = inet_ntoa (* ((struct in_addr *)(*phostinfo->h_addr_list)) );                
 	strcpy(ip, p);  
 	return _string_type(ip);
-}* /
+}*/
 
 
 int main(int argc, char* argv[])
@@ -62,12 +62,12 @@ int main(int argc, char* argv[])
 		MCmd_S_Free();
 		MCmd_S_Close();
 	};
-}*/
+}
 
-
-_server_::CommandServer*	GetServer( void )
+/*
+_server_::CmdServer*	GetServer( void )
 {
-	static	_server_::CommandServer	Server;
+	static	_server_::CmdServer	Server;
 	return &Server;
 }
 
@@ -77,7 +77,7 @@ void RecvBackFun( NETHANDLE Node, const char* pData, UInt32 u32Size )
 	GetServer()->Send(Node, pData, u32Size);
 }
 
-void CloseBackFun( NETHANDLE Node )
+void CloseBackFun( NETHANDLE Node, const char* c_szIP, UInt16 uPort )
 {
 	if( g_AcceptNum  <= 0 )
 	{
@@ -85,10 +85,10 @@ void CloseBackFun( NETHANDLE Node )
 	}
 
 	CASSubAndFetch(&g_AcceptNum);
-	printf("Client Close(%d): %s:%d\r\n", g_AcceptNum);
+	printf("Client Close(%d): %s:%d\r\n", g_AcceptNum,c_szIP, uPort);
 }
 
-void AcceptBackFun(const char* c_szIP, UInt16 uPort, NETHANDLE Node)
+void AcceptBackFun( NETHANDLE Node, const char* c_szIP, UInt16 uPort )
 {
 	GetServer()->SetRecvHandle(Node, function20_bind_Ex(RecvBackFun));
 	GetServer()->SetCloseHandle(Node, function20_bind_Ex(CloseBackFun));
@@ -96,27 +96,24 @@ void AcceptBackFun(const char* c_szIP, UInt16 uPort, NETHANDLE Node)
 	printf("Client Into(%d): %s:%d\r\n", g_AcceptNum, c_szIP, uPort);
 }
 
-/*_string_type GetHostIP( void )
+_string_type GetHostIP( void )
 {
 	char ip[20] = {0};
 	struct hostent *phostinfo = gethostbyname("");  
 	char *p = inet_ntoa (* ((struct in_addr *)(*phostinfo->h_addr_list)) );                
 	strcpy(ip, p);  
 	return _string_type(ip);
-}*/
+}
 
 int main(int argc, char* argv[])
 {
-	char* cs_IP = "192.168.1.246";
-	int iPort = 60000;
-
-	if( GetServer()->Listen(iPort, function20_bind_Ex(AcceptBackFun), cs_IP) )
+	if( GetServer()->Listen(8080, function20_bind_Ex(AcceptBackFun)) )
 	{
 		int iThreadNum = get_processor_number() * 2 + 2;
 		GetServer()->Run( iThreadNum );
 		printf("=====================================================\r\n");
 		printf("Command Serever is Runing,\r\nHost:%s, "
-			"Listen Port:%d\r\n%d Thread is Runing\r\n", cs_IP, iPort, iThreadNum);
+			"Listen Port:%d\r\n%d Thread is Runing\r\n", GetHostIP().c_str(),8080, iThreadNum);
 		printf("=====================================================\r\n");
 	}
 
@@ -124,4 +121,4 @@ int main(int argc, char* argv[])
 	{
 		
 	};
-}
+}*/

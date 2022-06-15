@@ -6,7 +6,7 @@ static void RecursiveCallBack( UInt64* pTotalSize,
 							const char* c_szFileName )
 { 
 	_string_type sPath(c_szDir);
-	sPath += SPLIT_CHAR_DEF;
+	sPath += "\\";
 	sPath += c_szFileName;
 	struct stat f_stat;
 	if (stat(sPath.c_str(), &f_stat) != -1)
@@ -118,10 +118,10 @@ int closedir(DIR *d)
 
 namespace	_file_{
 
-	bool CMyDirectory::IsExit( const char* c_szPath )
+	bool CMyDirectory::IsExit( const _string_type& sPath )
 	{
 		struct stat f_stat;
-		if (stat(c_szPath, &f_stat) == -1)
+		if (stat(sPath.c_str(), &f_stat) == -1)
 		{
 			return false;
 		}
@@ -176,7 +176,7 @@ namespace	_file_{
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 		if( strrchr( sPath.c_str(), '.' ) != NULL )
 		{
-			int iLen = strrchr( sPath.c_str(), SPLIT_CHAR_DEF ) - sPath.c_str();
+			int iLen = strrchr( sPath.c_str(), '\\' ) - sPath.c_str();
 			return _string_type(sPath.c_str(), iLen);
 		}
 #elif defined(PLATFORM_OS_FAMILY_UNIX)
@@ -229,9 +229,9 @@ namespace	_file_{
 				sTm = sTm.rstrim(SPLIT_STRING_DEF);
 		#if defined(PLATFORM_OS_FAMILY_WINDOWS)
 				if( !( sTm.size() == 2 && sTm.c_str()[1] == ':' )
-					&& !IsExit( sTm.c_str() ) )
+					&& !IsExit( sTm ) )
 		#elif defined(PLATFORM_OS_FAMILY_UNIX)
-				if( sTm.size() > 1 && !IsExit( sTm .c_str() ) )
+				if( sTm.size() > 1 && !IsExit( sTm ) )
 		#endif
 				{
 					if ( 0 != MKDIR(sDir.c_str()) )
@@ -242,7 +242,7 @@ namespace	_file_{
 
 		//如果不存在,创建
 		sDir = sDir.rstrim(SPLIT_STRING_DEF);
-		if( !IsExit( sDir.c_str() ) )
+		if( !IsExit( sDir ) )
 		{
 			if ( 0 != MKDIR(sDir.c_str()) )
 				return false;
@@ -251,7 +251,7 @@ namespace	_file_{
 		return true;
 	}
 
-	void CMyDirectory::RecursiveOnlyFile( const _string_type& sPath,
+	void CMyDirectory::Recursive( const _string_type& sPath,
 								const HFNFile& hfnNotify,
 								int iDepth )
 	{//递归目录
@@ -266,12 +266,12 @@ namespace	_file_{
 		while((entry = readdir(dp)) != NULL)  // 获取下一级目录信息，如果未否则循环  
 		{  
 			lstat(entry->d_name, &statbuf); // 获取下一级成员属性  
-			if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
-				continue;//过滤
-
 			if(S_IFDIR & statbuf.st_mode)    // 判断下一级成员是否是目录  
 			{  
-				RecursiveOnlyFile(sPath + SPLIT_STRING_DEF + entry->d_name, hfnNotify, iDepth + 4);              // 递归调用自身，扫描下一级目录的内容  
+				if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)  
+					continue;  
+
+				Recursive(sPath + SPLIT_STRING_DEF + entry->d_name, hfnNotify, iDepth + 4);              // 递归调用自身，扫描下一级目录的内容  
 			}  
 			/*else if( _string_type(entry->d_name).find(".xml") != _string_type::npos )
 			{
@@ -290,124 +290,12 @@ namespace	_file_{
 		return ;
 	}
 
-	void CMyDirectory::RecursiveAll(const _string_type& sPath,
-									const HFNFileV20& hfnNotify,
-									int iDepth)
-	{//递归目录
-		DIR *dp;                      // 定义子目录流指针  
-		struct dirent *entry;         // 定义dirent结构指针保存后续目录  
-		struct stat statbuf;          // 定义statbuf结构保存文件属性  
-		if ((dp = opendir(sPath.c_str())) == NULL) // 打开目录，获取子目录流指针，判断操作是否成功  
-		{
-			return;
-		}
-		_chdir(sPath.c_str());                     // 切换到当前目录  
-		while ((entry = readdir(dp)) != NULL)  // 获取下一级目录信息，如果未否则循环  
-		{
-			lstat(entry->d_name, &statbuf);		// 获取下一级成员属性
-			
-			if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
-				continue;//过滤
-
-			if (S_IFDIR & statbuf.st_mode)    // 判断下一级成员是否是目录  
-			{
-				RecursiveAll(sPath + SPLIT_STRING_DEF + entry->d_name, hfnNotify, iDepth + 4);              // 递归调用自身，扫描下一级目录的内容 
-			}
-			else
-			{
-				if (hfnNotify)
-				{
-					_string_type sFull = sPath + SPLIT_STRING_DEF + entry->d_name;
-					hfnNotify(false, sFull.c_str());
-				}
-			}
-		}
-
-		_chdir("..");                                                // 回到上级目录  
-		closedir(dp);                                               // 关闭子目录流  
-
-		if (hfnNotify)
-		{
-			hfnNotify(true, sPath.c_str());
-		}
-		return;
-	}
-
-	void CMyDirectory::RecursiveAllToDepth(const _string_type& sPath,
-		const HFNFileV20& hfnNotify, UInt32 uDepth)
-	{
-		DIR *dp;                      // 定义子目录流指针
-		struct dirent *entry;         // 定义dirent结构指针保存后续目录
-		struct stat statbuf;          // 定义statbuf结构保存文件属性
-		if ((dp = opendir(sPath.c_str())) == NULL) // 打开目录，获取子目录流指针，判断操作是否成功  
-		{
-			return;
-		}
-
-		_chdir(sPath.c_str());                 // 切换到当前目录  
-		while ((entry = readdir(dp)) != NULL)  // 获取下一级目录信息，如果未否则循环  
-		{
-			lstat(entry->d_name, &statbuf);		// 获取下一级成员属性
-
-			if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
-				continue;//过滤
-
-			if (S_IFDIR & statbuf.st_mode)    // 判断下一级成员是否是目录  
-			{				
-				if(uDepth - 1 > 0)
-					RecursiveAllToDepth(sPath + SPLIT_STRING_DEF + entry->d_name, hfnNotify, uDepth - 1);              // 递归调用自身，扫描下一级目录的内容 
-				else
-				{
-					_string_type sFull = sPath + SPLIT_STRING_DEF + entry->d_name;
-					hfnNotify(false, sFull.c_str());
-				}
-			}
-			else
-			{
-				if (hfnNotify)
-				{
-					_string_type sFull = sPath + SPLIT_STRING_DEF + entry->d_name;
-					hfnNotify(false, sFull.c_str());
-				}
-			}
-		}
-
-		_chdir("..");                                                // 回到上级目录  
-		closedir(dp);                                               // 关闭子目录流  
-		return;
-	}
-
 	UInt64 CMyDirectory::GetDirectSize( const char* c_szDir )
 	{
 		UInt64 uTotalSize = 0;
-		RecursiveOnlyFile(c_szDir, function20_bind(RecursiveCallBack, &uTotalSize,
+		Recursive(c_szDir, function20_bind(RecursiveCallBack, &uTotalSize,
 								_function_::_1, _function_::_2));
 		return uTotalSize;
-	}
-
-	static void HandleRemoveAll(bool isDir, const char* c_szPath)
-	{
-		if (isDir)
-			rmdir(c_szPath);
-		else
-			remove(c_szPath);
-	}
-
-	bool CMyDirectory::RemoveDir(const char* c_szDir)
-	{
-		RecursiveAll(c_szDir, function20_bind(HandleRemoveAll,
-			_function_::_1, _function_::_2));
-		return true;
-	}
-
-	_string_type CMyDirectory::NormcasePath(const _string_type& sDir)
-	{
-		_string_type sPath = sDir;
-#if defined( PLATFORM_OS_FAMILY_WINDOWS )
-		return const_cast<_string_type&>(sPath).replace("/", "\\");
-#elif defined( PLATFORM_OS_FAMILY_UNIX )
-		return const_cast<_string_type&>(sPath).replace("\\", "/");
-#endif
 	}
 
 } //_file_

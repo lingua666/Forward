@@ -54,7 +54,7 @@
 				HANDLE				_Handle;
 			}_ADR;
 			long			_Ref;
-			long			_ProcRef;
+			long			_ListRef;
 			HFNComplete		_hfnComplete;
 			function1_handle	_Free_Overlapp;
 
@@ -110,7 +110,7 @@
 				tagOverlapped* p = reinterpret_cast<tagOverlapped*>(_Pool.AllocObj<tagOverlapped>());
 				memset(&(p->_SWSAOverlapp.wsaOverlapped.Aiocb), 0, sizeof(struct iocb));
 				p->_ADR._Handle = INVALID_HANDLE_VALUE;
-				p->_ProcRef = 0;
+				p->_ListRef = 0;
 				p->_Ref = 1;
 				p->_SWSAOverlapp.wsaBuf.len = N;
 				if( N != 0 )

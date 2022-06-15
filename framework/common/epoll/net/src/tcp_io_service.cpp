@@ -37,7 +37,7 @@
 
 			io_service::~io_service( void )
 			{
-				Release();
+
 			}
 
 			io_service& io_service::operator=( const self_type& self )
@@ -50,20 +50,6 @@
 				_FreeLock = self._FreeLock;
 				_OverlappedManage = self._OverlappedManage;
 				return *this;
-			}
-
-			int io_service::Init(void)
-			{
-				//test
-				LOG_Print_SetLog(libEPoll_Net, MLog_GetAllLevel());
-				//test
-
-				return 1;
-			}
-
-			void io_service::Release(void)
-			{
-
 			}
 
 			int io_service::open( void )
@@ -132,7 +118,7 @@
 					pOverlapped->_hfnComplete.reset();
 				else
 				{
-					LOG_Print_Error(libEPoll_Net, "exit failed io_service::CloseOverlapped pOverlapped:%p has free\r\n", pOverlapped);
+					printf("exit failed io_service::CloseOverlapped pOverlapped:%p has free\r\n", pOverlapped);
 					_exit(0);
 				}
 				_FreeLock->UnLock();
@@ -226,7 +212,7 @@
 
 								if( pOver->_ProcRef < 0 && pOver->_hfnComplete )
 								{
-									LOG_Print_Error(libEPoll_Net,"io_service::process vvvvv lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, uOP:%d, p->_ADR._Sock:%d\r\n", pOver,pOver->_ProcRef,
+									printf("io_service::process vvvvv lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, uOP:%d, p->_ADR._Sock:%d\r\n", pOver,pOver->_ProcRef,
 										pOver->_SWSAOverlapp.wsaOverlapped.uOP, uOP, pOver->_ADR._Sock);
 									_exit(0);
 								}
@@ -239,7 +225,7 @@
 										{
 											if( pOver->_ProcRef < 0 )
 											{
-												LOG_Print_Error(libEPoll_Net,"io_service::process yyyyy lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, p->_ADR._Sock:%d\r\n", pOver, pOver->_ProcRef,
+												printf("io_service::process yyyyy lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d, p->_ADR._Sock:%d\r\n", pOver, pOver->_ProcRef,
 													pOver->_SWSAOverlapp.wsaOverlapped.uOP, pOver->_ADR._Sock);
 												_exit(0);
 											}
@@ -320,7 +306,7 @@
 					}
 				}
 
-				LOG_Print_Error(libEPoll_Net, "error thread exit threadid:%lld\r\n", _thread_::ThreadAPI::GetCurrentThreadId());
+				printf("thread exit threadid:%lld\r\n", _thread_::ThreadAPI::GetCurrentThreadId());
 				if( lpTmpOver != NULL )
 					_OverlappedManage->Free(lpTmpOver);
 			}
@@ -351,55 +337,12 @@
 					{
 						if( lpOverlapped->_RealSize == -1 && lpOverlapped->_hfnPerform )
 						{
-							if(uOP != IO_OP_WRITE)
-							{
-								lpOverlapped->_RealSize = lpOverlapped->_hfnPerform(lpOverlapped->_ADR._Sock,
-									lpOverlapped->_SWSAOverlapp.wsaBuf.buf,
-									lpOverlapped->_SWSAOverlapp.wsaBuf.len);
-								if( lpOverlapped->_RealSize < 0 && errno != EAGAIN )
-								{//Òì³£
-									lpOverlapped->_RealSize = 0;
-								}
-							}
-							else
-							{
-								int iRet = 0;
-								lpOverlapped->_RealSize = lpOverlapped->_Offset;
-								do 
-								{
-									iRet = lpOverlapped->_hfnPerform(lpOverlapped->_ADR._Sock,
-										&lpOverlapped->_SWSAOverlapp.wsaBuf.buf[lpOverlapped->_RealSize],
-										lpOverlapped->_SWSAOverlapp.wsaBuf.len - lpOverlapped->_RealSize);
-									if (iRet < 0 && errno != EAGAIN)
-									{//Òì³£
-										LOG_Print_Error(libEPoll_Net, "error io_service::process(%d,%d,%d,%d) _hfnPerform Faild\r\n", errno, lpOverlapped->_RealSize, iRet, lpOverlapped->_Offset);
-										lpOverlapped->_RealSize = 0;
-										break;
-									}
-									else
-									{
-										if (iRet > 0)
-										{
-											lpOverlapped->_RealSize += iRet;
-										}
-										else if(errno == EAGAIN)
-										{
-											/*LOG_Print_Info(libEPoll_Net, "io_service::process(%d,%d,%d,%d) EAGAIN IO_OP_WRITE\r\n", errno, lpOverlapped->_RealSize, iRet,lpOverlapped->_SWSAOverlapp.wsaBuf.len);*/
-
-											lpOverlapped->_Offset = lpOverlapped->_RealSize;
-											lpOverlapped->_RealSize = -1;
-											if (post_write(lpOverlapped->_ADR._Sock, lpOverlapped) == -1)
-											{
-												lpOverlapped->_RealSize = 0;
-												LOG_Print_Error(libEPoll_Net, "error io_service::process(%d,%p,%d,%d) post_write Faild\r\n", errno, lpOverlapped, lpOverlapped->_RealSize, iRet);
-												break;
-											}
-											return ;
-										}
-									}
-
-								} while (lpOverlapped->_RealSize < lpOverlapped->_SWSAOverlapp.wsaBuf.len);
-
+							lpOverlapped->_RealSize = lpOverlapped->_hfnPerform(lpOverlapped->_ADR._Sock,
+								lpOverlapped->_SWSAOverlapp.wsaBuf.buf,
+								lpOverlapped->_SWSAOverlapp.wsaBuf.len);
+							if( lpOverlapped->_RealSize < 0 && errno != EAGAIN )
+							{//Òì³£
+								lpOverlapped->_RealSize = 0;
 							}
 
 							pInfo->_pOverlapped = lpOverlapped;
@@ -414,14 +357,14 @@
 							//test
 							if( lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP == IO_OP_READ )
 							{
-								LOG_Print_Error(libEPoll_Net,"lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP == IO_OP_READ :%p,%d\r\n", lpOverlapped, lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP);
+								printf("lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP == IO_OP_READ :%p,%d\r\n", lpOverlapped, lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP);
 								_exit(0);
 							}
 
 							if( lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP == IO_OP_ACCEPT )
 							{
-								LOG_Print_Error(libEPoll_Net,"error exit failed io_service::process IO_OP_ACCEPT Free\r\n");
-								//_exit(0);
+								printf("exit failed io_service::process IO_OP_ACCEPT Free111\r\n");
+								_exit(0);
 							}
 							//test
 
@@ -432,7 +375,7 @@
 				//test
 				else
 				{
-					LOG_Print_Error(libEPoll_Net,"error failed io_service::process lpOverlapped is NULL\r\n");
+					printf("failed io_service::process lpOverlapped is NULL\r\n");
 					_exit(0);
 				}
 				//test

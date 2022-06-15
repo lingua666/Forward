@@ -13,8 +13,8 @@ struct tagAddress_INFO
 
 struct tagHeadLen
 {
-	UInt32	_uFlag:4;		//包类型    0: 普通包  1:地址信息包
-	UInt32	_uSize:28;
+	UInt16	_uFlag:4;		//包类型    0: 普通包  1:地址信息包
+	UInt16	_uSize:12;
 };
 
 struct tagAddress_HEAD
@@ -67,7 +67,7 @@ public:
 
 	void	Fill( UInt8 u8Flag, NETHANDLE Src, NETHANDLE Dst );
 
-	void	Append( const char* szData, UInt32 uSize );
+	void	Append( const char* szData, UInt16 u16Size );
 
 	_string_type	RemoveAddress( void );
 
@@ -77,7 +77,7 @@ public:
 
 	const _string_type&	GetString( void ) const;
 
-	int	Parse( const char* c_szData, UInt32 uInSize );
+	int	Parse( const char* c_szData, UInt32 u32Size );
 
 	inline UInt8	HeadSize( void ) const
 	{

@@ -1,5 +1,5 @@
 
-#include <dllFrameWork_Uart/Exports.h>
+#include <dllFramework_Uart/Exports.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>

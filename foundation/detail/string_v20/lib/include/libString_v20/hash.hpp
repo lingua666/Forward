@@ -30,10 +30,8 @@
 
 		_STD_END
 
-		#ifndef STDEXT_STRING_HASH
 
-			#define STDEXT_STRING_HASH
-			namespace stdext {
+		namespace stdext {
 
 			template <class _InIt>
 			inline size_t __Hash_value(_InIt _Begin, _InIt _End)
@@ -53,8 +51,6 @@
 			}
 
 		}
-
-		#endif
 
 	#endif
 

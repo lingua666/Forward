@@ -199,7 +199,6 @@
 # define __VA_BOOL_27		0
 # define __VA_BOOL_28		0
 # define __VA_BOOL_29		0
-# define __VA_BOOL_30		0
 # define __VA_BOOL_31		0
 # define __VA_BOOL_32		0
 # define __VA_BOOL_33		0

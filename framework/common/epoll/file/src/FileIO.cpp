@@ -249,22 +249,6 @@ namespace	_epoll_non_regular_file_{
 			}
 		}
 	}
-	
-	int FileIO::seek_read(Int64 uOffset)
-	{
-		if (!is_open())
-			return -1;
-
-		return lseek(_hFile, uOffset, SEEK_SET) == -1 ? -1 : 1;
-	}
-
-	Int64 FileIO::tell_read(void)
-	{
-		if (!is_open())
-			return -1;
-
-		return lseek(_hFile, 0, SEEK_CUR);
-	}
 
 } //_iocp_net_
 

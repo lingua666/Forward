@@ -1,6 +1,6 @@
 
 set( TARGET
-	libFrameWork_AsyncFiles
+	libFramework_AsyncFiles
 	)
 	
 #Traverse the file

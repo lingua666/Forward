@@ -15,13 +15,12 @@ namespace	_log_{
 
 	_string_type LogIOStd::GetTimer( void )
 	{
-		struct tm timeinfo = { 0 };
-		Timestamp_type().epochTM(&timeinfo);
+		struct tm * timeinfo = Timestamp_type().epochTM();
 		char szTime[100] = {0};
 		sprintf ( szTime,"[%04d-%02d-%02d %02d:%02d:%02d]", 
-			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-			timeinfo.tm_mday,timeinfo.tm_hour,
-			timeinfo.tm_min,timeinfo.tm_sec);
+			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+			timeinfo->tm_mday,timeinfo->tm_hour,
+			timeinfo->tm_min,timeinfo->tm_sec);
 		return szTime;
 	}
 
@@ -81,7 +80,7 @@ namespace	_log_{
 		if( -1 == _File.Open(szFilePath, "a+") ) 
 			return -1;
 
-		_File.GetCreateTime(&_CreateTime);
+		memcpy(&_CreateTime, _File.GetCreateTime(), sizeof(tm));
 		return 1;
 	}
 
@@ -98,8 +97,7 @@ namespace	_log_{
 			printf("LogFile_Date::Open is Failed! Path:%s", c_szFullPath);
 			return -1;
 		}
-
-		_File.GetCreateTime(&_CreateTime);
+		memcpy(&_CreateTime, _File.GetCreateTime(), sizeof(tm));
 		return 1;
 	}
 
@@ -135,7 +133,7 @@ namespace	_log_{
 
 		Timestamp_type stamp;
 		tm  NewTime = {0};
-		stamp.epochTM(&NewTime);
+		memcpy(&NewTime, stamp.epochTM(), sizeof(tm));
 
 		if( _CreateTime.tm_year != NewTime.tm_year || 
 			_CreateTime.tm_mon != NewTime.tm_mon || 
@@ -162,13 +160,12 @@ namespace	_log_{
 
 	_string_type LogFile_Date::GetTimer( void )
 	{
-		struct tm timeinfo = { 0 };
-		Timestamp_type().epochTM(&timeinfo);
+		struct tm * timeinfo = Timestamp_type().epochTM();
 		char szTime[100] = {0};
 		sprintf ( szTime,"[%04d-%02d-%02d %02d:%02d:%02d]", 
-			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-			timeinfo.tm_mday,timeinfo.tm_hour,
-			timeinfo.tm_min,timeinfo.tm_sec);
+			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+			timeinfo->tm_mday,timeinfo->tm_hour,
+			timeinfo->tm_min,timeinfo->tm_sec);
 		return szTime;
 	}
 
@@ -235,15 +232,14 @@ namespace	_log_{
 		if( _u32Capacity >= _u32MaxCapacity )
 		{
 			Timestamp_type stamp;
-			tm  Time = { 0 };
-			stamp.epochTM(&Time);
+			tm*  pTime = stamp.epochTM();
 
 			if( _File.is_open() )
 			{
 				_File.Close();
 				char sz[20] = {0};
-				sprintf(sz,"_%04d-%02d-%02d-%02d%02d%02d.", Time.tm_year + 1900, Time.tm_mon, Time.tm_mday + 1,
-					Time.tm_hour, Time.tm_min, Time.tm_sec);
+				sprintf(sz,"_%04d-%02d-%02d-%02d%02d%02d.",pTime->tm_year + 1900,pTime->tm_mon,pTime->tm_mday + 1,
+					pTime->tm_hour,pTime->tm_min,pTime->tm_sec);
 				_string_type sPath = _sFilePath;
 				sPath = sPath.replace(".",sz,1);
 				_sFilePath = sPath;

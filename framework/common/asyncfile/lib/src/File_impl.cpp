@@ -12,7 +12,6 @@ namespace	_async_{
 			, _isWrite( false )
 			, _uROffset( 0 )
 			, _uWOffset( 0 )
-			, _isOpen(false)
 		{
 			
 		}
@@ -20,7 +19,6 @@ namespace	_async_{
 		File_impl::~File_impl( void )
 		{
 			Release();
-			_List.clear();
 			if( _hDestroy )
 				_hDestroy();
 		}
@@ -36,7 +34,7 @@ namespace	_async_{
 		}
 
 #if defined( PLATFORM_OS_FAMILY_WINDOWS )
-		HANDLE	File_impl::Open( const char* szPath, int iMode, THandle hToken )
+		HANDLE	File_impl::Open( const char* szPath, int iMode )
 		{
 			HANDLE Handle = NULL;
 			switch(iMode)
@@ -69,28 +67,23 @@ namespace	_async_{
 				return INVALID_HANDLE_VALUE;
 			}
 
-			_isOpen = true;
 			_Handle = Handle;
-			_hToken = hToken;
 			return Handle;
 		}
 #elif defined( PLATFORM_OS_FAMILY_UNIX )
-		HANDLE	File_impl::Open( const char* szPath, int iMode, THandle hToken )
+		HANDLE	File_impl::Open( const char* szPath, int iMode )
 		{
 			HANDLE Handle = NULL;
 			switch(iMode)
 			{
 			case enMode_Read:
-				//O_LARGEFILE 大于2G文件
-				Handle = open(szPath, O_RDONLY | O_LARGEFILE, 0644);
+				Handle = open(szPath, O_RDONLY, 0644);  
 				break;
 			case enMode_Write:
-				//O_LARGEFILE 大于2G文件
-				Handle = open(szPath, O_WRONLY | O_CREAT | O_LARGEFILE, 0644);
+				Handle = open(szPath, O_WRONLY | O_CREAT, 0644);
 				break;
 			case enMode_ReadWrite:
-				//O_LARGEFILE 大于2G文件
-				Handle = open(szPath, O_RDWR | O_CREAT | O_LARGEFILE, 0644);
+				Handle = open(szPath, O_RDWR | O_CREAT, 0644);
 				break;
 			}
 
@@ -102,42 +95,34 @@ namespace	_async_{
 				return INVALID_HANDLE_VALUE;
 			}
 
-			_isOpen = true;
 			_Handle = Handle;
-			_hToken = hToken;
 			return Handle;
 		}
 #endif
 
 		void File_impl::Close( void )
 		{
+			HANDLE h = _Handle;
 			_Lock.Lock();
 			if( is_open() )
 			{
-				_isOpen = false;
+				_Handle = INVALID_HANDLE_VALUE;
+				_isWrite = false;
+				_uROffset = 0;
+				_uWOffset = 0;
 				_Lock.UnLock();
-
-				if (_List.size() <= 0)
-				{
-					Close_Impl();
-				}
-				else
-				{
-					GetTimerEventInstance()->push_back(function20_bind(&File_impl::HandleFlush, shared_from_this()), 10);
-				}
+#if defined( PLATFORM_OS_FAMILY_WINDOWS )
+				CloseHandle(h);
+#elif defined( PLATFORM_OS_FAMILY_UNIX )
+				close(h);
+#endif
+				_FileIO.close();
+				_List.clear();
 			}
 			else
 			{
 				_Lock.UnLock();
 			}
-		}
-
-		void File_impl::Close_Impl(void)
-		{
-			_isWrite = false;
-			_uROffset = 0;
-			_uWOffset = 0;
-			_FileIO.close();
 		}
 
 		void File_impl::SetCallBack( const HFNNotify& hRead,
@@ -172,7 +157,6 @@ namespace	_async_{
 					shared_from_this(), Buf, _function_::_1),
 					Offset) == -1 )
 				{
-					_isWrite = false;
 					Close();
 				}
 			}
@@ -222,7 +206,7 @@ namespace	_async_{
 			{
 				_uROffset += pIOData->_ibytes_transferred;
 				Buf->Data[pIOData->_ibytes_transferred] = 0;
-				_hRead(/*_Handle*/_hToken, Buf->Data, pIOData->_ibytes_transferred);
+				_hRead(_Handle, Buf->Data, pIOData->_ibytes_transferred);
 			}
 		}
 
@@ -232,7 +216,7 @@ namespace	_async_{
 			if( is_open() && _hRead )
 			{
 				_uROffset += pIOData->_ibytes_transferred;
-				_hRead(/*_Handle*/_hToken, szBuf, pIOData->_ibytes_transferred);
+				_hRead(_Handle, szBuf, pIOData->_ibytes_transferred);
 			}
 		}
 
@@ -264,42 +248,14 @@ namespace	_async_{
 				pIOData->_pOverlapped->_SWSAOverlapp.wsaBuf.len = Buf->uSize;
 				if( _FileIO.async_write(pIOData->_pOverlapped, uOffset) == -1 )
 				{
-					_isWrite = false;
 					Close();
 				}
 			}
 			
-			if( /*is_open() && */_hWrite )
+			if( is_open() && _hWrite )
 			{
-				_hWrite(/*_Handle*/_hToken, Buf->Data, pIOData->_ibytes_transferred);
+				_hWrite(_Handle, Buf->Data, pIOData->_ibytes_transferred);
 			}
-		}
-
-		void File_impl::HandleFlush(void)
-		{
-			if (_List.size() <= 0 ||
-				GetTimerEventInstance()->push_back(function20_bind(&File_impl::HandleFlush, shared_from_this()), 10) == -1)
-			{
-				Close_Impl();
-			}
-		}
-
-		int File_impl::Seek_Read( Int64 uOffset )
-		{
-			if (!is_open())
-				return -1;
-
-			_uROffset = uOffset;
-
-			return _FileIO.seek_read(uOffset);
-		}
-
-		UInt64 File_impl::Tell_Read(void)
-		{
-			if (!is_open())
-				return -1;
-
-			return _uROffset;
 		}
 
 	}// namespace	_files_

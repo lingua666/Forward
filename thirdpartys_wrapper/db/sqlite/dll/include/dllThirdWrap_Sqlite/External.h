@@ -1,9 +1,0 @@
-
-#ifndef __EXTERNAL_20160329215604_1444199361_H__
-#define __EXTERNAL_20160329215604_1444199361_H__
-
-#include <dllCommon/DllCommon.h>
-
-typedef void* HMRecordSet;
-
-#endif//__EXTERNAL_20150914105604_1444199361_H__

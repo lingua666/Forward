@@ -34,7 +34,7 @@
 		char*	szName;
 		char*	szIP;
 		char*	szDescribe;
-		unsigned char	Mac[8];
+		unsigned char	Mac[6];
 		unsigned char	Type;
 	};
 
@@ -44,20 +44,7 @@
 		UInt64_t uFreeSize;
 	};
 
-	struct tagDisk_Detail_INFO
-	{
-		char* pManufacturer;	//制造商名称
-		char* pModel;			//磁盘驱动器的制造商的型号
-		char* pSerialNumber;	//磁盘序列号
-		char* pInterfaceType;	//硬件接口类型  IDE、SATA
-		Int64_t uSize;			//硬盘大小
-	};
-
-	//获取网卡信息
 	typedef	void (*pfnNetworkInfo)( tagNetworks_INFO* pInfo, void* pUser );
-
-	//获取硬盘详细信息
-	typedef void (*fpnGetDiskDetailInfo)(tagDisk_Detail_INFO* pInfo);
 
 	/// 获得CPU的核数
 	int get_processor_number( void );
@@ -73,19 +60,19 @@
 	//获取cpu类型
 	int get_cpu_brand( char* pbrand, int isize );
 
-	/// 获取cpu使用率，返回-1失败 单位/百分比
-	int get_sys_cpu_usage( void );
+	/// 获取cpu使用率，返回-1失败
+	int get_cpu_usage( void );
 
-	//获取内存信息 单位/K
+	//获取内存信息
 	void get_memory_info( UInt64_t* total, UInt64_t* free );
 
 	/// 获取当前进程总共读和写的IO字节数，返回-1失败，0成功
 	int get_process_io_bytes( UInt64_t* read_bytes, UInt64_t* write_bytes );
 
-	/// 获取当前进程内存和虚拟内存使用量，返回-1失败，0成功  单位/K
+	/// 获取当前进程内存和虚拟内存使用量，返回-1失败，0成功
 	int get_process_memory_usage( UInt64_t* mem, UInt64_t* vmem );
 
-	/// 获取当前进程的cpu使用率，返回-1失败 单位/百分比
+	/// 获取当前进程的cpu使用率，返回-1失败
 	int get_process_cpu_usage( void );
 
 	//通过进程名获取进程ID
@@ -106,17 +93,11 @@
 	//获取某年天数
 	int get_days_to_year( unsigned short uYear );
 
+	//获取磁盘空间
+	int get_disk_space( const char* c_szDir, tagSys_Disk_INFO* pInfo );
+
 	//获取系统配置资源
 	int get_system_resource( const char* szFilePath );
-
-	//设置系统内核转存文件的最大长度和可以打开的socket数量(linux系统有效)
-	int set_core_and_file_max(int iCore = -1, int iFile = -1 );
-
-	//获取磁盘空间
-	int get_disk_space(const char* c_szDir, tagSys_Disk_INFO* pInfo);
-
-	//获取磁盘详细信息
-	int get_disk_detail(fpnGetDiskDetailInfo pFunc);
 
 #ifdef  __cplusplus
 	}

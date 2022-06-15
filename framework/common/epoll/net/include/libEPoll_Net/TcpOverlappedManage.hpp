@@ -49,12 +49,11 @@
 			{
 				tagWSAOverlapped		_SWSAOverlapp;
 				union {
-					SOCKET		_Sock;
+					SOCKET				_Sock;
 				}_ADR;
 				long			_Ref;
 				long			_ProcRef;
 				long			_RealSize;
-				long			_Offset;
 				HFNPerform		_hfnPerform;
 				HFNComplete		_hfnComplete;
 				function1_handle	_Free_Overlapp;
@@ -106,7 +105,6 @@
 					p->_ADR._Sock = INVALID_SOCKET;
 					p->_RealSize = -1;
 					p->_ProcRef = 0;
-					p->_Offset = 0;
 
 					p->_Ref = 1;
 					p->_SWSAOverlapp.wsaBuf.len = N;

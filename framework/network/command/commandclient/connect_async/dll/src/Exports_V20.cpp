@@ -41,8 +41,8 @@ void _CALLTYPE	gCloseBack20160526_V20( fpnMCmd_C_V20_Close fpnClose,
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_C_V20_Init( int iIOThreadNum, int iProcThreadNum )
 {
 	//test
-	//LOG_Print_SetLog(Cmd_C_Module, MLog_GetAllLevel())
-	//LOG_Print_SetLog(Cmd_C_DataError, MLog_GetAllLevel())
+	//LOG_Print_SetLog(Cmd_C_Module, 1)
+	//LOG_Print_SetLog(Cmd_C_DataError, 1)
 	//test
 
 	LOG_Print_Info(Cmd_C_V20_Module,"MCmd_C_V20_Init():")
@@ -95,7 +95,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS NETHANDLE _CALLTYPE MCmd_C_V20_Connect( const char*
 	return GetAsynCmdClientsInstance()->Connect(c_szIP, u16Port,
 							function20_bind(gConnectResultBack20160526_V20,
 									g_fpnMCmd_C_Connect20160526_v20, pUser,
-									_string_type(c_szIP), u16Port, _function_::_1), -1, -1);
+									_string_type(c_szIP), u16Port, _function_::_1));
 }
 
 /*****************************************************************
@@ -126,8 +126,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_C_V20_SetClose( NETHANDLE handle
 
 	return GetAsynCmdClientsInstance()->SetDestroyHandle(handle,
 							function20_bind(gCloseBack20160526_V20, fpnClose,
-							pUser, GetIPv4SFromNETNODE(handle),
-							GetPortFromNETNODE(handle),_function_::_1));
+							pUser, GetIPv4ToString(handle),
+							GetPort(handle),_function_::_1));
 }
 
 

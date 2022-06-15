@@ -9,11 +9,6 @@
 
 			typedef _sys_error_					error_code;
 
-			void TcpSocket::CloseSocket(const HSOCKET& Sock)
-			{
-				APIWSAClose(Sock);
-			}
-
 			TcpSocket::TcpSocket( const io_service& service )
 				: _Service(service)
 				, _Sock(INVALID_SOCKET)
@@ -28,10 +23,9 @@
 				this->close();
 			}
 
-			TcpSocket::HSOCKET TcpSocket::Connect( const _string_type& sIP, UInt16 u16Port,
-							int iSocketRecv, int iSocketSend )
+			TcpSocket::HSOCKET TcpSocket::Connect( const _string_type& sIP, UInt16 u16Port )
 			{
-				_Sock = APIWSACreate(SOCK_STREAM, iSocketRecv, iSocketSend);
+				_Sock = APIWSACreate(SOCK_STREAM,-1,-1);
 				if( _Sock == SOCKET_ERROR )
 					return INVALID_SOCKET;
 
@@ -103,7 +97,6 @@
 				p->_SWSAOverlapp.wsaBuf.buf = wBuf.buf;
 				p->_SWSAOverlapp.wsaBuf.len = wBuf.len;
 				p->_Free_Overlapp = function1_handle(&io_service::OverlappedManage_type::Free, _Service.GetOverlappedManage().get());//function1_handle(&TcpSocket::FreeOverlapped, this);
-				p->_Offset = 0;
 
 				//增加1,统一close后删除
 				tagOverlapped::AddRef(p);
@@ -189,32 +182,31 @@
 				p->_SWSAOverlapp.wsaBuf.buf = wBuf.buf;
 				p->_SWSAOverlapp.wsaBuf.len = wBuf.len;
 				p->_Free_Overlapp = function1_handle(&TcpSocket::FreeOverlapped, this);
-				p->_RealSize = 0;
-				p->_Offset = 0;
 
 				int iRet = APIWSASend(_Sock, p->_SWSAOverlapp.wsaBuf.buf, p->_SWSAOverlapp.wsaBuf.len);
 				if( iRet >= 0 )
-				{	
+				{		
 					int iTime = 0;
 					tagIOData_INFO	IODataINFO = {0};
 					IODataINFO._pOverlapped = p;
-					p->_RealSize += iRet;
+					p->_RealSize = iRet;
 
 					while( p->_RealSize < wBuf.len )
 					{
 						iRet = APIWSASend(_Sock, &p->_SWSAOverlapp.wsaBuf.buf[p->_RealSize], p->_SWSAOverlapp.wsaBuf.len - p->_RealSize);
 						if( iRet == SOCKET_ERROR )
 						{
+
 							// 当socket是非阻塞时,如返回此错误,表示写缓冲队列已满,
 							// 在这里做延时后再重试.
-							if(errno == EAGAIN)
+							if(errno == EAGAIN && iTime < 10)
 							{
-								p->_Offset = p->_RealSize;
-								goto gt_post;
+								Sleep(5);
+								iTime ++;
+								continue;
 							}
 							else
 							{
-								LOG_Print_Error(libEPoll_Net, "TcpSocket::async_write(%d,%d,%d) APIWSASend Failed, Close", errno, p->_RealSize, p->_SWSAOverlapp.wsaBuf.len);
 								_OverlappedManage.Free(p);
 								return -1;
 							}
@@ -222,12 +214,12 @@
 
 						p->_RealSize += iRet;
 					}
-					
+
 					_Service.process(&IODataINFO, p);
+					//_Service.post(p, 0);
 				}
 				else if( errno == EAGAIN )
 				{
-gt_post:
 					p->_RealSize = -1;
 					if( _Service.post_write(_Sock, p) == -1 )
 					{
@@ -248,7 +240,6 @@ gt_post:
 			{
 				tagOverlapped::AddRef(pOverlapped);
 				pOverlapped->_RealSize = -1;
-				pOverlapped->_Offset = 0;
 
 				int iRet = APIWSASend(_Sock, pOverlapped->_SWSAOverlapp.wsaBuf.buf, pOverlapped->_SWSAOverlapp.wsaBuf.len);
 				if( iRet >= 0 )
@@ -260,19 +251,19 @@ gt_post:
 
 					while( pOverlapped->_RealSize < pOverlapped->_SWSAOverlapp.wsaBuf.len )
 					{
-						iRet = APIWSASend(_Sock, &pOverlapped->_SWSAOverlapp.wsaBuf.buf[pOverlapped->_RealSize], pOverlapped->_SWSAOverlapp.wsaBuf.len - pOverlapped->_RealSize);
+						iRet = APIWSASend(_Sock, &pOverlapped->_SWSAOverlapp.wsaBuf.buf[pOverlapped->_RealSize], 			pOverlapped->_SWSAOverlapp.wsaBuf.len - pOverlapped->_RealSize);
 						if( iRet == SOCKET_ERROR )
 						{
 							// 当socket是非阻塞时,如返回此错误,表示写缓冲队列已满,
 							// 在这里做延时后再重试.
-							if(errno == EAGAIN)
+							if(errno == EAGAIN && iTime < 10)
 							{
-								pOverlapped->_Offset = pOverlapped->_RealSize;
-								goto gt_post;
+								Sleep(5);
+								iTime ++;
+								continue;
 							}
 							else
 							{
-								LOG_Print_Error(libEPoll_Net, "TcpSocket::async_write11(%d,%d,%d) APIWSASend Failed, Close", errno, pOverlapped->_RealSize, pOverlapped->_SWSAOverlapp.wsaBuf.len);
 								_OverlappedManage.Free(pOverlapped);
 								return -1;
 							}
@@ -285,7 +276,6 @@ gt_post:
 				}
 				else if( errno == EAGAIN )
 				{
-gt_post:
 					pOverlapped->_RealSize = -1;
 					if( _Service.post_write(_Sock, pOverlapped) == -1 )
 					{

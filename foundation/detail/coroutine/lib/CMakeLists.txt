@@ -8,13 +8,14 @@ set ( TARGET_INCLUDE_DIR
 	include
 	)
 
-FILE(GLOB_RECURSE TARGET_H_LIST "${TARGET_INCLUDE_DIR}/*.h" "${TARGET_INCLUDE_DIR}/*.hpp")
+FILE(GLOB_RECURSE TARGET_H_LIST "${TARGET_INCLUDE_DIR}/*.h")
+FILE(GLOB_RECURSE TARGET_H_LIST "${TARGET_INCLUDE_DIR}/*.hpp")
 FILE(GLOB_RECURSE TARGET_SRC_LIST "src/*.cpp")
 
 add_target(${TARGET} StaticLib ${TARGET_SRC_LIST} ${TARGET_H_LIST})
 
-add_dependencies(${TARGET} libCommon libSmart_ptr_v20)
-target_link_libraries(${TARGET} libCommon libSmart_ptr_v20)
+add_dependencies(${TARGET} libCommon)
+target_link_libraries(${TARGET} libCommon)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

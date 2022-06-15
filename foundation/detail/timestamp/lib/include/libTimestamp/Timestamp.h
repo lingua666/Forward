@@ -97,30 +97,22 @@ public:
 		/// time_t base time is midnight, January 1, 1970.
 		/// Resolution is one second.
 
-	int epochTM(struct tm * Time) const;
+	struct tm * epochTM() const;
 
 	_string_type	localTimePrintf();
 
-	_string_type	localTimePrintf2();
-
 	_string_type	gmTimePrintf();
 
-	_string_type	DateString(const char* c_szSeparator = NULL) const;
-
-	// ±∑÷√Î.∫¡√Î
-	_string_type	MSTimeString(const char* c_szSeparator = NULL) const;
-
-	// ±∑÷√Î
-	_string_type	STimeString(const char* c_szSeparator = NULL) const;
+	_string_type	DateString();
 
 	//√Î
-	_string_type	DateTimeString(const char* c_szSeparator = NULL) const;
+	_string_type	DateTimeString();
 
 	//∫¡√Î
-	_string_type	DateMilliString() const;
+	_string_type	DateMilliString();
 
 	//Œ¢√Ó
-	_string_type	DateMicroString() const;
+	_string_type	DateMicroString();
 
 	UInt32 unixTime() const;
 		
@@ -155,8 +147,6 @@ public:
 		/// the returned value is always 1000000.
 		
 	static TimeVal getcurrent_microseconds();
-
-	static int static_epochTM(const time_t& rawtime, struct tm * Time);
 
 #if defined(_WIN32)
 	static Timestamp fromFileTimeNP(UInt32 fileTimeLow, UInt32 fileTimeHigh);
@@ -242,6 +232,12 @@ inline Timestamp& Timestamp::operator -= (Timestamp::TimeDiff d)
 inline std::time_t Timestamp::epochTime() const
 {
 	return std::time_t(_ts/resolution());
+}
+
+inline struct tm * Timestamp::epochTM() const
+{
+	time_t rawtime = epochTime();
+	return localtime ( &rawtime );
 }
 
 inline UInt32 Timestamp::unixTime() const

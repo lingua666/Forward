@@ -5,40 +5,32 @@
 
 namespace _iocp_net_{
 
-	namespace _tcp_ {
+	namespace _tcp_{
 
-		io_service::io_service(void)
+		io_service::io_service( void )
 			: _is_run(false)
 			, _io_handle(NULL)
 		{
 
 		}
 
-		io_service::io_service(const self_type& self)
+		io_service::io_service( const self_type& self )
 			: _io_handle(self._io_handle)
 			, _is_run(self._is_run)
 		{
 
 		}
 
-		io_service::~io_service(void)
+		io_service::~io_service( void )
 		{
 			//stop();
 		}
 
-		io_service& io_service::operator=(const self_type& self)
+		io_service& io_service::operator=( const self_type& self )
 		{
 			_io_handle = self._io_handle;
 			return *this;
 		}
-
-		int io_service::Init(void)
-		{
-			return 1;
-		}
-
-		void io_service::Release(void)
-		{}
 
 		int io_service::open( void )
 		{

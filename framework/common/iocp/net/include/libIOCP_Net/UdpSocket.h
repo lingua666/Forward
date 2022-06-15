@@ -46,7 +46,7 @@ namespace	_iocp_net_{
 			*/
 			~UdpSocket( void );
 
-			UdpSocket::HSOCKET Listen( UInt16 u16Port, const char* c_szIP = NULL);
+			UdpSocket::HSOCKET Listen( UInt16 u16Port );
 
 			int Bind( const HSOCKET& Sock );
 

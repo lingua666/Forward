@@ -37,32 +37,32 @@ tagAddress_HEAD*	Packet_Route::GetHeadInfo( void )
 	return (tagAddress_HEAD*)pHead->_Data;
 }
 
-void	Packet_Route::Fill( NETHANDLE Dst, UInt32 uHop )
+void	Packet_Route::Fill( NETHANDLE Dst, UInt16 uHop )
 {
 	_Head.Fill(1, _Address, Dst);
 	_Head.Append((char*)&uHop, sizeof(uHop));
 }
 
-int	Packet_Route::AppendHead( const char* c_szData, UInt32 uSize )
+int	Packet_Route::AppendHead( const char* c_szData, UInt16 u16Size )
 {
-	_Head.Append(c_szData, uSize);
+	_Head.Append(c_szData, u16Size);
 	return 1;
 }
 
-int	Packet_Route::AppendData( const char* c_szData, UInt32 uSize )
+int	Packet_Route::AppendData( const char* c_szData, UInt16 u16Size )
 {
-	_sData.append(c_szData, uSize);
+	_sData.append(c_szData, u16Size);
 	return 1;
 }
 
-int	Packet_Route::Parse( const char* c_szData, UInt32 uInSize )
+int	Packet_Route::Parse( const char* c_szData, UInt32 u32Size )
 {
-	if( _Head.HeadSize() > uInSize)
+	if( _Head.HeadSize() > u32Size )
 		return -1;
 
-	int iOffset = _Head.Parse(c_szData, uInSize);
-	if( iOffset < uInSize)
-		_sData.append(c_szData[iOffset], uInSize - iOffset);
+	int iOffset = _Head.Parse(c_szData, u32Size);
+	if( iOffset < u32Size )
+		_sData.append(c_szData[iOffset], u32Size - iOffset);
 
 	return 1;
 }

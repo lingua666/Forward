@@ -65,8 +65,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Init( int uWorkerThreads =
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_V20_Listen( int u16Port,
 															pfnCmd_S_V20_Accept pfnAccept,
-															void* pUser, UInt8 uIOThreadNum = 0,
-															const char* c_szIP = NULL );
+															void* pUser, UInt8 uIOThreadNum = 0 );
 
 /*****************************************************************
 /*函数说明：	关闭服务器

@@ -51,8 +51,8 @@ namespace	_client_{
 
 			NETHANDLE Connect( const char* c_szIP, UInt16 uPort );
 			int Close( NETHANDLE Node );
-			int	SendError( NETHANDLE Node, const char* c_pData, UInt32 uSize );
-			int	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
+			int	SendError( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
+			int	Send( NETHANDLE Node, const char* c_pData, UInt16 u16Size );
 
 			/********************ÊÂ¼þ×¢²á*****************************/
 			EVENT_REGISTER_LIST_BEGIN(CmdSession)

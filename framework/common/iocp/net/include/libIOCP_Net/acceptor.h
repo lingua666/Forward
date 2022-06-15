@@ -38,7 +38,7 @@ namespace _iocp_net_{
 
 			int attach( const io_service& service );
 
-			int bind( UInt16 u16Port, const char* c_szIP = NULL );
+			int bind( UInt16 u16Port );
 
 			int listen( void );
 

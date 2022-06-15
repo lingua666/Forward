@@ -1,4 +1,4 @@
-LIBRARY  dllFrameWork_AsyncUarts
+LIBRARY  dllFramework_AsyncUarts
 
 EXPORTS
 
@@ -7,7 +7,6 @@ GetModuleInfo				@2
 MAsyncUart_Init				@3
 MAsyncUart_Free				@4
 MAsyncUart_Open				@5
-MAsyncUart_SetRecData		@6
+MAsyncUart_SetRecData			@6
 MAsyncUart_Close			@7
 MAsyncUart_SentData			@8
-MAsyncUart_GetWinComName	@9

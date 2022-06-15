@@ -36,11 +36,6 @@ namespace	_server_{
 			typedef LinkList_type<StreamBuf_ptr>		LList;
 			typedef Container_HashMap_type<_HASH, StreamSession_sptr>				HashMap_type;
 
-			struct __M_ALIGNED_PACKED__ tagStreamIdentity
-			{
-				StreamSession*	_Identity;
-			};
-
 			static	void	MessageThread( void* pParamter );
 			static	void	WorkThread( void* pParamter );
 		public:
@@ -63,21 +58,18 @@ namespace	_server_{
 			void Release( void );
 
 			Int32	Send( NETHANDLE Node, sockaddr_in* pDest, UInt32 MediaType,
-				const char* c_pData, UInt32 uSize, UInt16 uBufNum = 0);
+				const char* c_pData, UInt16 u16Size );
 
 			Int32	Send( NETHANDLE Node, sockaddr_in* pDest,
-				const char* c_pData, UInt32 uSize, UInt16 uBufNum = 0);
+				const char* c_pData, UInt16 u16Size );
 
 			Int32	Send(NETHANDLE Node, const char* c_szDstIP, UInt16 uDstPort,
-				const char* c_pData, UInt32 uSize, UInt16 uBufNum = 0);
+				const char* c_pData, UInt16 u16Size);
 
 			void	Stop( void );
 			int		Close( NETHANDLE Node );
 
-			NETHANDLE	Open(UInt16 u16Port, const char* c_szIP = NULL, UInt16 uBufNum = 0);
-
-			//µ•Œª∫¡√Î
-			void	SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS);
+			NETHANDLE	Open( UInt16 u16Port );
 
 			int	SetCloseHandle( NETHANDLE Node, const Stream_HClose& Handle )
 			{
@@ -211,8 +203,6 @@ namespace	_server_{
 			CLock			_Lock;
 			bool			_isSequence;
 			io_service		_ioService;
-			UInt32 			_uWorkMS;
-			UInt32 			_uDestroyMS;
 		};
 		/** @} end AppMain */
 

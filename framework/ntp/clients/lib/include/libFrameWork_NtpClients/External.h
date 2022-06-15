@@ -1,9 +1,0 @@
-
-#ifndef __EXTERNAL_20220409162504_3344199361_H__
-#define __EXTERNAL_20220409162504_3344199361_H__
-
-#include <libNetFrame_UDP_Stream/AppMain.h>
-
-LOG_OBJ_DECL(libFrameWork_NtpClients)
-
-#endif//__EXTERNAL_20150914105604_3344199361_H__

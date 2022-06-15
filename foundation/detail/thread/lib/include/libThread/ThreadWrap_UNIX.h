@@ -113,8 +113,6 @@ namespace	_thread_{
 
 		void	interrupt( UInt32 iCode = 0 );
 
-		bool	is_run(void);
-
 	protected:
 		void close( void );
 

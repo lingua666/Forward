@@ -3,7 +3,7 @@
 #include <libCommon/os/Platform.h>
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
-#include <dllFrameWork_Uart/Exports.h>
+#include <dllFramework_Uart/Exports.h>
 #include <libValidityCheck/FileCheck.h>
 #include <stdio.h>
 #include <stdlib.h>

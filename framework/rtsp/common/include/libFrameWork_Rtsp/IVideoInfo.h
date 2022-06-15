@@ -36,7 +36,7 @@ public:
 public:
 	virtual ~IVideoInfo( void ) { }
 
-	virtual void Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo, bool isNormalize = true ) = 0;
+	virtual void Parse( char* c_szData, UInt32 uLen, tagVideoPlayload_INFO* pPlayloadInfo ) = 0;
 
 	virtual bool isReady( void ) = 0;
 
@@ -47,10 +47,6 @@ public:
 	virtual tagMediaVideoINFO*	GetStreamInfo( void ) = 0;
 
 	virtual	UInt8	GetVideoType( void ) const = 0;
-
-	virtual	const _string_type&	GetSPS(void) const = 0;
-
-	virtual	const _string_type&	GetPPS(void) const = 0;
 
 	virtual _string_type GetHeadBuffer( void ) = 0;
 

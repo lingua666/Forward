@@ -1,10 +1,6 @@
 
 #include <libCommon/CASAtomic.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 //予可使用C++11 std::atomic原子操作 
 
 #if defined(PLATFORM_OS_FAMILY_UNIX)
@@ -75,8 +71,4 @@ const long CASSubAndFetch( long* Destination )
 #undef CASAddFetch
 #undef CASFetchSub
 #undef CASSubFetch
-
-#ifdef  __cplusplus
-}
-#endif
 

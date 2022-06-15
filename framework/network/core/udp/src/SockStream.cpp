@@ -112,8 +112,8 @@ namespace _io_net_{
 				function20_bind(&self_type::HandleSend, shared_from_this(), c_szData, 
 				_foundation_::_1) ) == -1 )
 			{
-				printf("failed SockStream::PostSend(%d) error %s, this:%p, soc:%p\r\n",
-					u32Size, error_code(error_code::GetLastError()).message().c_str(), this, &_Socket);
+				printf("failed SockStream::PostSend error %s, this:%p, soc:%p\r\n",
+					error_code(error_code::GetLastError()).message().c_str(), this, &_Socket);
 
 				Close();
 			}

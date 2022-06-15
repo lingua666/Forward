@@ -87,7 +87,7 @@ public:
 	void reset();
 	const DigestEngine::Digest& digest();
 
-	_string_type	digestToFile(const char* c_szPath);
+	_string_type	digestToFile( const _string_type& sFile );
 
 protected:
 	void updateImpl(const void* data, unsigned length);

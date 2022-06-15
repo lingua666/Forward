@@ -17,7 +17,7 @@ namespace	_iocp_net_{
 
 		}
 
-		UdpSocket::HSOCKET UdpSocket::Listen( UInt16 u16Port, const char* c_szIP)
+		UdpSocket::HSOCKET UdpSocket::Listen( UInt16 u16Port )
 		{
 			_Sock = APIWSACreate(SOCK_DGRAM, 1024 * 100, -1);
 			if( _Sock == SOCKET_ERROR )
@@ -25,11 +25,7 @@ namespace	_iocp_net_{
 
 			SOCKADDR_IN addr;
 			addr.sin_family			= AF_INET;
-			if(c_szIP == NULL)
-				addr.sin_addr.s_addr	= htonl(INADDR_ANY);
-			else
-				addr.sin_addr.s_addr = inet_addr(c_szIP);
-
+			addr.sin_addr.s_addr	= htonl(INADDR_ANY);
 			addr.sin_port			= htons( u16Port );
 
 			if( ::bind( _Sock, (sockaddr *) &addr, sizeof(addr) ) == -1 )

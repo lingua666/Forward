@@ -18,7 +18,7 @@
 
 	typedef	int SOCKET;
 
-	SOCKET	APIWSACreate( int iSocketType, int iRevSize, int iSendSize, const char* c_szIP = NULL );
+	SOCKET	APIWSACreate( int iSocketType, int iRevSize, int iSendSize );
 	int APIWSASetnonBlocking( SOCKET Sock );
 	int	APIWSAShutDown( SOCKET Sock );
 	int	APIWSAClose( SOCKET Sock );

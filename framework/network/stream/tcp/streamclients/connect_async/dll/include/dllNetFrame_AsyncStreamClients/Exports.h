@@ -13,7 +13,7 @@ DLL_LOG_DECL_DEF(Stream_C_Module)
 
 /*****************************************************************
 /*原型声明：	连接响应回调函数
-/*参数说明：	Handle: 客户端连接成功句柄(64bit连接句柄)
+/*参数说明：	handle: 客户端连接成功句柄(64bit连接句柄)
 						-1: 失败	>0: 句柄值
 
 				c_szSvrIP: 客户端IP地址
@@ -23,11 +23,11 @@ DLL_LOG_DECL_DEF(Stream_C_Module)
 *****************************************************************/
 typedef void (_CALLTYPE *fpnMStream_C_Connect)( const char* c_szSvrIP,
 											UInt16 uSvrPort,
-											NETHANDLE Handle);
+											NETHANDLE handle );
 
 /*****************************************************************
 /*原型声明：	连接断开回调函数
-/*参数说明：	Handle: 64bit连接句柄
+/*参数说明：	handle: 64bit连接句柄
 				c_szIP: 客户端IP地址
 				uPort: 客户端端口号
 /*				
@@ -35,17 +35,17 @@ typedef void (_CALLTYPE *fpnMStream_C_Connect)( const char* c_szSvrIP,
 *****************************************************************/
 typedef void (_CALLTYPE *fpnMStream_C_Close)( const char* c_szIP,
 											UInt16 uPort,
-											NETHANDLE Handle);
+											NETHANDLE handle );
 
 /*****************************************************************
 /*原型声明：	接收回调函数
-/*参数说明：	Handle: 64bit连接句柄
+/*参数说明：	handle: 64bit连接句柄
 				c_pData: 接收缓冲区
 				u32Size: 接收长度
 /*				
 /*返回值：		64bit连接句柄
 *****************************************************************/
-typedef void (_CALLTYPE *fpnMStream_C_RecData)( NETHANDLE Handle,
+typedef void (_CALLTYPE *fpnMStream_C_RecData)( NETHANDLE handle,
 											const char* c_szData,
 											UInt32 u32Size );
 
@@ -89,20 +89,20 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_Connect( const char* c_szIP
 
 /*****************************************************************
 /*函数说明：	关闭连接
-/*参数说明：	Handle: 64bit连接句柄
+/*参数说明：	handle: 64bit连接句柄
 /*				
 /*返回值：		1: 成功		<0:错误码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_Close( NETHANDLE Handle );
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_Close( NETHANDLE handle );
 
 
 /*****************************************************************
 /*函数说明：	设置断开回调函数
-/*参数说明：	Handle: 64bit连接句柄
+/*参数说明：	handle: 64bit连接句柄
 				fpnClose: 回调函数地址
 /*返回值：		1: 成功		<0:错误码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SetClose( NETHANDLE Handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SetClose( NETHANDLE handle,
 															fpnMStream_C_Close fpnClose );
 
 /*****************************************************************
@@ -111,18 +111,18 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SetClose( NETHANDLE Handle,
 				pCMD_ClientRecData: 回调函数地址
 /*返回值：		1: 成功		<0:错误码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SetRecData( NETHANDLE Handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SetRecData( NETHANDLE handle,
 															fpnMStream_C_RecData fpnRecData );
 
 /*****************************************************************
 /*函数说明：	发送数据
-/*参数说明：	Handle: 64bit连接句柄
+/*参数说明：	handle: 64bit连接句柄
 				c_pData: 数据缓冲区
 				u32Size: 数据长度
 /*				
 /*返回值：		1: 成功		<0:错误码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SentData( NETHANDLE Handle,
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_C_SentData( NETHANDLE handle,
 														const char* c_pData,
 														UInt32 u32Size );
 

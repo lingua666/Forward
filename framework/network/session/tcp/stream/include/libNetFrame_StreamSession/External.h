@@ -7,12 +7,9 @@
 #include <libMessage/PriorityQueue.h>
 #include <libNetFrame_Packet/Packet_Raw.h>
 #include <libFoundation/modafx.h>
-#include <dllLog/Exports.h>
 
 typedef Packet_Raw		MediaNPacket;
 typedef	PKBuf_ptr		MediaDBuf_ptr;
 typedef PKBList_ptr		MPList_ptr;
-
-LOG_OBJ_DECL(libNetFrame_StreamSession)
 
 #endif//__EXTERNAL_20150914105604_2442199361_H__

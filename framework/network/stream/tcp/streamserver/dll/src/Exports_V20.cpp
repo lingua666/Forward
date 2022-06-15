@@ -52,10 +52,10 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_V20_Init( UInt8 uWorkerThre
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_V20_Listen( UInt16 u16Port,
 											pfnStream_S_V20_Accept pfnAccept,
-											void* pUser, const char* c_szIP)
+											void* pUser )
 {
 	if( GetStreamSvrInstance()->Listen(u16Port,
-		function20_bind(pfnAccept, pUser, _function_::_1, _function_::_2, _function_::_3), c_szIP) )
+		function20_bind(pfnAccept, pUser, _function_::_1, _function_::_2, _function_::_3)) )
 	{
 		int iThreadNum = get_processor_number();
 		GetStreamSvrInstance()->Run( __max(iThreadNum / 2, 2), __max(iThreadNum / 2, 2) );
@@ -119,8 +119,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_V20_SetClientDisConnect( NE
 
 	return GetStreamSvrInstance()->SetDestroyHandle(handle,
 		function20_bind(g_StreamSvrClientClose201609141640_V20, pClientClose,
-		pUser, GetIPv4SFromNETNODE(handle),
-		GetPortFromNETNODE(handle), _function_::_1));
+		pUser, GetIPv4ToString(handle),
+		GetPort(handle), _function_::_1));
 }
 
 /*****************************************************************

@@ -1,6 +1,6 @@
 
 set( TARGET
-	libFrameWork_Uart
+	libFramework_Uart
 	)
 	
 #Traverse the file

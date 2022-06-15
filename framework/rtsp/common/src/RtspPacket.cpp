@@ -452,21 +452,20 @@ void RtspPacket::put_field( const char* c_szFieldName, const char* c_szValue,
 _string_type RtspPacket::get_date( void )
 {
 	_string_type sDate;
-	struct tm timeinfo = { 0 };
-	Timestamp_type().epochTM(&timeinfo);
-	sDate += g_szWeek20171221[timeinfo.tm_wday];
+	struct tm * timeinfo = Timestamp_type().epochTM();
+	sDate += g_szWeek20171221[timeinfo->tm_wday];
 	sDate += ", "; 
-	sDate += g_szMonth20171221[timeinfo.tm_mon];
+	sDate += g_szMonth20171221[timeinfo->tm_mon];
 	sDate += " ";
-	sDate += _string_type::NumberToStr(timeinfo.tm_mday);
+	sDate += _string_type::NumberToStr(timeinfo->tm_mday);
 	sDate += " ";
-	sDate += _string_type::NumberToStr(timeinfo.tm_year + 1900);
+	sDate += _string_type::NumberToStr(timeinfo->tm_year + 1900);
 	sDate += " ";
-	sDate += _string_type::NumberToStr(timeinfo.tm_hour);
+	sDate += _string_type::NumberToStr(timeinfo->tm_hour);
 	sDate += ":";
-	sDate += _string_type::NumberToStr(timeinfo.tm_min);
+	sDate += _string_type::NumberToStr(timeinfo->tm_min);
 	sDate += ":";
-	sDate += _string_type::NumberToStr(timeinfo.tm_sec);
+	sDate += _string_type::NumberToStr(timeinfo->tm_sec);
 	sDate += " GMT";
 	return sDate;
 }

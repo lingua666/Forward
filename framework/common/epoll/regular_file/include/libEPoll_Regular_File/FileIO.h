@@ -65,10 +65,6 @@ namespace	_epoll_regular_file_{
 
 		void close( void );
 
-		int seek_read(Int64 uOffset);
-
-		Int64 tell_read(void);
-
 		inline HFILE GetHandle( void ) const
 		{
 			return _hFile;
@@ -79,10 +75,18 @@ namespace	_epoll_regular_file_{
 			return _hFile != INVALID_FILE;
 		}
 
+	protected:
+		void	FreeOverlapped( tagOverlapped* p )
+		{
+			_OverlappedManage.Free(p);
+		}
+
 	private:
 		HFILE		_hFile;
 		io_service::io_service_sptr	_IOService_sptr;
+		tagOverlapped*	_pRecv;
 		CLock			_Lock;
+		OverlappedManage<>	_OverlappedManage;
 	};
 	/** @} end FileIO */
 

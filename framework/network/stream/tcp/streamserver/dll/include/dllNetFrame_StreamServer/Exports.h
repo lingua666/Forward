@@ -64,8 +64,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_Init( UInt8 uWorkerThreads 
 /*返回值：		1:成功  <0: 错误码
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MStream_S_Listen( UInt16 u16Port,
-															pfnStream_S_Accept pfnAccept,
-															const char* c_szIP = NULL );
+															pfnStream_S_Accept pfnAccept );
 
 /*****************************************************************
 /*函数说明：	关闭服务器

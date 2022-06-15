@@ -51,7 +51,7 @@ namespace	_client_{
 
 			int Close( NETHANDLE Node );
 
-			Int32	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
+			Int32	Send( NETHANDLE Node, const char* c_pData, UInt16 u32Size );
 
 			/********************ÊÂ¼þ×¢²á*****************************/
 			EVENT_REGISTER_LIST_BEGIN(StreamSession)

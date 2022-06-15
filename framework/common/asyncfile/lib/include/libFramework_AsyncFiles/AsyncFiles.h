@@ -48,10 +48,6 @@ namespace	_async_{
 
 			int Read( THandle Handle, UInt32 uSize, char* szBuf = NULL );
 
-			int Seek( THandle Handle, Int64 uOffset );
-
-			Int64 Tell( THandle Handle );
-
 			bool is_open( void ) const
 			{
 				return _ioService.is_open() ? true : false;
@@ -60,10 +56,10 @@ namespace	_async_{
 		protected:
 			AsyncFiles::FileImpl_ptr  FindFileImpl( THandle Handle );
 
-			void HandleRead( const HFNRead& hRead, THandle Handle,
+			void HandleRead( const HFNRead& hRead, HANDLE Handle,
 					const char* szBuf, UInt32 uSize );
 
-			void HandleWrite( const HFNWrite& hWrite, THandle Handle,
+			void HandleWrite( const HFNWrite& hWrite, HANDLE Handle,
 					const char* szBuf, UInt32 uSize );
 
 			void HandleDestroy( const HFNDestroy& hDestroy, THandle Handle );

@@ -30,13 +30,7 @@ namespace	_client_{
 			typedef std::vector<Thread_ptr>	ThreadList;
 
 			typedef LinkList_type<StreamBuf_ptr>		LList;
-			typedef std::map<_HASH, StreamSession_sptr>		HashMap_type;
-
-			struct __M_ALIGNED_PACKED__ tagStreamIdentity
-			{
-				StreamSession*	_Identity;
-			};
-
+			typedef Container_HashMap_type<_HASH, StreamSession_sptr>		HashMap_type;
 			static	void	MessageThread( void* pParamter );
 			static	void	WorkThread( void* pParamter );
 		public:
@@ -58,19 +52,14 @@ namespace	_client_{
 
 			void Init( UInt8 uIOThreadNum = 0, UInt8 uProcThreadNum = 0, bool isSequence = false );
 
-			int Connect( const char* c_szIP, UInt16 uPort,
-				int iSocketRecv = -1, int iSocketSend = -1 );
+			int Connect( const char* c_szIP, UInt16 uPort );
 
 			int Connect( const char* c_szIP, UInt16 uPort,
-					const Stream_HConnect& hConnect,
-					int iSocketRecv = -1, int iSocketSend = -1 );
+					const Stream_HConnect& hConnect );
 
 			int Close( NETHANDLE Node );
 			
-			Int32	Send( NETHANDLE Node, const char* c_pData, UInt32 uSize );
-
-			//单位毫秒
-			void	SetSleepStep(UInt32 uWorkMS, UInt32 uDestroyMS);
+			Int32	Send( NETHANDLE Node, const char* c_pData, UInt16 u32Size );
 
 			/********************事件注册*****************************/
 			EVENT_REGISTER_LIST_BEGIN(StreamSession)
@@ -193,8 +182,6 @@ namespace	_client_{
 			CLock			_QuitLock;
 			CLock			_Lock;
 			bool			_isSequence;
-			UInt32 			_uWorkMS;
-			UInt32 			_uDestroyMS;
 		};
 		/** @} end MyMeidaClient */
 

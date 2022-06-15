@@ -34,13 +34,13 @@
 				return 1;
 			}
 
-			int acceptor::bind( UInt16 u16Port, const char* c_szIP )
+			int acceptor::bind(  UInt16 u16Port )
 			{
-				_Sock = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE, -1, 65535);
+				_Sock = APIWSACreate(CMyInitSock::SOCKET_TCP_TYPE,-1,-1);
 				if( _Sock == INVALID_SOCKET )
 					return -1;
 
-				if( APIWSABind(_Sock, u16Port, c_szIP) == SOCKET_ERROR )
+				if( APIWSABind(_Sock,u16Port) == SOCKET_ERROR )
 				{
 					APIWSAClose(_Sock);
 					_Sock = INVALID_SOCKET;
@@ -193,7 +193,7 @@
 					{
 						//test
 						printf("exit failed acceptor::async_accept11 failed pOverlapped:%p, errno:%d!\r\n", pOverlapped, errno);
-						//system("cat /proc/sys/fs/file-nr");
+						system("cat /proc/sys/fs/file-nr");
 						Sleep(100);
 						_exit(0);
 						//test
@@ -206,7 +206,7 @@
 				{
 					//test
 					printf("exit failed acceptor::async_accept22 failed pOverlapped:%p, errno:%d!\r\n", pOverlapped, errno);
-					//system("cat /proc/sys/fs/file-nr");
+					system("cat /proc/sys/fs/file-nr");
 					Sleep(100);
 					_exit(0);
 					//test

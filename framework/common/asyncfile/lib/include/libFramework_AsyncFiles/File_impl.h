@@ -33,7 +33,7 @@ namespace	_async_{
 			typedef SmartPTR<tagFileBuf>	FileBuf_sptr;
 			typedef	LinkList_type<FileBuf_sptr, CNoneLock>	LList;
 			typedef	function20_handle<void (void)>	HFNDestroy;
-			typedef	function20_handle<void (THandle, const char*, UInt32)>	HFNNotify;
+			typedef	function20_handle<void (HANDLE, const char*, UInt32)>	HFNNotify;
 
 			enum FilesMode
 			{
@@ -50,7 +50,7 @@ namespace	_async_{
 
 			void Release( void );
 		
-			HANDLE	Open( const char* szPath, int iMode, THandle hToken);
+			HANDLE	Open( const char* szPath, int iMode );
 
 			void Close( void );
 
@@ -62,20 +62,12 @@ namespace	_async_{
 
 			int Read( UInt32 uSize, char* szBuf = NULL, Int64 Offset = -1 );
 
-			int Seek_Read( Int64 uOffset );
-
-			UInt64 Tell_Read( void );
-
 			bool is_open( void ) const
 			{
-				//return _Handle != INVALID_HANDLE_VALUE ? true : false;
-				return _isOpen;
+				return _Handle != INVALID_HANDLE_VALUE ? true : false;
 			}
 
 		protected:
-
-			void Close_Impl(void);
-
 			void HandleRead( const FileBuf_sptr& Buf,
 				tagIOData_INFO* pIOData );
 
@@ -84,8 +76,6 @@ namespace	_async_{
 
 			void HandleWrite( const FileBuf_sptr& Buf,
 				tagIOData_INFO* pIOData );
-
-			void HandleFlush(void);
 
 		private:
 			UInt64			_uROffset;
@@ -99,8 +89,6 @@ namespace	_async_{
 			HFNNotify		_hWrite;
 			HFNDestroy		_hDestroy;
 			FileIO			_FileIO;
-			bool			_isOpen;
-			THandle 			_hToken;
 		};
 
 	}// namespace	_files_

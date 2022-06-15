@@ -55,10 +55,6 @@
 		
 				io_service& operator=( const self_type& self );
 
-				int Init(void);
-
-				void Release(void);
-
 				int open( void );
 
 				int close( void );

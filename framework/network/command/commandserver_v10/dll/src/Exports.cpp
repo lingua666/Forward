@@ -43,10 +43,9 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_SV10_Init( int uWorkerThreads )
 /*返回值：		>0:成功  <1: 失败
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_SV10_Listen( int u16Port,
-											pfnCmd_SV10_Accept pfnAccept,
-											const char* c_szIP )
+											pfnCmd_SV10_Accept pfnAccept )
 {
-	if( GetCommandServer_V10Instance()->Listen(u16Port, function20_bind_Ex(pfnAccept), c_szIP) )
+	if( GetCommandServer_V10Instance()->Listen(u16Port, function20_bind_Ex(pfnAccept)) )
 	{
 		GetCommandServer_V10Instance()->Run( get_processor_number() * 2 + 2 );
 		return 1;
@@ -108,8 +107,8 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_SV10_SetClientDisConnect( NETHAN
 
 	return GetCommandServer_V10Instance()->SetDestroyHandle(handle,
 		function20_bind(g_CmdSvr10ClientClose201609141640, pClientClose,
-		GetIPv4SFromNETNODE(handle),
-		GetPortFromNETNODE(handle), _function_::_1));
+		GetIPv4ToString(handle),
+		GetPort(handle), _function_::_1));
 }
 
 /*****************************************************************

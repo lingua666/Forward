@@ -1,6 +1,0 @@
-LIBRARY  dllThirdWrap_Openssl
-
-EXPORTS
-
-MOpenssl_AESEncode		@1
-MOpenssl_AESDecode		@2

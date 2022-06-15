@@ -28,7 +28,7 @@ namespace _io_net_{
 
 			}
 
-			virtual bool	Listen( UInt16 u16Port, const char* c_szIP) = 0;
+			virtual bool	Listen( UInt16 u16Port ) = 0;
 
 			virtual	void	Stop( void ) = 0;
 			virtual void	Run( UInt8 uNum ) = 0;

@@ -30,11 +30,11 @@ void _CALLTYPE g_CmdSvrClientClose201609141640( fpnMCmd_S_Close fpnClientClose,
 /*返回值：		>0:成功  <1: 失败
 *****************************************************************/
 EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_Listen( UInt16 u16Port,
-											fpnMCmd_S_Accept fpnAccept, const char* c_szIP)
+											fpnMCmd_S_Accept fpnAccept )
 {
 	LOG_Print_Info(Cmd_S_Module,"MCmd_S_Listen():\n\t16Port:%d", u16Port)
 
-	if( GetCommandServerInstance()->Listen(u16Port, function20_bind_Ex(fpnAccept), c_szIP))
+	if( GetCommandServerInstance()->Listen(u16Port, function20_bind_Ex(fpnAccept)))
 	{
 		GetCommandServerInstance()->Run( get_processor_number() * 2 + 2 );
 		return 1;
@@ -104,7 +104,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MCmd_S_SetClientDisConnect( NETHANDLE
 
 	return GetCommandServerInstance()->SetDestroyHandle(handle,
 										function20_bind(g_CmdSvrClientClose201609141640, fpnClientClose,
-											GetIPv4SFromNETNODE(handle), GetPortFromNETNODE(handle), _function_::_1));
+													GetIPv4ToString(handle), GetPort(handle), _function_::_1));
 }
 
 /*****************************************************************

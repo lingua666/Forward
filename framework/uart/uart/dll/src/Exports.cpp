@@ -1,6 +1,6 @@
 
-#include <dllFrameWork_Uart/Exports.h>
-#include <libFrameWork_Uart/Uart.h>
+#include <dllFramework_Uart/Exports.h>
+#include <libFramework_Uart/Uart.h>
 
 DLL_INIT_DEF(g_pTagTModuleInfoRecord_201602172205,
 			"45000001000V2016021700000000VZZZ10000000",

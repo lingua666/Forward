@@ -14,7 +14,7 @@ namespace	_session_{
 		typedef _io_net_::StreamBuf			StreamBuf;
 		typedef _io_net_::_scoket_info		_scoket_info;
 
-		typedef	function20_handle<void (const char*,  UInt32)>	HSendComplete;
+		typedef	function20_handle<void (void)>	HSendComplete;
 
 		/*!
 		* @class  StreamCtrl
@@ -33,8 +33,8 @@ namespace	_session_{
 			* @brief    
 			* @return  
 			*/
-			StreamCtrl( UInt32 uSendSize,
-						UInt32 ReservedSize );
+			StreamCtrl( UInt16 uSendSize,
+						UInt16 ReservedSize );
 
 			/*!
 			* @function   ~StreamCtrl
@@ -44,11 +44,11 @@ namespace	_session_{
 			~StreamCtrl( void );
 
 			UInt32	Send( void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize );
+						const char* pData, UInt16 u16Size );
 
-			UInt32	Send( const char* pData, UInt32 uSize );
+			UInt32	Send( const char* pData, UInt16 u16Size );
 
-			void	SendQue( const char* pHasData,  UInt32 HasSize );
+			void	SendQue( void );
 
 			void	HandleSend( const STREAM_HANDLE& Stream, const char* pData, UInt32 u32Size );
 
@@ -67,15 +67,15 @@ namespace	_session_{
 		protected:
 			void	FullPacket( const StreamBuf_ptr& Buf_ptr );
 
-			int	MorePack( const char* pData, UInt32 uSize );
+			int	MorePack( const char* pData, UInt16 u16Size );
 
-			int	OnePack( const char* pData, UInt32 uSize );
+			int	OnePack( const char* pData, UInt16 u16Size );
 
 			int	MorePack( void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize );
+						const char* pData, UInt16 u16Size );
 
 			int	OnePack( void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize );
+						const char* pData, UInt16 u16Size );
 
 			void	SendData( void );
 

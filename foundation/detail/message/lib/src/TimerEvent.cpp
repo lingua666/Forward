@@ -8,7 +8,6 @@ TimerEvent* GetTimerEventInstance(void)
 
 TimerEvent::TimerEvent( void )
 	: _isRun( false )
-	, _uMillisecond(10)
 {
 
 }
@@ -16,7 +15,6 @@ TimerEvent::TimerEvent( void )
 //注意: 该构造函数不可用于全局变量，否则会导致由于主线程还未启动，导致出现错误
 TimerEvent::TimerEvent( UInt8 uThread )
 	: _isRun( false )
-	, _uMillisecond(10)
 {
 	Init(uThread);
 }
@@ -49,36 +47,26 @@ void	TimerEvent::CloseAll( void )
 	Clear();
 }
 
-int	TimerEvent::push_back( const Event_type& Event, UInt64 uInterval )
+void	TimerEvent::push_back( const Event_type& Event, UInt32 uInterval )
 {
-	if (_Threads.size() <= 0)
-		return -1;
-
 	tagEvent_INFO	tagInfo;
 	tagInfo._Event = Event;
 	tagInfo._uInterval = uInterval * 1000;
-	tagInfo._isExec = true;
+	tagInfo._Timer = Timestamp_type();
 	_Lock.Lock();
 	_EventList.push_back(tagInfo);
-	tagInfo._Timer = Timestamp_type();
 	_Lock.UnLock();
-
-	return 1;
 }
 
-int	TimerEvent::push_back_sync( const Event_type& Event, UInt64 uInterval/*毫秒*/ )
+int	TimerEvent::push_back_sync( const Event_type& Event, UInt32 uInterval/*毫秒*/ )
 {
-	if (_Threads.size() <= 0)
-		return -1;
-
 	Int8 iRet = 0;
 	tagEvent_INFO	tagInfo;
 	tagInfo._Event = function20_bind(&TimerEvent::HandleSync, this, Event, &iRet);
 	tagInfo._uInterval = uInterval * 1000;
-	tagInfo._isExec = true;
+	tagInfo._Timer = Timestamp_type();
 	_Lock.Lock();
 	_EventList.push_back(tagInfo);
-	tagInfo._Timer = Timestamp_type();
 	_Lock.UnLock();
 	while( iRet == 0 && _isRun )
 	{
@@ -101,7 +89,6 @@ void	TimerEvent::HandleSync( const Event_type& Event, Int8* iRet )
 void	TimerEvent::WorkThread( void )
 {
 	tagEvent_INFO tagInfo;
-	int iInc = 0;
 	_isRun = true;
 
 	while( true )
@@ -121,17 +108,11 @@ void	TimerEvent::WorkThread( void )
 						_Lock.UnLock();
 						tagInfo._Event();
 						tagInfo._Event.reset();
-						iInc = -1;
 					}
 					else
 					{
 						_EventList.next();
 						_Lock.UnLock();
-					}
-
-					if ((++ iInc) >= _EventList.size())
-					{//轮询一轮
-						goto gt_sleep;
 					}
 				}
 				else
@@ -143,8 +124,7 @@ void	TimerEvent::WorkThread( void )
 			else
 			{
 gt_sleep:
-				iInc = 0;
-				Sleep(_uMillisecond);
+				Sleep(1);
 			}
 		}
 		catch (const thread_interrupted& e)
@@ -187,31 +167,4 @@ void	TimerEvent::Clear( void )
 int		TimerEvent::size( void )
 {
 	return _EventList.size();
-}
-
-void	TimerEvent::Lock(void)
-{
-	_Lock.Lock();
-}
-
-void	TimerEvent::UnLock(void)
-{
-	_Lock.UnLock();
-}
-
-void	TimerEvent::UpdateTime(const Timestamp_type& LocalTime, const Timestamp_type& NewTime)
-{
-	tagEvent_INFO tagInfo;
-	for (int i = 0; i < _EventList.size(); i++)
-	{
-		tagInfo = _EventList.current();
-		tagInfo._Timer = NewTime - (LocalTime - tagInfo._Timer);
-		_EventList.next();
-	}
-}
-
-//单位毫秒
-void	TimerEvent::SetSleepStep(UInt32 uMillisecond)
-{
-	_uMillisecond = uMillisecond;
 }

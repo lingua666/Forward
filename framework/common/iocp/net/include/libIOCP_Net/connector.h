@@ -39,14 +39,12 @@ namespace _iocp_net_{
 
 			int attach( const io_service& service );
 
-			int listen( int iSocketRecv = -1, int iSocketSend = -1 );
+			int listen( void );
+
+			int async_connect( const char* szIP, UInt16 uPort );
 
 			int async_connect( const char* szIP, UInt16 uPort,
-							int iSocketRecv = -1, int iSocketSend = -1 );
-
-			int async_connect( const char* szIP, UInt16 uPort,
-						const fn_connect_handle& handle,
-						int iSocketRecv = -1, int iSocketSend = -1 );
+						const fn_connect_handle& handle );
 
 			void connect_handle( const fn_connect_handle& f, tagIOData_INFO* pIOData);
 

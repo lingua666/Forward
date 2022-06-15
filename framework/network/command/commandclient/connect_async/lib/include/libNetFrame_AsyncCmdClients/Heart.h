@@ -19,7 +19,7 @@ typedef NETHANDLE	_HASH;
 		struct  stHeartInfo
 		{
 			CmdSession_sptr _Session_ptr;
-			unsigned long	_u32CurrentTimer;
+			UInt32	_u32CurrentTimer;
 			UInt32	_u32Remain;
 			bool	_isValid;
 
@@ -108,7 +108,7 @@ typedef NETHANDLE	_HASH;
 			{
 				s_Lock.Lock();
 				stHeartInfo* pHeart = s_List.current();
-				if( pHeart && (unsigned long)GetTickCount() - pHeart->_u32CurrentTimer > HEART_INTERVAL_TIME )
+				if( pHeart && GetTickCount() - pHeart->_u32CurrentTimer > HEART_INTERVAL_TIME )
 				{
 					s_List.pop();
 					if( pHeart->_u32CurrentTimer != 0 && pHeart->_u32Remain != 0 )
@@ -125,11 +125,6 @@ typedef NETHANDLE	_HASH;
 						{//超时断开
 							s_Lock.UnLock();
 							pHeart->_Session_ptr->HeartTimeOut();
-
-							//test
-							LOG_Print_Error(NetFrame_AsyncCmdClients,
-								"Heart::CheckHeart() Node:%lld is TimeOut!!", pHeart->_Session_ptr->GetLocalNode());
-							//test
 						}
 						else 
 						{ // 主动断开

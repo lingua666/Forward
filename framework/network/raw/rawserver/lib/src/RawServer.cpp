@@ -20,12 +20,6 @@ namespace	_server_{
 		Release();
 	}
 
-	int RawServer::Init(void)
-	{
-		((io_service&)_Accept.GetIoServer()).Init();
-		return 1;
-	}
-
 	void RawServer::Release( void )
 	{
 		Stop();

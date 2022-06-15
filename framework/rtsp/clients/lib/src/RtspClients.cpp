@@ -5,7 +5,9 @@ RtspClients::RtspClients( void )
 	: _Pool( sizeof(RtspClient_Impl) )
 	, _uSeq( 0 )
 {
-	
+	//test
+	LOG_Print_SetLog(libFrameWork_RtspClients, 0)
+	//test
 }
 
 RtspClients::~RtspClients( void )
@@ -16,10 +18,6 @@ RtspClients::~RtspClients( void )
 void RtspClients::Init( UInt8 uRtspIOThreadNum, UInt8 uRtspProcThreadNum,
 	UInt8 uRtpIOThreadNum, UInt8 uRtpProcThreadNum )
 {
-	//test
-	LOG_Print_SetLog(libFrameWork_RtspClients, MLog_GetAllLevel())
-	//test
-
 	GetAsynStreamClientsInstance()->Init(uRtspIOThreadNum, uRtspProcThreadNum, true);
 	GetUDPStreamInstance()->Init(uRtpIOThreadNum, uRtpProcThreadNum, true);
 	GetTimerEventInstance()->Init(1);

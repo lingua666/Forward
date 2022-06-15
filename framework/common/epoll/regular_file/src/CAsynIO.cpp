@@ -68,7 +68,7 @@
 			ev.data.fd = 0;
 			while( epoll_ctl(hCompletionPort, EPOLL_CTL_MOD, Handle, &ev) < 0 )
 			{
-				printf("CAsynIO::DettachHandle epoll_ctl(%d) failed!!\r\n", errno);
+				printf("CAsynIO::DettachHandle epoll_ctl failed!!\r\n");
 			};
 			
 			return epoll_ctl(hCompletionPort, EPOLL_CTL_DEL, Handle, &ev) < 0 ? -1 : 1;

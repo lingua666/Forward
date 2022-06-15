@@ -5,8 +5,8 @@ namespace	_session_{
 
 	namespace	_tcp_{
 
-		CommandStreamCtrl::CommandStreamCtrl( UInt32 uSendSize,
-			UInt32 ReservedSize )
+		CommandStreamCtrl::CommandStreamCtrl( UInt16 uSendSize,
+			UInt16 ReservedSize )
 			: _isSending(false)
 			, _Pack(uSendSize, ReservedSize)
 		{
@@ -19,10 +19,10 @@ namespace	_session_{
 		}
 
 		int	CommandStreamCtrl::Send( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
-			if( (uSize + u8AddSize) > _Pack.GetSendSize() ? MorePack(pAddtion, u8AddSize, pData, uSize) \
-				: OnePack(pAddtion, u8AddSize, pData, uSize) )
+			if( (u16Size + u8AddSize) > _Pack.GetSendSize() ? MorePack(pAddtion, u8AddSize, pData, u16Size) \
+				: OnePack(pAddtion, u8AddSize, pData, u16Size) )
 			{
 				SendData();
 				return 1;
@@ -31,10 +31,10 @@ namespace	_session_{
 			return -1;
 		}
 
-		int	CommandStreamCtrl::Send( const char* pData, UInt32 uSize )
+		int	CommandStreamCtrl::Send( const char* pData, UInt16 u16Size )
 		{
-			if( uSize > _Pack.GetSendSize() ? MorePack(pData, uSize) \
-				: OnePack(pData, uSize) )
+			if( u16Size > _Pack.GetSendSize() ? MorePack(pData, u16Size) \
+				: OnePack(pData, u16Size) )
 			{
 				SendData();
 				return 1;
@@ -43,12 +43,12 @@ namespace	_session_{
 			return -1;
 		}
 
-		bool	CommandStreamCtrl::MorePack( const char* pData, UInt32 uSize  )
+		bool	CommandStreamCtrl::MorePack( const char* pData, UInt16 u16Size  )
 		{
-			if( uSize > _Pack.GetMaxPayload())
+			if( u16Size > _Pack.GetMaxPayload())
 				return false;
 
-			CmdList_ptr sptr = _Pack.BigPackage(pData, uSize);
+			CmdList_ptr sptr = _Pack.BigPackage(pData, u16Size);
 			if( !sptr )
 			{
 				return false;
@@ -64,9 +64,9 @@ namespace	_session_{
 			return true;
 		}
 
-		bool	CommandStreamCtrl::OnePack( const char* pData, UInt32 uSize )
+		bool	CommandStreamCtrl::OnePack( const char* pData, UInt16 u16Size )
 		{
-			CmdDBuf_ptr sptr = _Pack.Package(pData, uSize);
+			CmdDBuf_ptr sptr = _Pack.Package(pData, u16Size);
 
 			if( !sptr )
 			{
@@ -80,13 +80,13 @@ namespace	_session_{
 		}
 
 		bool	CommandStreamCtrl::MorePack( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
-			if( uSize > _Pack.GetMaxPayload())
+			if( u16Size > _Pack.GetMaxPayload())
 				return false;
 
 			CmdList_ptr sptr = _Pack.BigPackage(pAddtion, u8AddSize, 
-				pData, uSize);
+				pData, u16Size);
 			if( !sptr )
 			{
 				return false;
@@ -103,9 +103,9 @@ namespace	_session_{
 		}
 
 		bool	CommandStreamCtrl::OnePack( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
-			CmdDBuf_ptr sptr = _Pack.Package(pAddtion, u8AddSize, pData, uSize);
+			CmdDBuf_ptr sptr = _Pack.Package(pAddtion, u8AddSize, pData, u16Size);
 
 			if( !sptr )
 			{
@@ -139,7 +139,7 @@ namespace	_session_{
 				_Lock.UnLock();
 		}
 
-		void	CommandStreamCtrl::SendQue( const char* pHasData,  UInt32 HasSize )
+		void	CommandStreamCtrl::SendQue( void )
 		{
 			CmdDBuf_ptr sptr;
 
@@ -159,14 +159,14 @@ namespace	_session_{
 					_isSending = false;
 
 				if( _SendComplete )
-					_SendComplete(pHasData, HasSize);
+					_SendComplete();
 			}
 		}
 
 		void	CommandStreamCtrl::HandleSend( const STREAM_HANDLE& Stream,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt32 u32Size )
 		{
-			SendQue(pData, uSize);
+			SendQue();
 			_Pack.FreeBuf(pData);
 		}
 

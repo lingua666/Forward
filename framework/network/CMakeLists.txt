@@ -52,8 +52,8 @@ if( NETFRAME_CORE_ENABLE EQUAL 1)
 endif()
  
 add_subdirectory(command)
-#add_subdirectory(raw)
-#add_subdirectory(file)
+add_subdirectory(raw)
+add_subdirectory(file)
 add_subdirectory(stream)
 add_subdirectory(session)
 

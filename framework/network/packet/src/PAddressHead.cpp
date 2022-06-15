@@ -20,11 +20,11 @@ void	PAddressHead::Fill( UInt8 u8Flag, NETHANDLE Src, NETHANDLE Dst )
 	pHead->_Len._uSize = 0;
 }
 
-void	PAddressHead::Append( const char* szData, UInt32 uSize )
+void	PAddressHead::Append( const char* szData, UInt16 u16Size )
 {
 	tagAddress_HEAD* pHead = (tagAddress_HEAD*)_sHead.c_str();
-	pHead->_Len._uSize += uSize;
-	_sHead.append(szData, uSize);
+	pHead->_Len._uSize += u16Size;
+	_sHead.append(szData, u16Size);
 }
 
 _string_type	PAddressHead::RemoveAddress( void )
@@ -56,12 +56,12 @@ const _string_type&	PAddressHead::GetString( void ) const
 	return _sHead;
 }
 
-int	PAddressHead::Parse( const char* c_szData, UInt32 uInSize )
+int	PAddressHead::Parse( const char* c_szData, UInt32 u32Size )
 {
-	if(uInSize < HeadSize() )
+	if( u32Size < HeadSize() )
 		return -1;
 
-	UInt32 uSize = ((tagAddress_HEAD*)c_szData)->_Len._uSize + HeadSize();
-	_sHead = _string_type(c_szData, uSize);
-	return uSize;
+	UInt16 u16Size = ((tagAddress_HEAD*)c_szData)->_Len._uSize + HeadSize();
+	_sHead = _string_type(c_szData, u16Size);
+	return u16Size;
 }

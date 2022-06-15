@@ -64,10 +64,6 @@ namespace	_epoll_non_regular_file_{
 		int async_write( tagOverlapped* pOverlapped );
 
 		void close( void );
-		
-		int seek_read(Int64 uOffset);
-
-		Int64 tell_read(void);
 
 		inline HFILE GetHandle( void ) const
 		{

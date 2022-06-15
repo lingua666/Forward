@@ -32,14 +32,6 @@ namespace _iocp_net_{
 			return *this;
 		}
 
-		int io_service::Init(void)
-		{
-			return 1;
-		}
-
-		void io_service::Release(void)
-		{}
-
 		int io_service::open( void )
 		{
 			_io_handle = CAsynIO::CreateAsynIO();

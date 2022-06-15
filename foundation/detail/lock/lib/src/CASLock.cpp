@@ -25,6 +25,6 @@ namespace	_lock_{
 
 	bool CASLock::TryLock( void )
 	{
-		return CASCompareExchange(&_mutex, 0, 1) ? 1 : 0;
+		return CASCompareExchange(&_mutex, 1, 0) ? 1 : 0;
 	}
 }

@@ -8,7 +8,6 @@
 	#include <sys/syscall.h>      /* for __NR_* definitions */
 	#include <linux/aio_abi.h>    /* for AIO types and constants */
 	#include <fcntl.h>            /* O_RDWR */
-	#define REGULAR_FILE_EVENTS_MAX 128
 
 	namespace _epoll_regular_file_{
 

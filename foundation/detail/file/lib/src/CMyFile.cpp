@@ -1,12 +1,11 @@
 
 #include <libFile/CMyFile.h>
-#include <libTimestamp/Timestamp.h>
 
 namespace	_file_{
 
-	bool CMyFile::IsExit( const char* c_szsPath )
+	bool CMyFile::IsExit( const _string_type& sPath )
 	{
-		return CMyDirectory::IsExit(c_szsPath);
+		return CMyDirectory::IsExit(sPath);
 		/*struct stat f_stat;
 		if (stat(sPath.c_str(), &f_stat) == -1)
 		{
@@ -15,7 +14,7 @@ namespace	_file_{
 		return true;*/
 	}
 
-	Int64	CMyFile::GetFileSize( const _string_type& sPath )
+	int	CMyFile::GetFileSize( const _string_type& sPath )
 	{
 		/*#ifdef WIN32
 		return filelength(fileno(_FHandle));
@@ -25,61 +24,16 @@ namespace	_file_{
 		{
 			return -1;
 		}
-		return (Int64)f_stat.st_size;
+		return (long)f_stat.st_size;
 		//#endif
 	}
 
-	int CMyFile::GetFileCreateTime( const _string_type& sPath, struct tm* Time)
+	tm* CMyFile::GetFileCreateTime( const _string_type& sPath )
 	{ 
 		struct stat buf; //in stat head file
-		if (stat(sPath.c_str(), &buf) > -1)
-		{
-			Timestamp_type::static_epochTM(buf.st_ctime, Time);
-			return 1;
-		}
-		return -1;
-	}
-
-	int CMyFile::CopyFile(const _string_type& sSrcPath, const _string_type& sDstPath)
-	{
-		FILE* pSrc = fopen(sSrcPath.c_str(), "rb");
-		if (pSrc == NULL)
-			return -1;
-
-		FILE* pDst = fopen(sDstPath.c_str(), "wb");
-		if (pDst == NULL)
-		{
-			fclose(pSrc);
-			return -1;
-		}
-
-		char szBuffer[1024 * 8] = { 0 };
-		int iRet = -1;
-
-		do 
-		{
-			iRet = fread(szBuffer, 1, sizeof(szBuffer), pSrc);
-			if (iRet <= 0)
-				break;
-			fwrite(szBuffer, 1, iRet, pDst);
-		} while (true);
-
-		fclose(pSrc);
-		fclose(pDst);
-		return 1;
-	}
-
-	int CMyFile::MoveFile(const _string_type& sSrcPath, const _string_type& sDstPath)
-	{
-#if defined(PLATFORM_OS_FAMILY_WINDOWS)
-		_string_type s = "move /Y ";
-		s += sSrcPath + " " + sDstPath;
-#elif defined(PLATFORM_OS_FAMILY_UNIX)
-		_string_type s = "mv -f ";
-		s += sSrcPath + " " + sDstPath;
-#endif
-		system(s.c_str());
-		return 1;
+		if( stat(sPath.c_str(),&buf) > -1 )
+			return (tm*)localtime((time_t*)&buf.st_ctime);
+		return NULL;
 	}
 
 	int	CMyFile::DeleteFile( const _string_type& sPath )
@@ -126,68 +80,9 @@ namespace	_file_{
 		str = str.replace("\\","/");
 		str = str.replace("//","/");
 		str = str.strim(" ");
-		str = str.rstrim("/");
+		str = str.strim("/");
 		return str;
 #endif
-	}
-
-	int CMyFile::GetDetailedInfo(const _string_type& sPath, tagFile_INFO* pInfo)
-	{
-		tm CreateTime = {0};
-		struct stat buf; //in stat head file
-		if (stat(sPath.c_str(), &buf) <= -1)
-		{
-			return -1;
-		}
-
-		//创建时间
-		struct tm Tm = { 0 };
-		Timestamp_type::static_epochTM(buf.st_ctime, &Tm);
-
-		memcpy(&CreateTime, &Tm, sizeof(tm));
-		pInfo->Time.Year = CreateTime.tm_year + 1900;
-		pInfo->Time.Month = CreateTime.tm_mon + 1;
-		pInfo->Time.Day = CreateTime.tm_mday;
-		pInfo->Time.Hour = CreateTime.tm_hour;
-		pInfo->Time.Minute = CreateTime.tm_min;
-		pInfo->Time.Second = CreateTime.tm_sec;
-
-		//是否目录
-		if (S_ISDIR(buf.st_mode))
-		{
-			pInfo->isDir = true;
-			pInfo->Size = 0;
-		}
-		else
-		{
-			pInfo->isDir = false;
-			pInfo->Size = buf.st_size;
-		}
-		
-		//执行权限
-		if (S_ISREAD(buf.st_mode))
-			pInfo->Permissions.isRead = true;
-		else
-			pInfo->Permissions.isRead = false;
-
-		if (S_ISWRITE(buf.st_mode))
-			pInfo->Permissions.isWrite = true;
-		else
-			pInfo->Permissions.isWrite = false;
-
-		if (S_ISEXEC(buf.st_mode))
-			pInfo->Permissions.isExec = true;
-		else
-			pInfo->Permissions.isExec = false;
-
-		//文件所有者的用户识别码
-		//pInfo->Ower = _string_type::NumberToStr(buf.st_uid);
-
-		pInfo->Name = sPath.substr(sPath.rfind(SPLIT_CHAR_DEF) + 1);
-
-		//硬连接
-		pInfo->HardTime = buf.st_nlink;
-		return 1;
 	}
 
 	CMyFile::CMyFile( void )
@@ -316,16 +211,12 @@ namespace	_file_{
 		return sBuf;
 	}
 
-	int CMyFile::GetCreateTime(struct tm* Time)
+	tm* CMyFile::GetCreateTime( void )
 	{ 
 		struct stat buf; //in stat head file
-		if (stat(_Path.c_str(), &buf) > -1)
-		{
-			Timestamp_type::static_epochTM(buf.st_ctime, Time);
-			return 1;
-		}
-
-		return -1;
+		if( stat(_Path.c_str(),&buf) > -1 )
+			return (tm*)localtime((time_t*)&buf.st_ctime);
+		return NULL;
 	}
 
 	const _string_type& CMyFile::GetPath( void ) const

@@ -139,10 +139,10 @@ EXTERN_C _SYMBOL_DLL_EXPORTS void _CALLTYPE MLog_FreeObj( HLOGOBJ hObj )
 
 /*****************************************************************
 /*函数说明：	获取日志完整路径（组成: 程序运行路径+Log+模块名称+当前系统时间(如20160616)+.txt）（只适用C++）
-/*参数说明：	c_szSubDirName: 子目录 为空则不新建子目录
+/*参数说明：	c_szSubDirName: 模块名称 为空则不新建子目录
 /*				szOut: 接收日志完整路径缓冲区
 /*				uSize: 缓冲区大小
-/*返回值：		路径长度
+/*返回值：		如: E:\LogTest\Log\Module\20160616.txt
 *****************************************************************/
 _SYMBOL_DLL_EXPORTS int _CALLTYPE MLog_GetModuleLogPath( const char* c_szSubDirName,
 														char* szOut, int uSize )
@@ -199,7 +199,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS void _CALLTYPE MLog_Free( HLOG hLog )
 
 
 /*****************************************************************
-/*函数说明：	打开日志文件（如果文件已经存在，则内容在结尾追加）
+/*函数说明：	打开日志文件
 /*参数说明：	hLog : 日志句柄
 /*				c_szPath: 日志文件完整路径
 /*返回值：		1:成功  <0: 错误代码
@@ -216,7 +216,7 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MLog_Open( HLOG hLog, const char* c_s
 /*				c_szPath: 日志文件完整路径
 /*返回值：		1:成功  <0: 错误代码
 *****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MLog_SetLevel( HLOG hLog, unsigned char uLevel )
+EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MLog_SetLevel( HLOG hLog, UInt8 uLevel )
 {
 	if( hLog > 0 )
 		return reinterpret_cast<_CLog_*>(hLog)->SetLevel(uLevel);
@@ -330,29 +330,3 @@ EXTERN_C _SYMBOL_DLL_EXPORTS int _CALLTYPE MLog_FATAL( HLOG hLog, const char* c_
 	}
 	return -1;
 }
-
-static UInt8 g_uLevel = LOG_PRINT_LEVEL;
-
-/*****************************************************************
-/*函数说明：	设置所有日志级别（总共6级: 0 - 4, 日志只输出级别高于或等于日志级别的日志）
-/*参数说明：	hLog : 日志句柄
-/*				c_szPath: 日志文件完整路径
-/*返回值：		1:成功  <0: 错误代码
-*****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS void _CALLTYPE MLog_SetAllLevel(unsigned char uLevel)
-{
-	g_uLevel = uLevel;
-}
-
-
-/*****************************************************************
-/*函数说明：	设置日志级别（总共6级: 0 - 4, 日志只输出级别高于或等于日志级别的日志）
-/*参数说明：	hLog : 日志句柄
-/*				c_szPath: 日志文件完整路径
-/*返回值：		1:成功  <0: 错误代码
-*****************************************************************/
-EXTERN_C _SYMBOL_DLL_EXPORTS unsigned char _CALLTYPE MLog_GetAllLevel(void)
-{
-	return	g_uLevel;
-}
-

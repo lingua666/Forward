@@ -5,8 +5,8 @@ namespace	_session_{
 
 	namespace	_tcp_{
 
-		StreamCtrl::StreamCtrl( UInt32 uSendSize,
-			UInt32 ReservedSize )
+		StreamCtrl::StreamCtrl( UInt16 uSendSize,
+			UInt16 ReservedSize )
 			: _isSending(false)
 			, _Pack(uSendSize, ReservedSize)
 		{
@@ -19,25 +19,25 @@ namespace	_session_{
 		}
 
 		UInt32	StreamCtrl::Send( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
-			(uSize + u8AddSize) > _Pack.GetSendSize() ? MorePack(pAddtion, u8AddSize, pData, uSize) \
-				: OnePack(pAddtion, u8AddSize, pData, uSize);
+			(u16Size + u8AddSize) > _Pack.GetSendSize() ? MorePack(pAddtion, u8AddSize, pData, u16Size) \
+				: OnePack(pAddtion, u8AddSize, pData, u16Size);
 			SendData();
 			return 1;
 		}
 
-		UInt32	StreamCtrl::Send( const char* pData, UInt32 uSize )
+		UInt32	StreamCtrl::Send( const char* pData, UInt16 u16Size )
 		{
-			uSize > _Pack.GetSendSize() ? MorePack(pData, uSize) \
-				: OnePack(pData, uSize);
+			u16Size > _Pack.GetSendSize() ? MorePack(pData, u16Size) \
+				: OnePack(pData, u16Size);
 			SendData();
 			return 1;
 		}
 
-		int	StreamCtrl::MorePack( const char* pData, UInt32 uSize )
+		int	StreamCtrl::MorePack( const char* pData, UInt16 u16Size )
 		{
-			MPList_ptr sptr = _Pack.BigPackage(pData, uSize);
+			MPList_ptr sptr = _Pack.BigPackage(pData, u16Size);
 			if( sptr )
 			{
 				_SendLock.Lock();
@@ -52,9 +52,9 @@ namespace	_session_{
 			return -1;
 		}
 
-		int	StreamCtrl::OnePack( const char* pData, UInt32 uSize )
+		int	StreamCtrl::OnePack( const char* pData, UInt16 u16Size )
 		{
-			MediaDBuf_ptr sptr = _Pack.Package(pData, uSize);
+			MediaDBuf_ptr sptr = _Pack.Package(pData, u16Size);
 
 			if( sptr )
 			{
@@ -67,10 +67,10 @@ namespace	_session_{
 		}
 
 		int	StreamCtrl::MorePack( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
 			MPList_ptr sptr = _Pack.BigPackage(pAddtion, u8AddSize, 
-				pData, uSize);
+				pData, u16Size);
 			if( sptr )
 			{
 				_SendLock.Lock();
@@ -86,9 +86,9 @@ namespace	_session_{
 		}
 
 		int	StreamCtrl::OnePack( void* pAddtion, UInt8 u8AddSize,
-			const char* pData, UInt32 uSize )
+			const char* pData, UInt16 u16Size )
 		{
-			MediaDBuf_ptr sptr = _Pack.Package(pAddtion, u8AddSize, pData, uSize);
+			MediaDBuf_ptr sptr = _Pack.Package(pAddtion, u8AddSize, pData, u16Size);
 
 			if( sptr )
 			{
@@ -121,7 +121,7 @@ namespace	_session_{
 				_Lock.UnLock();
 		}
 
-		void	StreamCtrl::SendQue( const char* pHasData,  UInt32 HasSize )
+		void	StreamCtrl::SendQue( void )
 		{
 			MediaDBuf_ptr sptr;
 
@@ -141,14 +141,14 @@ namespace	_session_{
 					_isSending = false;
 
 				if( _SendComplete )
-					_SendComplete(pHasData, HasSize);
+					_SendComplete();
 			}
 		}
 
 		void	StreamCtrl::HandleSend( const STREAM_HANDLE& Stream, 
 			const char* pData, UInt32 u32Size )
 		{
-			SendQue(pData, u32Size);
+			SendQue();
 			_Pack.FreeBuf(pData);
 		}
 

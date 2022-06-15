@@ -24,7 +24,7 @@ public:
 	* @brief    
 	* @return  
 	*/
-	Packet_Raw( UInt32 uSendSize, UInt32 ReservedSize )
+	Packet_Raw( UInt16 uSendSize, UInt16 ReservedSize )
 		: _uSendSize( uSendSize )
 		, _ReservedSize( ReservedSize )
 		, _MemPool( GetPoolSize() )
@@ -48,12 +48,12 @@ public:
 
 	}
 
-	UInt32	GetHeadSize( void ) const
+	UInt16	GetHeadSize( void ) const
 	{
 		return sizeof(tagPKBuf) - 1;
 	}
 
-	UInt32	GetSendSize( void ) const
+	UInt16	GetSendSize( void ) const
 	{
 		return _uSendSize;
 	}
@@ -63,60 +63,60 @@ public:
 		_Function = Function;
 	}
 
-	const PKBuf_ptr	Package( const char* c_InData, UInt32 uInSize,
-		UInt32 uInPayload )
+	const PKBuf_ptr	Package( const char* c_InData, UInt16 u16InSize,
+							UInt16 u16InPayload )
 	{
 		tagPKBuf* p = reinterpret_cast<tagPKBuf*>(_MemPool.Alloc());
 		if( p != NULL )
 		{
-			p->_uPayload = uInPayload;
-			memcpy(p->_Data, c_InData, uInSize);
+			p->_uPayload = u16InPayload;
+			memcpy(p->_Data, c_InData, u16InSize);
 			return PKBuf_ptr(p, false);
 		}
 		return PKBuf_ptr();
 	}
 
-	const PKBuf_ptr	Package( const char* c_InData, UInt32 uInSize )
+	const PKBuf_ptr	Package( const char* c_InData, UInt16 u16InSize ) 
 	{
-		return Package(c_InData, uInSize, uInSize);
+		return Package(c_InData, u16InSize, u16InSize);
 	}
 
 	const PKBuf_ptr	Package( void* pAddtion, UInt8 u8AddSize, 
-							const char* c_InData, UInt32 uInSize )
+							const char* c_InData, UInt16 u16InSize ) 
 	{
 		tagPKBuf* p = reinterpret_cast<tagPKBuf*>(_MemPool.Alloc());
-		p->_uPayload = u8AddSize + uInSize ;
+		p->_uPayload = u8AddSize + u16InSize ;
 		memcpy(&p->_Data, pAddtion, u8AddSize);
-		memcpy(&p->_Data[u8AddSize], c_InData, uInSize);
+		memcpy(&p->_Data[u8AddSize], c_InData, u16InSize);
 		return PKBuf_ptr(p, false);
 	}
 
-	const PKBList_ptr	BigPackage( const char* c_InData, UInt32 uInSize )
+	const PKBList_ptr	BigPackage( const char* c_InData, UInt16 u16InSize )
 	{
-		UInt32	uInLen = 0, uInOffset = 0;
+		UInt16	u16InLen = 0, u16InOffset = 0;
 		PKBList* pList = _ListPool.AllocObj<PKBList>();
 		if( pList == NULL )
 			return PKBList_ptr();
 
 		//第一个包
-		uInLen = __min(uInSize, GetSendSize());
-		pList->push_back( Package(c_InData, uInLen) );
-		uInSize -= uInLen;
-		uInOffset += uInLen;
+		u16InLen = __min(u16InSize, GetSendSize());
+		pList->push_back( Package(c_InData, u16InLen) );
+		u16InSize -= u16InLen;
+		u16InOffset += u16InLen;
 
 		//后续包
 		tagPKBuf* p = NULL;
-		while( uInSize > 0 )
+		while( u16InSize > 0 )
 		{
 			p = reinterpret_cast<tagPKBuf*>(_MemPool.Alloc());
 
-			uInLen = __min(uInSize, GetSendSize());
-			memcpy(p->_Data, &c_InData[uInOffset], uInLen);
-			p->_uPayload = uInLen;
+			u16InLen = __min(u16InSize, GetSendSize());
+			memcpy(p->_Data, &c_InData[u16InOffset], u16InLen);
+			p->_uPayload = u16InLen;
 			pList->push_back( PKBuf_ptr(p, false) );
 
-			uInSize -= uInLen;
-			uInOffset += uInLen;
+			u16InSize -= u16InLen;
+			u16InOffset += u16InLen;
 		};
 
 		return PKBList_ptr(pList, 
@@ -124,41 +124,41 @@ public:
 	}
 
 	const PKBList_ptr	BigPackage( void* pAddtion, UInt8 u8AddSize,
-									const char* c_InData, UInt32 uInSize )
+									const char* c_InData, UInt16 u16InSize ) 
 	{
-		UInt32	uInLen = 0, uInOffset = 0;
+		UInt16	u16InLen = 0, u16InOffset = 0;
 		tagPKBuf* pBuf = NULL;
 		PKBList* pList = _ListPool.AllocObj<PKBList>();
 		if( pList == NULL )
 			return PKBList_ptr();
 
 		PKBuf_ptr sptr = Package((char*)pAddtion, u8AddSize);
-		uInLen = __min(uInSize, GetSendSize() - sptr->_uPayload);
-		memcpy( &sptr->_Data[sptr->_uPayload], c_InData, uInLen );
-		sptr->_uPayload += uInLen;
+		u16InLen = __min(u16InSize, GetSendSize() - sptr->_uPayload);
+		memcpy( &sptr->_Data[sptr->_uPayload], c_InData, u16InLen );
+		sptr->_uPayload += u16InLen;
 		pList->push_back(sptr);
 
-		uInSize -= uInLen;
-		uInOffset += uInLen;
+		u16InSize -= u16InLen;
+		u16InOffset += u16InLen;
 
 		tagPKBuf* p = NULL;
-		while( uInSize > 0 )
+		while( u16InSize > 0 )
 		{
 			p = reinterpret_cast<tagPKBuf*>(_MemPool.Alloc());
 
-			uInLen = __min(uInSize, GetSendSize());
-			memcpy(p->_Data, &c_InData[uInOffset], uInLen);
-			p->_uPayload = uInLen;
+			u16InLen = __min(u16InSize, GetSendSize());
+			memcpy(p->_Data, &c_InData[u16InOffset], u16InLen);
+			p->_uPayload = u16InLen;
 			pList->push_back( PKBuf_ptr(p,false) );
-			uInSize -= uInLen;
-			uInOffset += uInLen;
+			u16InSize -= u16InLen;
+			u16InOffset += u16InLen;
 		} ;
 
 		return PKBList_ptr(pList, 
 			function20_bind(&MemPool_type::FreeMemObj<PKBList>, &_ListPool, _foundation_::_1));
 	}
 
-	int	Parse( const char* c_szInData, UInt32 uInSize,
+	int	Parse( const char* c_szInData, UInt16 u16InSize,
 				const StreamBuf_ptr& Buf_ptr ) 
 	{
 		_Function(Buf_ptr);
@@ -176,8 +176,8 @@ public:
 	}
 
 private:
-	const UInt32 _uSendSize;
-	const UInt32 _ReservedSize;
+	const UInt16 _uSendSize;
+	const UInt16 _ReservedSize;
 
 	MemPool_type		_MemPool;
 	MemPool_type		_ListPool;

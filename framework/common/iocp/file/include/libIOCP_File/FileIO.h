@@ -56,10 +56,6 @@ namespace	_iocp_file_{
 
 		void close( void );
 
-		int seek_read(Int64 uOffset);
-
-		Int64 tell_read(void);
-
 		inline HFILE GetHandle( void ) const
 		{
 			return _hFile;

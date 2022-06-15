@@ -245,52 +245,6 @@ namespace	_string_v20_{
 		typedef _My_String_const_iterator	const_iterator;
 
 	public:
-		static size_type FindData(const _Elem *_Myptr, size_type _Mysize, const _Elem *_Ptr,
-			size_type _Off, size_type _Count)
-		{
-			if (_Count == 0 && _Off <= _Mysize)
-				return (_Off);	// null string always matches (if inside string)
-
-			size_type _Nm;
-			if (_Off < _Mysize && _Count <= (_Nm = _Mysize - _Off))
-			{	// room for match, look for it
-				const _Elem *_Uptr, *_Vptr;
-				for (_Nm -= _Count - 1, _Vptr = _Myptr + _Off;
-					(_Uptr = (const _Elem *)memchr(_Vptr, *_Ptr, _Nm)) != 0;
-					_Nm -= _Uptr - _Vptr + 1, _Vptr = _Uptr + 1)
-					if (memcmp(_Uptr, _Ptr, _Count) == 0)
-						return (_Uptr - _Myptr);	// found a match
-			}
-
-			return (-1);	// no match
-		}
-
-		static size_type rFindData(const _Elem *_Myptr, size_type _Mysize, const _Elem *_Ptr,
-			size_type _Off, size_type _Count)
-		{	// look for [_Ptr, _Ptr + _Count) beginning before _Off
-
-			if (_Count == 0)
-				return (_Off < _Mysize ? _Off
-					: _Mysize);	// null always matches
-
-			if (_Count <= _Mysize)
-			{	// room for match, look for it
-				const _Elem *_Head = _Myptr;
-				const _Elem *_Uptr = _Head +
-					(_Off < _Mysize - _Count ? _Off
-						: _Mysize - _Count);
-
-				for (; ; --_Uptr)
-					if (*_Uptr == *_Ptr
-						&& memcmp(_Uptr, _Ptr, _Count) == 0)
-						return (_Uptr - _Head);	// found a match
-					else if (_Uptr == _Head)
-						break;	// at beginning, no more chance for match
-			}
-
-			return (-1);	// no match
-		}
-
 		static int64_tt StrHexToInt( const string& s )
 		{
 			int64_tt iValue = 0, t = 1;
@@ -404,18 +358,10 @@ namespace	_string_v20_{
 			return reinterpret_cast<char*>(szBuf);
 		}
 
-		static string	FloatToStr( double dValue, unsigned short uPrecision = 0)
+		static string	FloatToStr( double dValue )
 		{
-			char szBuf[50] = { 0 };
-			if (uPrecision == 0)
-				sprintf(szBuf, "%lf", dValue);
-			else
-			{
-				string s = "%.";
-				s += NumberToStr(uPrecision);
-				s += "lf";
-				sprintf(szBuf, s.c_str(), dValue);
-			}
+			char szBuf[50] = {0};
+			sprintf(szBuf, "%lf", dValue);
 			return reinterpret_cast<char*>(szBuf);
 		}
 
@@ -459,8 +405,8 @@ namespace	_string_v20_{
 		static int stringCompareIgnoreCase( const string& lhs, const string& rhs )
 		{
 			//转换小写比较
-			string tmlhs = string(lhs.tolowers().c_str()).strim();
-			string tmrhs = string(rhs.tolowers().c_str()).strim();
+			string tmlhs = lhs.tolowers().strim();
+			string tmrhs = rhs.tolowers().strim();
 			return tmlhs.compare(tmrhs);
 		}
 
@@ -478,22 +424,8 @@ namespace	_string_v20_{
 			return s;
 		}
 
-		static string rFixation(const string& s, int iLen, char c)
-		{
-			int Num = iLen - s.size();
-			if (Num > 0)
-			{
-				string New;
-				New.append(s);
-				New.append(Num, c);
-				return New;
-			}
-
-			return s;
-		}
-
 	private:
-		_Elem			_Buf[STRING_OBJ_SIZE_V20 + STRING_BUF_SIZE + 1];
+		_Elem			_Buf[STRING_OBJ_SIZE + STRING_BUF_SIZE + 1];
 		size_type		_Mysize;
 		size_type		_Myres;
 		_Alty			_Alval;	// allocator object for strings
@@ -513,7 +445,6 @@ namespace	_string_v20_{
 			, _Alval(_Buf)
 		{
 			_Alval = t1._Alval;
-			_Myptr()[_Mysize] = 0;
 		}
 
 		string( const _Elem* _Ptr )
@@ -559,7 +490,6 @@ namespace	_string_v20_{
 				{
 					_Mysize = _Right._Mysize;
 					_Alval = _Right._Alval;
-					_Myptr()[_Mysize] = 0;
 				}
 				else
 				{
@@ -582,7 +512,6 @@ namespace	_string_v20_{
 			{
 				_Mysize = _Right._Mysize;
 				_Alval.swap( reinterpret_cast<string&&>(_Right)._Alval);
-				_Myptr()[_Mysize] = 0;
 			}
 			else
 			{
@@ -1029,9 +958,6 @@ namespace	_string_v20_{
 				// no overlap, just move down and copy in new stuff
 				if( _Off > 0 )
 					std::memmove(_Uptr + _Off + _Count, _Uptr + _Off + _N0, _Nm);	// fill hole
-
-				if (_Nm > 0)
-					std::memmove(_Uptr + _Off + _Count, _Uptr + _Off + _N0, this->_Mysize - (_Off + _N0));	// fill hole
 
 				std::memcpy(_Uptr + _Off, _Right + _Roff, _Count);	// fill hole
 				_Mysize = 0;
@@ -1610,7 +1536,7 @@ gt_alloc:
 
 		char* _GetDataBuf( void )
 		{
-			return reinterpret_cast<char*>(_Buf) + STRING_OBJ_SIZE_V20;
+			return reinterpret_cast<char*>(_Buf) + STRING_OBJ_SIZE;
 		}
 	};
 

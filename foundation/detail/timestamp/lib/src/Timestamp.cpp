@@ -47,12 +47,9 @@
 #endif
 
 #include <libCommon/CMyException.h>
-#include <libLock/Lock.hpp>
 
 
 namespace _timestamp_ {
-
-CLock	g_202107121033;
 
 
 Timestamp::Timestamp()
@@ -97,36 +94,7 @@ void Timestamp::swap(Timestamp& timestamp)
 	std::swap(_ts, timestamp._ts);
 }
 
-int Timestamp::epochTM(struct tm * Time) const
-{
-	time_t rawtime = epochTime();
-	g_202107121033.Lock();
-#if defined(PLATFORM_OS_FAMILY_UNIX)
-	localtime_r(&rawtime, Time);
-#elif defined(PLATFORM_OS_FAMILY_WINDOWS)
-	localtime_s(Time, &rawtime);
-#else
-	struct tm* t = localtime(&rawtime);
-	memcpy(Time, t, sizeof(struct tm));
-#endif
-	g_202107121033.UnLock();
-	return 1;
-}
 
-int Timestamp::static_epochTM(const time_t& rawtime, struct tm * Time)
-{
-	g_202107121033.Lock();
-#if defined(PLATFORM_OS_FAMILY_UNIX)
-	localtime_r(&rawtime, Time);
-#elif defined(PLATFORM_OS_FAMILY_WINDOWS)
-	localtime_s(Time, &rawtime);
-#else
-	struct tm* t = localtime(&rawtime);
-	memcpy(Time, t, sizeof(struct tm));
-#endif
-	g_202107121033.UnLock();
-	return 1;
-}
 
 Timestamp Timestamp::fromEpochTm(tm* t)
 {
@@ -187,20 +155,6 @@ _string_type Timestamp::localTimePrintf()
 	return szTime;
 }
 
-_string_type	Timestamp::localTimePrintf2()
-{
-	struct tm * timeinfo;
-	char szTime[30] = { 0 };
-	time_t rawtime = epochTime();
-	timeinfo = localtime(&rawtime);
-	sprintf(szTime, "%04d-%02d-%02d %02d:%02d:%02d",
-		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
-		timeinfo->tm_mday, timeinfo->tm_hour,
-		timeinfo->tm_min, timeinfo->tm_sec);
-
-	return szTime;
-}
-
 _string_type	Timestamp::gmTimePrintf()
 {
 	struct tm * timeinfo;
@@ -209,119 +163,54 @@ _string_type	Timestamp::gmTimePrintf()
 	timeinfo = gmtime ( &rawtime );
 	sprintf ( szTime,"[%04d-%02d-%02d %02d:%02d:%02d]", 
 		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
-		timeinfo->tm_mday,timeinfo->tm_hour + 8,
+		timeinfo->tm_mday,timeinfo->tm_hour,
 		timeinfo->tm_min,timeinfo->tm_sec);
 
 	return szTime;
 }
 
-_string_type	Timestamp::DateString(const char* c_szSeparator) const
+_string_type	Timestamp::DateString()
 {
-	struct tm timeinfo = {0};
-	epochTM(&timeinfo);
-	char szTime[50] = {0};
-	if (c_szSeparator == NULL)
-	{
-		sprintf(szTime, "%04d%02d%02d",
-			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-			timeinfo.tm_mday);
-	}
-	else
-	{
-		sprintf(szTime, "%04d%s%02d%s%02d",
-			timeinfo.tm_year + 1900, c_szSeparator, timeinfo.tm_mon + 1,
-			c_szSeparator, timeinfo.tm_mday);
-	}
+	struct tm * timeinfo = epochTM();
+	char szTime[10] = {0};
+	sprintf ( szTime,"%04d%02d%02d", 
+		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+		timeinfo->tm_mday );
 	return szTime;
 }
 
-//时分秒.毫秒
-_string_type	Timestamp::MSTimeString(const char* c_szSeparator) const
+_string_type	Timestamp::DateTimeString()
 {
-	struct tm timeinfo = { 0 };
-	epochTM(&timeinfo);
-	char szTime[50] = { 0 };
-	if (c_szSeparator == NULL)
-	{
-		sprintf(szTime, "%02d%02d%02d.%03d",
-			timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
-			_ts % resolution() / 1000);
-	}
-	else
-	{
-		sprintf(szTime, "%02d%s%02d%s%02d.%03d",
-			timeinfo.tm_hour, c_szSeparator, timeinfo.tm_min, c_szSeparator, timeinfo.tm_sec,
-			_ts % resolution() / 1000);
-	}
-	return szTime;
-}
-
-//时分秒
-_string_type	Timestamp::STimeString(const char* c_szSeparator) const
-{
-	struct tm timeinfo = { 0 };
-	epochTM(&timeinfo);
-	char szTime[50] = { 0 };
-	if (c_szSeparator == NULL)
-	{
-		sprintf(szTime, "%02d%02d%02d",
-			timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-	}
-	else
-	{
-		sprintf(szTime, "%02d%s%02d%s%02d",
-			timeinfo.tm_hour, c_szSeparator, timeinfo.tm_min, c_szSeparator, timeinfo.tm_sec);
-	}
-	return szTime;
-}
-
-_string_type	Timestamp::DateTimeString(const char* c_szSeparator) const
-{
-	struct tm timeinfo = {0};
-	epochTM(&timeinfo);
-
+	struct tm * timeinfo = epochTM();
 	char szTime[25] = {0};
-	if (c_szSeparator == NULL)
-	{
-		sprintf(szTime, "%04d%02d%02d%02d%02d%02d",
-			timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-			timeinfo.tm_mday,
-			timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-	}
-	else
-	{
-		sprintf(szTime, "%04d%s%02d%s%02d%s%02d%s%02d%s%02d",
-			timeinfo.tm_year + 1900, c_szSeparator, timeinfo.tm_mon + 1,
-			c_szSeparator, timeinfo.tm_mday, c_szSeparator,
-			timeinfo.tm_hour, c_szSeparator, timeinfo.tm_min, c_szSeparator, timeinfo.tm_sec);
-	}
+	sprintf ( szTime,"%04d%02d%02d%02d%02d%02d", 
+		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+		timeinfo->tm_mday,
+		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec );
 	return szTime;
 }
 
 //毫秒
-_string_type	Timestamp::DateMilliString() const
+_string_type	Timestamp::DateMilliString()
 {
-	struct tm timeinfo = {0};
-	epochTM(&timeinfo);
-
+	struct tm * timeinfo = epochTM();
 	char szTime[25] = {0};
 	sprintf ( szTime,"%04d%02d%02d%02d%02d%02d%03d", 
-		timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-		timeinfo.tm_mday,
-		timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+		timeinfo->tm_mday,
+		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec,
 		_ts % resolution() / 1000);
 	return szTime;
 }
 
-_string_type	Timestamp::DateMicroString() const
+_string_type	Timestamp::DateMicroString()
 {
-	struct tm timeinfo = {0};
-	epochTM(&timeinfo);
+	struct tm * timeinfo = epochTM();
 	char szTime[25] = {0};
 	sprintf ( szTime,"%04d%02d%02d%02d%02d%02d%06d", 
-		timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-		timeinfo.tm_mday,
-		timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, _ts % resolution() );
+		timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+		timeinfo->tm_mday,
+		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec, _ts % resolution() );
 	return szTime;
 }
 

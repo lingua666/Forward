@@ -1,6 +1,6 @@
 
 set( TARGET
-	SampleFrameWork_AsyncFiles
+	SampleFramework_AsyncFiles
 	)
 	
 #Traverse the file
@@ -14,8 +14,8 @@ add_target(${TARGET} ConsoleApp ${TARGET_SRC_LIST})
 
 target_compile_definitions(${TARGET} PRIVATE -DBOOST_ALL_NO_LIB)
 		
-add_dependencies(${TARGET} dllFrameWork_AsyncFiles)
-target_link_libraries(${TARGET} dllFrameWork_AsyncFiles)
+add_dependencies(${TARGET} dllFramework_AsyncFiles)
+target_link_libraries(${TARGET} dllFramework_AsyncFiles)
 
 if(UNIX)
 	if(NOT BUILD_ANDROID)	#∑«androidœµÕ≥

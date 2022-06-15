@@ -33,11 +33,11 @@ namespace _io_net_{
 				return _ioService;
 			}
 
-			inline bool	Listen( UInt16 u16Port, const char* c_szIP = NULL )
+			inline bool	Listen( UInt16 u16Port )
 			{
 				_ioService.open();
 				_Acceptor.attach(_ioService);
-				if( _Acceptor.bind(u16Port, c_szIP) == -1 )
+				if( _Acceptor.bind(u16Port) == -1 )
 					return false;
 				_Acceptor.listen();
 				return true;

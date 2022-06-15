@@ -113,12 +113,12 @@ namespace	_string_v20_{
 	public:
 		static sp_counted_base* GetInstance( void* pBuf )
 		{
-			return new(pBuf) sp_counted_impl_buf( reinterpret_cast<char*>(pBuf) + STRING_OBJ_SIZE_V20);
+			return new(pBuf) sp_counted_impl_buf( reinterpret_cast<char*>(pBuf) + STRING_OBJ_SIZE );
 		}
 
 		static char* GetBuffer( char* pBuf )
 		{
-			return pBuf + STRING_OBJ_SIZE_V20;
+			return pBuf + STRING_OBJ_SIZE;
 		}
 
 	public:

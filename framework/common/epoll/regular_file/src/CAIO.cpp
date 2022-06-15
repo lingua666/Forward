@@ -6,7 +6,7 @@
 
 namespace _epoll_regular_file_{
 
-	/*const int g_regular_file_events_20170630 = 128;*/
+	const int g_regular_file_events_20170630 = 128;
 
 	//使用O_DIRECT，则使用DIRECT I/O，这样会减少内存拷贝次数，
 	//cpu使用率也会减少。但是这样做就需要由用户层来做内存block对齐，并且其内存大小也必须是block整数倍
@@ -98,7 +98,7 @@ namespace _epoll_regular_file_{
 			return -1;
         }
 		
-		if ( Setup(REGULAR_FILE_EVENTS_MAX/*g_regular_file_events_20170630*/) == -1 )
+		if ( Setup(g_regular_file_events_20170630) == -1 )
 		{
 			perror("io_setup");
 			return -1;
@@ -145,7 +145,7 @@ namespace _epoll_regular_file_{
 		if( !is_open() )
 			return -1;
 
-		return io_getevents(_ctx, 1, REGULAR_FILE_EVENTS_MAX/*g_regular_file_events_20170630*/, events, &_tms);
+		return io_getevents(_ctx, 1, g_regular_file_events_20170630, events, &_tms);
 	}
 
 	int CAIO::ReadEventNum( void )

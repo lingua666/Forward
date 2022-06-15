@@ -33,8 +33,8 @@ namespace	_session_{
 			* @brief    
 			* @return  
 			*/
-			StreamCtrl( UInt32 uSendSize,
-						UInt32 ReservedSize );
+			StreamCtrl( UInt16 uSendSize,
+						UInt16 ReservedSize );
 
 			/*!
 			* @function   ~StreamCtrl
@@ -43,19 +43,15 @@ namespace	_session_{
 			*/
 			~StreamCtrl( void );
 
-			int Init(void);
-
-			void Release(void);
-
 			UInt32	Send( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize, UInt16 uBufNum = 0);
+						const char* pData, UInt16 u16Size );
 
-			UInt32	Send( sockaddr_in* pDest, const char* pData, UInt32 uSize, UInt16 uBufNum = 0);
+			UInt32	Send( sockaddr_in* pDest, const char* pData, UInt16 u16Size );
 
 			void	SendQue( void );
 
 			void	HandleSend( const STREAM_HANDLE& Stream, sockaddr_in* pDest, 
-				const char* pData, UInt32 uSize );
+				const char* pData, UInt32 u32Size );
 
 			void	HandleRecv( const STREAM_HANDLE& Stream, sockaddr_in* pSrc,
 				const StreamBuf_ptr& Buf_ptr );
@@ -73,15 +69,15 @@ namespace	_session_{
 		protected:
 			void	FullPacket( void* pUser, const StreamBuf_ptr& Buf_ptr );
 
-			int	MorePack( sockaddr_in* pDest, const char* pData, UInt32 uSize );
+			int	MorePack( sockaddr_in* pDest, const char* pData, UInt16 u16Size );
 
-			int	OnePack( sockaddr_in* pDest, const char* pData, UInt32 uSize );
+			int	OnePack( sockaddr_in* pDest, const char* pData, UInt16 u16Size );
 
 			int	MorePack( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize );
+						const char* pData, UInt16 u16Size );
 
 			int	OnePack( sockaddr_in* pDest, void* pAddtion, UInt8 u8AddSize,
-						const char* pData, UInt32 uSize );
+						const char* pData, UInt16 u16Size );
 
 			void	SendData( void );
 

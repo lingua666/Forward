@@ -159,9 +159,9 @@ const DigestEngine::Digest& MD5Engine::digest()
 	return _digest;
 }
 
-_string_type	MD5Engine::digestToFile(const char* c_szPath)
+_string_type	MD5Engine::digestToFile( const _string_type& sFile )
 {
-	FILE*  file = fopen(c_szPath, "rb");
+	FILE*  file = fopen(sFile.c_str(),"rb");
 	if( file != NULL )
 	{
 		int nLength = 0;       //number of bytes read from the file  

@@ -9,8 +9,6 @@
 
 	namespace _epoll_regular_file_{
 
-		typedef _sys_error_					error_code;
-
 		io_service::io_service( void )
 			: _is_run(false)
 			, _io_handle(NULL)
@@ -20,9 +18,7 @@
 			, _FreeLock( new CLock() )
 			, _OverlappedManage( new OverlappedManage_type() )
 		{	
-			//test
-			LOG_Print_SetLog(libEPoll_Regular_File, MLog_GetAllLevel());
-			//test
+
 		}
 
 		io_service::io_service( const self_type& self )
@@ -47,14 +43,6 @@
 			_io_handle = self._io_handle;
 			return *this;
 		}
-
-		int io_service::Init(void)
-		{
-			return 1;
-		}
-
-		void io_service::Release(void)
-		{}
 
 		int io_service::open( void )
 		{
@@ -136,16 +124,6 @@
 			return GetCAIOInstance()->Submit(1, piocb);
 		}
 
-		int io_service::post_cancel( tagOverlapped* pOverlapped )
-		{
-			struct io_event result;
-
-			//取消I/O事件 
-			pOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes = pOverlapped->_SWSAOverlapp.wsaBuf.len;
-			pOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_resfd = GetCAIOInstance()->GetHandle();
-			return GetCAIOInstance()->Cancel(&pOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb, &result);
-		}
-
 		int io_service::post_delete( HANDLE Handle )
 		{
 			return CAsynIO::DettachHandle(_io_handle, Handle);
@@ -153,7 +131,7 @@
 
 		int io_service::post( HANDLE Handle, int iType, int iValue, tagOverlapped* pOverlapped )
 		{
-			return CAsynIO::PostIO(_io_handle, Handle, iType, iValue, (UInt64)pOverlapped);
+			return CAsynIO::PostIO(_io_handle, Handle, iType, iValue, (DWORD)pOverlapped);
 		}
 
 		tagOverlapped* io_service::Alloc( void )
@@ -168,6 +146,9 @@
 
 		void io_service::CloseOverlapped( tagOverlapped* pOverlapped )
 		{
+			for(int i = 0; i < 20; i ++)
+				tagOverlapped::AddRef(pOverlapped);
+
 			pOverlapped->_SWSAOverlapp.wsaOverlapped.uOP = IO_OP_CLOSE;
 
 			_FreeLock->Lock();
@@ -175,12 +156,11 @@
 				pOverlapped->_hfnComplete.reset();
 			else
 			{
-				LOG_Print_Error(libEPoll_Regular_File, "error exit failed io_service::CloseOverlapped pOverlapped:%p has free\r\n", pOverlapped);
+				printf("exit failed io_service::CloseOverlapped pOverlapped:%p has free\r\n", pOverlapped);
 				_exit(0);
 			}
 			_FreeLock->UnLock();
-			
-			tagOverlapped::AddRef(pOverlapped);
+
 			this->post(pOverlapped);
 		}
 
@@ -188,6 +168,7 @@
 		{
 			_Lock->Lock();
 			_List->push_back(pOverlapped);
+			pOverlapped->_ListRef ++;
 			_Lock->UnLock();
 			return 1;
 		}
@@ -198,6 +179,7 @@
 			{
 				_Lock->Lock();
 				_List->push_back(pOverlapped);
+				pOverlapped->_ListRef ++;
 				_Lock->UnLock();
 				for(int i = 0; i < _ThreadList->size(); i ++)
 				{
@@ -220,14 +202,14 @@
 
 		void io_service::run( void )
 		{
-			int			iRet = 0, iNum = 0, iEvNum = 0;
+			int			iRet = 0, iNum = 0, iEvNum;
 			UInt64		uReady = 0;
 			UInt32	uEvent, uOP;
 			tagOverlapped*	lpOverlapped = NULL;
 			tagOverlapped*	lpTmpOver = NULL;
 			tagIOData_INFO	IODataINFO = {0};
-			struct epoll_event events[REGULAR_FILE_EVENTS_MAX];
-			struct io_event   io_ev[REGULAR_FILE_EVENTS_MAX];
+			struct epoll_event events[128];
+			struct io_event   io_ev[64];
 
 			//设置信号捕捉
 			struct sigaction act;
@@ -256,6 +238,12 @@
 				if( _List->size() > 0 )
 				{
 					pOver = _List->front();
+					pOver->_ListRef --;
+					if( pOver->_ListRef < 0 )
+					{
+						printf("exit failed io_service::run _ListRef 111!\r\n");
+						_exit(0);
+					}
 					_List->pop();
 				}
 				_Lock->UnLock();
@@ -266,45 +254,62 @@
 					{
 					case IO_OP_CLOSE:
 						{
-							if (pOver->_ProcRef <= 0)
+							bool	isFree = false;
+							int iRef = tagOverlapped::SubRef(pOver);
+							if( iRef > 0 )
 							{
-								if (pOver->_ProcRef < 0)
+								_Lock->Lock();
+								if( pOver->_ListRef == 0 )
 								{
-									LOG_Print_Error(libEPoll_Regular_File, "error io_service::process yyyyy lpOverlapped:%p,lpOverlapped->_ProcRef:%d, WuOP:%d\r\n", pOver, pOver->_ProcRef,
-										pOver->_SWSAOverlapp.wsaOverlapped.uOP);
+									pOver->_ListRef ++;
+									_List->push_back(pOver);
+								}
+								else if( pOver->_ListRef < 0)
+								{
+									printf("exit failed io_service::run _ListRef 222!\r\n");
 									_exit(0);
 								}
-
-								if (pOver->_Free_Overlapp)
-								{
-									pOver->_Free_Overlapp(pOver);
-								}
+								_Lock->UnLock();
 							}
-							else
+							else if( iRef == 0 && pOver->_Free_Overlapp )
 							{
-								post(pOver);
-							}	
-						}
-						break;
-					case IO_OP_READ:
-					case IO_OP_WRITE:
-						{
-							IODataINFO._ibytes_transferred = pOver->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes;
-							IODataINFO._pOverlapped = pOver;
-							CASSubAndFetch(&pOver->_ProcRef);
-							if(pOver->_ProcRef < 0)
+								isFree = true;
+							}
+
+							if( pOver->_Ref < 0 )
 							{
-								LOG_Print_Error(libEPoll_Regular_File, "error Write And Read 111 pOver:%p, uOP:%d, Handle:%lld, offset:%lld", pOver, pOver->_SWSAOverlapp.wsaOverlapped.uOP,  pOver->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_fildes, pOver->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_offset);
+								printf("exit failed pOver:%p, pOver->_Ref:%d\r\n", pOver, pOver->_Ref);
 								_exit(0);
 							}
 
+							if( isFree )
+							{//释放									
+								pOver->_Free_Overlapp(pOver);
+							}
+						}
+						break;
+					case IO_OP_READ:
+						{
+							IODataINFO._ibytes_transferred = lpOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes;
+							IODataINFO._pOverlapped = pOver;
 							process(&IODataINFO, pOver, pOver->_SWSAOverlapp.wsaOverlapped.uEvent);
-
+						}
+						break;
+					case IO_OP_WRITE:
+						{
+							IODataINFO._ibytes_transferred = lpOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes;
+							IODataINFO._pOverlapped = pOver;
+							process(&IODataINFO, pOver, pOver->_SWSAOverlapp.wsaOverlapped.uEvent);
+							if( tagOverlapped::SubRef(pOver) <= 0 && pOver->_Free_Overlapp )
+							{//释放
+								HFNComplete h = pOver->_hfnComplete;
+								pOver->_Free_Overlapp(pOver);
+							}
 						}
 						break;
 					case IO_OP_WAIT:
 						{
-							iRet = CAsynIO::GetQueuedCompletionStatus(_io_handle, events, REGULAR_FILE_EVENTS_MAX);
+							iRet = CAsynIO::GetQueuedCompletionStatus(_io_handle, events, 128);
 							// Dispatch the waiting events.
 							if( iRet != -1 )
 							{
@@ -322,24 +327,25 @@
 
 											for(int k = 0; k < iEvNum; k ++)
 											{
-												lpOverlapped = (tagOverlapped *) (uintptr_t) io_ev[k].data;
+												lpOverlapped = (tagOverlapped *) (uintptr_t) io_ev[i].data;
 
 												if( uEvent != 0 && lpOverlapped != NULL )
 												{
-													lpOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes = io_ev[k].res;
+													lpOverlapped->_SWSAOverlapp.wsaOverlapped.Aiocb.aio_nbytes = io_ev[i].res;
 													uOP = lpOverlapped->_SWSAOverlapp.wsaOverlapped.uOP;
-													lpOverlapped->_SWSAOverlapp.wsaOverlapped.uEvent = uEvent;
+													if( uOP != IO_OP_READ )
+														tagOverlapped::AddRef(lpOverlapped);
 
+													lpOverlapped->_SWSAOverlapp.wsaOverlapped.uEvent = uEvent;
 
 													if( lpOverlapped->_ADR._Handle != INVALID_HANDLE_VALUE )
 													{
-														CASAddAndFetch(&lpOverlapped->_ProcRef);
 														post(lpOverlapped);
 													}
 													else
-													{
-														LOG_Print_Error(libEPoll_Regular_File, "error lpOverlapped->_ADR._Handle == INVALID_HANDLE_VALUE\r\n");
-														_exit(0);
+													{//已经关闭
+														if( uOP != IO_OP_READ )
+															tagOverlapped::SubRef(lpOverlapped);
 													}
 												}
 
@@ -354,12 +360,11 @@
 							{//出现错误
 								if( errno == EINTR && this->is_open() )
 								{
-									LOG_Print_Error(libEPoll_Regular_File, "io_service::run GetQueuedCompletionStatus(%p) failed, error code:%d!!", lpTmpOver, errno)
 									post(lpTmpOver);
 								}
 								else
 								{
-									LOG_Print_Error(libEPoll_Regular_File, "io_service::run GetQueuedCompletionStatus failed, error code:%d!!", errno)
+									LOG_Print_Info(libEPoll_Regular_File, "io_service::run GetQueuedCompletionStatus failed, error code:%d!!", errno)
 									break;//退出线程
 								}
 							}
@@ -376,7 +381,7 @@
 				}
 			}
 
-			printf("thread exit threadid(%d):%lld\r\n", _is_run, _thread_::ThreadAPI::GetCurrentThreadId());
+			printf("thread exit threadid:%lld\r\n", _thread_::ThreadAPI::GetCurrentThreadId());
 			if( lpTmpOver != NULL )
 				_OverlappedManage->Free(lpTmpOver);
 		}
@@ -404,12 +409,6 @@
 					{
 						if( tagOverlapped::SubRef(lpOverlapped) <= 0 && lpOverlapped->_Free_Overlapp )
 						{//释放
-							if(lpOverlapped->_Ref < 0)
-							{
-								LOG_Print_Error(libEPoll_Regular_File, "error failed io_service::process33333 lpOverlapped Failed\r\n");
-								_exit(0);	
-							}
-
 							lpOverlapped->_Free_Overlapp(lpOverlapped);
 						}	
 					}
@@ -418,10 +417,12 @@
 			//test
 			else
 			{
-				LOG_Print_Error(libEPoll_Regular_File, "failed io_service::process lpOverlapped is NULL\r\n");
+				printf("failed io_service::process lpOverlapped is NULL\r\n");
 				_exit(0);
 			}
 			//test
+
+			//LOG_Print_Info(libEPoll_Regular_File, "io_service::process end")
 		}
 
 		int io_service::stop(void)

@@ -1,6 +1,0 @@
-add_subdirectory(db)
-add_subdirectory(data_format)
-add_subdirectory(media)
-add_subdirectory(message_middle)
-add_subdirectory(crypto)
-add_subdirectory(arm)

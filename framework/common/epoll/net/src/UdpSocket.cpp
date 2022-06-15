@@ -23,7 +23,7 @@
 				//this->close();
 			}
 
-			UdpSocket::HSOCKET UdpSocket::Listen( UInt16 u16Port, const char* c_szIP )
+			UdpSocket::HSOCKET UdpSocket::Listen( UInt16 u16Port )
 			{
 				_Sock = APIWSACreate(SOCK_DGRAM, -1, -1);
 				if( _Sock == SOCKET_ERROR )
@@ -31,10 +31,7 @@
 
 				struct sockaddr_in addr = {0};
 				addr.sin_family			= AF_INET;
-				if(c_szIP == NULL)
-					addr.sin_addr.s_addr	= htonl(INADDR_ANY);
-				else
-					addr.sin_addr.s_addr = inet_addr(c_szIP);
+				addr.sin_addr.s_addr	= htonl(INADDR_ANY);
 				addr.sin_port			= htons( u16Port );
 
 				if( ::bind( _Sock, (sockaddr *) &addr, sizeof(struct sockaddr_in) ) == -1 )
@@ -225,8 +222,8 @@
 						p->_RealSize += iRet;
 					}
 
-					//_Service.process(&IODataINFO, p);
-					_Service.post(p, 0);
+					_Service.process(&IODataINFO, p);
+					//_Service.post(p, 0);
 				}
 				else if( errno == EAGAIN )
 				{
@@ -282,8 +279,8 @@
 
 						pOverlapped->_RealSize += iRet;
 					}
-					//_Service.process(&IODataINFO, pOverlapped);
-					_Service.post(pOverlapped, 0);
+					_Service.process(&IODataINFO, pOverlapped);
+					//_Service.post(pOverlapped, 0);
 				}
 				else if( errno == EAGAIN )
 				{
